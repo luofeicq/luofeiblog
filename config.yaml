@@ -49,14 +49,14 @@ params:
         Content: >
             Welcome to My blog：
             
-            - 🧔 I am a public health reasearcher worked in Chongqing China.
+            -  I am a public health reasearcher worked in Chongqing China.
             
-            - 💻 I am learing using R language  for statistical analysis in infectious diseses. 
+            -  I am learing using R language  for statistical analysis in infectious diseses. 
             
-            - 🎡 I will record the issues in the learning process and my own solutions here, and I will also record my daily life . 
+            -  I l recorded the issues encountered during the learning process and my solutions. 
             You are welcome to leave your valuable comments
             
-            - 😜 Many thanks for you visting  ! 
+            -  Many thanks for your visting  ! 
     socialIcons:
         - name: Github
           url: https://github.com/luofeicq/
