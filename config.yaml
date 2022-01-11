@@ -37,7 +37,10 @@ menu:
           name: search
           url: /search/
           weight: 40
-params:    
+params:
+    label:
+        icon: /img/logo.png
+        iconHeight: 35
     env: production
     ShowBreadCrumbs: true
     description: Luo Fei's web site
