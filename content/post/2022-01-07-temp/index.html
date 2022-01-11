@@ -1,0 +1,162 @@
+---
+title: Monte Carlo method
+author: luofei # multiple authors["Me", "You"] 
+date: '2022-01-07'
+slug: [temp]
+categories:
+  - hogo
+tags:
+  - temp
+output:
+    blogdown::html_page:
+      number_sections: true
+# weight: 1
+# aliases: ["/first"]
+math: true
+showToc: true
+TocOpen: false
+draft: false
+hidemeta: false
+comments: false
+description: "mote carlo"
+canonicalURL: ""
+disableHLJS: false # to disable highlightjs
+disableShare: false
+hideSummary: false
+searchHidden: false
+ShowReadingTime: true
+ShowBreadCrumbs: true
+ShowPostNavLinks: true
+cover:
+    image: "" # image path/url
+    alt: "<alt text>" # alt text
+    caption: "<text>" # display caption under cover
+    relative: false # when using page bundles set this to true
+    hidden: true # only hide on current single page
+ 
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+
+
+<div id="蒙特卡洛法monte-carlo-method计算pi的值" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> 蒙特卡洛法（Monte Carlo method）计算<span class="math inline">\(\pi\)</span>的值</h1>
+<p>用随机函数<code>runif()</code>随机生成N个在1个单位正方形内的散点，根据三角公式筛选出在圆内的点,数据如下:</p>
+<pre class="r"><code>## 生成基础数据
+
+set.seed(2021)
+
+N &lt;-  5000
+
+df01 &lt;- tibble(
+  x = runif(N, -0.5, 0.5),
+  y = runif(N, -0.5, 0.5)
+) %&gt;% 
+  mutate(
+    z = if_else(
+      x^2 + y ^2 &lt; 0.25, 1, 0),
+    p = runif(N,0,2 * pi),
+    x2 = cos(p) * 0.5,
+    y2 = sin(p) * 0.5
+    )
+
+knitr::kable(head(df01), caption = &quot;随机数据&quot;, col.names = c(&quot;散点X&quot;, &quot;散点Y&quot;, &quot;是否在圆内&quot;,
+                                                          &quot;随机生成0-180度&quot;, &quot;圆X&quot;, &quot;圆Y&quot;))</code></pre>
+<table>
+<caption><span id="tab:unnamed-chunk-1">Table 1.1: </span>随机数据</caption>
+<thead>
+<tr class="header">
+<th align="right">散点X</th>
+<th align="right">散点Y</th>
+<th align="right">是否在圆内</th>
+<th align="right">随机生成0-180度</th>
+<th align="right">圆X</th>
+<th align="right">圆Y</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">-0.0487326</td>
+<td align="right">-0.2075665</td>
+<td align="right">1</td>
+<td align="right">4.580134</td>
+<td align="right">-0.0659349</td>
+<td align="right">-0.4956335</td>
+</tr>
+<tr class="even">
+<td align="right">0.2837798</td>
+<td align="right">0.2123884</td>
+<td align="right">1</td>
+<td align="right">4.174745</td>
+<td align="right">-0.2560569</td>
+<td align="right">-0.4294588</td>
+</tr>
+<tr class="odd">
+<td align="right">0.2096822</td>
+<td align="right">-0.3945003</td>
+<td align="right">1</td>
+<td align="right">1.947142</td>
+<td align="right">-0.1837623</td>
+<td align="right">0.4650069</td>
+</tr>
+<tr class="even">
+<td align="right">-0.1182557</td>
+<td align="right">0.2040979</td>
+<td align="right">1</td>
+<td align="right">1.999538</td>
+<td align="right">-0.2078633</td>
+<td align="right">0.4547448</td>
+</tr>
+<tr class="odd">
+<td align="right">0.1363238</td>
+<td align="right">-0.2860130</td>
+<td align="right">1</td>
+<td align="right">2.294345</td>
+<td align="right">-0.3310244</td>
+<td align="right">0.3747304</td>
+</tr>
+<tr class="even">
+<td align="right">0.2013460</td>
+<td align="right">0.4472050</td>
+<td align="right">1</td>
+<td align="right">4.295846</td>
+<td align="right">-0.2023008</td>
+<td align="right">-0.4572465</td>
+</tr>
+</tbody>
+</table>
+<div id="绘图" class="section level2" number="1.1">
+<h2><span class="header-section-number">1.1</span> 绘图</h2>
+<p>画出散点的分布图</p>
+<pre class="r"><code>## 绘图
+df01 %&gt;% ggplot() +
+  geom_point(aes(x, y, col= as.factor(z)),
+             alpha = 0.5, size = 0.5, show.legend = F) + 
+  theme_bw() +
+  geom_point(aes(x2,y2), alpha = 0.5, size = 0.5)</code></pre>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:fig001"></span>
+<img src="{{< blogdown/postref >}}index_files/figure-html/fig001-1.png" alt="1个单位正方形内的散点" width="576" />
+<p class="caption">
+Figure 1.1: 1个单位正方形内的散点
+</p>
+</div>
+</div>
+<div id="计算hatpi" class="section level2" number="1.2">
+<h2><span class="header-section-number">1.2</span> 计算<span class="math inline">\(\hat\pi\)</span></h2>
+<p>根据面积比可得<span class="math inline">\(\hat\pi=4\frac{^{ }S_c}{S_s}\)</span>。当投掷5000个点的时候,<span class="math inline">\(\hat\pi=\frac{3925\times4}{5000}=\)</span> 3.14。以实验投掷散点数量为X轴，以估的<span class="math inline">\(\hat\pi\)</span>为Y轴绘图如下。很明显地可以看出随着点的数量增多<span class="math inline">\(\hat\pi\)</span>慢慢向真实的值（蓝线）逼近。</p>
+<pre class="r"><code>estmatepi &lt;- tibble(y = cumsum(df01$z)/(1:N)*4,
+                    x = 1:N)
+estmatepi %&gt;% ggplot(aes(x,y))+
+  geom_line()+
+  geom_hline(yintercept = pi, col = &quot;blue&quot;) +
+  theme_classic() +
+  xlab(&quot;N&quot;) +
+  ylab(expression(hat(pi)))</code></pre>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:unnamed-chunk-2"></span>
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-1.png" alt="估计圆周率与实验次数关系" width="672" />
+<p class="caption">
+Figure 1.2: 估计圆周率与实验次数关系
+</p>
+</div>
+</div>
+</div>

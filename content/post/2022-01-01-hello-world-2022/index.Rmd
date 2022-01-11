@@ -1,0 +1,59 @@
+---
+title: Hello world 2022
+author: luofei
+date: '2022-01-01'
+slug: [hello2022]
+output:
+    blogdown::html_page:
+      number_sections: false
+    language:
+      label:
+        fig: "图 "
+        tab: "表 "  
+categories:
+  - Diary
+tags:
+  - Trifles
+# weight: 1
+# aliases: ["/first"]
+# author: ["Me", "You"] # multiple authors
+showToc: false
+# TocOpen: false
+draft: false
+hidemeta: false
+comments: false
+description: "arraris"
+canonicalURL: ""
+disableHLJS: false # to disable highlightjs
+disableShare: false
+hideSummary: false
+searchHidden: false
+ShowReadingTime: true
+ShowBreadCrumbs: true
+ShowPostNavLinks: true
+cover:
+    image: "images/hello2022-001.jpg" # image path/url
+    alt: "<alt text>" # alt text
+    caption: "<text>" # display caption under cover
+    relative: false # when using page bundles set this to true
+    hidden: true # only hide on current single page
+---
+# 2022年元旦   
+# The first morning of year 2022
+
+第一缕阳光透过薄纱铺洒床头。    
+The sun shines sprinkled upper on my bed through the tulle.    
+微冷的空气中弥漫来阵阵花香。   
+The scent of flowers permeated in the cold air.   
+我张开怀抱,   
+I opened my arms,    
+迎接新年的来到。     
+Hugged the new year.    
+你好！    
+Hello !    
+世界！    
+world!     
+2022！
+<img src="images/hello2022-001.jpg" width="80%" align="center">
+
+

@@ -1,0 +1,53 @@
+theme: "hugo-PaperMod"
+baseURL: /
+languageCode: en-us
+title: Home
+publishDir: docs
+ignoreFiles: 
+      - \.Rmd$
+      - \.Rmarkdown$
+      - _cache$
+      - \.knit\.md$
+      - \.utf8\.md$
+publishdir: tocs
+outputs:
+    home:
+        - HTML
+        - RSS
+        - JSON # is necessary
+enableRobotsTXT: true
+buildDrafts: true
+buildFuture: false
+buildExpired: false
+menu:
+    main:
+        - identifier: archives
+          name: Archives
+          url: /archives/
+          weight: 10  
+        - identifier: categories
+          name: Categories
+          url: /categories/
+          weight: 20
+        - identifier: tags
+          name: Tags
+          url: /tags/
+          weight: 30
+        - identifier: Search
+          name: search
+          url: /search/
+          weight: 40
+params:
+    ShowBreadCrumbs: true
+assets:
+    favicon: "/favicon.ico"
+    favicon16x16:  "/favicon-16x16.png"
+    favicon32x32:  "/favicon-32x32.png"
+    apple_touch_icon:  "/apple-touch-icon.png"
+analytics:
+         google:
+             SiteVerificationTag: "G-FTJY4N1GXR"    
+markup:
+  goldmark:
+    renderer:
+      unsafe: true
