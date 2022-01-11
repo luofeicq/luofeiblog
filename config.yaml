@@ -37,8 +37,29 @@ menu:
           name: search
           url: /search/
           weight: 40
-params:
+params:    
+    env: production
     ShowBreadCrumbs: true
+    description: Luo Fei's web site
+    homeInfoParams:
+        Title: Luo Fei Site
+        Content: >
+            Welcome to My blog：
+            
+            - 🧔 I am a public health reasearcher worked in Chongqing China.
+            
+            - 💻 I am learing using R language  for statistical analysis in infectious diseses. 
+            
+            - 🎡 I will record the issues in the learning process and my own solutions here, and I will also record my daily life . 
+            You are welcome to leave your valuable comments
+            
+            - 😜 Many thanks for you visting  ! 
+    socialIcons:
+        - name: Github
+          url: https://github.com/luofeicq/
+        - name: Zhihu
+          url: https://www.zhihu.com/people/tai-gu-mao    
+
 assets:
     favicon: "/favicon.ico"
     favicon16x16:  "/favicon-16x16.png"
