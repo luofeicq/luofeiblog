@@ -1,5 +1,5 @@
 theme: "hugo-PaperMod"
-baseURL: http://luofeiblog.netlify.app/
+baseURL: /
 languageCode: en-us
 title: Home
 publishDir: docs
