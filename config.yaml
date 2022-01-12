@@ -1,9 +1,9 @@
 theme: "hugo-PaperMod"
-baseURL: ""
+baseURL: /
 languageCode: en-us
 title: Home
 publishDir: docs
-relativeurls: false
+relativeurls: true
 ignoreFiles: 
       - \.Rmd$
       - \.Rmarkdown$
