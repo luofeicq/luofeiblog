@@ -3,6 +3,7 @@ baseURL: /
 languageCode: en-us
 title: Home
 publishDir: docs
+relativeurls: false
 ignoreFiles: 
       - \.Rmd$
       - \.Rmarkdown$
