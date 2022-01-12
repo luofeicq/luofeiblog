@@ -39,6 +39,11 @@ menu:
           url: /search/
           weight: 40
 params:
+    utteranc:
+        enable: true
+        repo: luofeicq/luofeiblog
+        issueTerm: BlogComments
+        theme: github-light
     ShowShareButtons: true
     ShowPostNavLinks: true
     ShowBreadCrumbs: true
