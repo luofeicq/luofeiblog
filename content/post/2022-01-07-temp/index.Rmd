@@ -39,6 +39,7 @@ cover:
     hidden: true # only hide on current single page
  
 ---
+
 ```{r,setup,include=FALSE}
 ##knitr设置
 knitr::opts_chunk$set(
@@ -51,9 +52,6 @@ knitr::opts_chunk$set(
   fig.align = "center",
   collapse = TRUE
   )
-## 加载包
-
-library(tidyverse)
 
 ```
 

@@ -21,3 +21,14 @@ options(
 
 # fix Hugo version
 options(blogdown.hugo.version = "0.91.2")
+
+# post set
+
+options(
+  blogdown.author = "Luo Fei",
+  blogdown.ext = "Rmd",
+  blogdown.subdir = "post"
+)
+cat("Welcome luofei ! I am loading the regular packages for you, please hold on for a monent ")
+
+require(tidyverse)
