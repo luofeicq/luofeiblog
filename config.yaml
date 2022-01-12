@@ -1,6 +1,6 @@
 theme: "hugo-PaperMod"
 baseURL: /
-languageCode: en-us
+languageCode: zh-cn
 title: Home
 publishDir: docs
 relativeurls: true
@@ -39,11 +39,19 @@ menu:
           url: /search/
           weight: 40
 params:
+    ShowShareButtons: true
+    ShowPostNavLinks: true
+    ShowBreadCrumbs: true
+    ShowCodeCopyButtons: true
+    disableScrollToTop: false
+    hidemeta: false
+    hideSummary: false
+    showtoc: true
+    tocopen: false
     label:
         icon: /img/logo.png
         iconHeight: 35
     env: production
-    ShowBreadCrumbs: true
     description: Luo Fei's web site
     homeInfoParams:
         Title: Luo Fei Site
@@ -62,7 +70,8 @@ params:
         - name: Github
           url: https://github.com/luofeicq/
         - name: Zhihu
-          url: https://www.zhihu.com/people/tai-gu-mao    
+          url: https://www.zhihu.com/people/tai-gu-mao
+    
 
 assets:
     favicon: "/favicon.ico"
