@@ -41,9 +41,9 @@ menu:
 params:
     utteranc:
         enable: true
-        repo: luofeicq/luofeiblog
-        issueTerm: BlogComments
-        theme: github-light
+        repo: "luofeicq/luofeiblog"
+        issue-term: "BlogComments"
+        theme: "github-light"
     ShowShareButtons: true
     ShowPostNavLinks: true
     ShowBreadCrumbs: true
