@@ -42,7 +42,7 @@ params:
     utteranc:
         enable: true
         repo: luofeicq/luofeiblog
-        issue-term: BlogComments
+        issueTerm: BlogComments
         theme: github-light
     ShowShareButtons: true
     ShowPostNavLinks: true
