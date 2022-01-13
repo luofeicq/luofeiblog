@@ -39,6 +39,8 @@ menu:
           url: /search/
           weight: 40
 params:
+    assets:
+        disableHLJS: false
     utteranc:
         enable: true
         repo: luofeicq/luofeiblog
@@ -76,17 +78,9 @@ params:
           url: https://github.com/luofeicq/
         - name: Zhihu
           url: https://www.zhihu.com/people/tai-gu-mao
-    
-
-assets:
-    favicon: "/favicon.ico"
-    favicon16x16:  "/favicon-16x16.png"
-    favicon32x32:  "/favicon-32x32.png"
-    apple_touch_icon:  "/apple-touch-icon.png"
 analytics:
-         google:
-             SiteVerificationTag: "G-FTJY4N1GXR"    
-markup:
-  goldmark:
-    renderer:
-      unsafe: true
+    google:
+        SiteVerificationTag: "G-FTJY4N1GXR"
+        
+        
+        
