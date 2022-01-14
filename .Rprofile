@@ -29,6 +29,5 @@ options(
   blogdown.ext = "Rmd",
   blogdown.subdir = "post"
 )
-cat("Welcome luofei ! I am loading the regular packages for you, please hold on for a monent ")
 
-require(tidyverse)
+

@@ -62,13 +62,13 @@ knitr::opts_chunk$set(
 样本身高体重见表\@ref(tab:table001)
 
 ```
-Table: (\tab:table001)A simple table
+Table:(\#tab:table001)A simple table
 
 left  | center | right
-:----:|:------:|:-----:
+:-----|:------:|------:
 A     |   180  | 60
 B     |   160  | 50
-c     |   170  | 30     
+c     |   170  | 30        
 
 ```
 
@@ -79,4 +79,8 @@ left  | center | right
 A     |   180  | 60
 B     |   160  | 50
 c     |   170  | 30     
+
+## 图片
+
+微信截图的图片不能被`knit`正确读取，会提示找不到文件，需要更改文件类型或者名字？
 

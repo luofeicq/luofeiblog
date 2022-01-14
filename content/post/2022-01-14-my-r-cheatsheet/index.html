@@ -47,13 +47,13 @@ cover:
 <h2>表格</h2>
 <p>除了<code>kable()</code>命令生成表格外,其他的表格生成如果要使其能被交叉引用,需要添加标签<code>label</code>,如:<code>Table:(\#tab:yourlabel)Caption</code>,然后使用<code>\@ref(tab:label)</code> 。例如：</p>
 <p>样本身高体重见表<a href="#tab:table001">1</a></p>
-<pre><code>Table: (\tab:table001)A simple table
+<pre><code>Table:(\#tab:table001)A simple table
 
 left  | center | right
-:----:|:------:|:-----:
+:-----|:------:|------:
 A     |   180  | 60
 B     |   160  | 50
-c     |   170  | 30     
+c     |   170  | 30        
 </code></pre>
 <table>
 <caption><span id="tab:table001">Table 1: </span>A simple table</caption>
@@ -82,5 +82,9 @@ c     |   170  | 30
 </tr>
 </tbody>
 </table>
+</div>
+<div id="图片" class="section level2">
+<h2>图片</h2>
+<p>微信截图的图片不能被<code>knit</code>正确读取，会提示找不到文件，需要更改文件类型或者名字？</p>
 </div>
 </div>
