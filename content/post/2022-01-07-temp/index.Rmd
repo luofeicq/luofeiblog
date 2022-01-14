@@ -10,10 +10,6 @@ tags:
 output:
     blogdown::html_page:
       number_sections: true
-      language:
-         label:
-           fig: "图 "
-           tab: "表 "
 # weight: 1
 # aliases: ["/first"]
 math: true
@@ -81,14 +77,14 @@ df01 <- tibble(
     )
 
 knitr::kable(head(df01), caption = "随机数据", col.names = c("散点X", "散点Y", "是否在圆内",
-                                                          "随机生成0-180度", "圆X", "圆Y"))
+                                                          "随机生成0-180度", "圆X", "圆Y"), digits = 3, align = "c" )
 
 ```
 
 
 ## 绘图
 
-画出散点的分布图
+画出散点的分布图。
 
 ```{r,fig001,fig.cap="1个单位正方形内的散点",fig.width=6,fig.height=6}
 ## 绘图
@@ -102,10 +98,9 @@ df01 %>% ggplot() +
            
 ```
 
-
 ## 计算$\hat\pi$
 
-根据面积比可得$\hat\pi=4\frac{^{ }S_c}{S_s}$。当投掷5000个点的时候,$\hat\pi=\frac{3925\times4}{5000}=$ `r 4*sum(df01[3]/N)`。以实验投掷散点数量为X轴，以估的$\hat\pi$为Y轴绘图如下。很明显地可以看出随着点的数量增多$\hat\pi$慢慢向真实的值（蓝线）逼近。
+根据面积比可得$\hat\pi=4\frac{^{ }S_c}{S_s}$。当分布5000个点的时候,$\hat\pi=\frac{3925\times4}{5000}=$ `r 4*sum(df01[3]/N)`。以实验投掷散点数量为X轴，以估的$\hat\pi$为Y轴绘图如下。很明显地可以看出随着点的数量增多$\hat\pi$逐渐向$\pi$真实值（蓝线）逼近。
 
 ```{r fig.cap="估计圆周率与实验次数关系"}
 estmatepi <- tibble(y = cumsum(df01$z)/(1:N)*4,
