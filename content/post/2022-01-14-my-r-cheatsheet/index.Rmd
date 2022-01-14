@@ -7,6 +7,9 @@ categories:
   - Tec
 tags:
   - R
+output:
+    blogdown::html_page:
+      number_sections: true
 math: true
 showToc: true
 TocOpen: false
