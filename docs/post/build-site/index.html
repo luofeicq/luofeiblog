@@ -10,8 +10,10 @@
 <meta name="description" content="记录建立这个网站过程中踩过的坑。。。。">
 <meta name="author" content="Luo Fei">
 <link rel="canonical" href="../../post/build-site/" />
-<link crossorigin="anonymous" href="../../assets/css/stylesheet.min.1e44d58192cbf6d7a4eb649bc43dbc3d4cc432677e5d8adc69b08c34cbe461ac.css" integrity="sha256-HkTVgZLL9tek62SbxD28PUzEMmd&#43;XYrcabCMNMvkYaw=" rel="preload stylesheet" as="style">
+<link crossorigin="anonymous" href="../../assets/css/stylesheet.min.6e4d9e97f662dc72dc5ba6f432488612c74255aa3906e0c67212af68894a9eb5.css" integrity="sha256-bk2el/Zi3HLcW6b0MkiGEsdCVao5BuDGchKvaIlKnrU=" rel="preload stylesheet" as="style">
 <link rel="preload" href="../../img/logo.png" as="image">
+<script defer crossorigin="anonymous" src="../../assets/js/highlight.min.7680afc38aa6b15ddf158a4f3780b7b1f7dde7e91d26f073e6229bb7a0793c92.js" integrity="sha256-doCvw4qmsV3fFYpPN4C3sffd5&#43;kdJvBz5iKbt6B5PJI="
+    onload="hljs.initHighlightingOnLoad();"></script>
 <link rel="icon" href="../../favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="../../favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="../../favicon-32x32.png">
@@ -116,8 +118,8 @@
   "keywords": [
     "Tec"
   ],
-  "articleBody": "\r\r在繁忙的工作中，断断续续、跌跌撞撞地自学R语言，翻资料，查英文。这一段历程对于一个老大叔来说，作实有点辛苦，值得记录。还记得第一次正式接触和使用R还是2015年在上海工作期间。那时候也没有深入的了解和学习，只是基础的学习了平实在工作中可能会使用的基础功能。真正认真开始学习是2019年新冠疫情暴发之初，因为要处理大量数据、分析、绘图、建模，所以认真花费了一段时间来学习。在学习过程中参考了不少大牛的教材，书籍和参考资料等。尤其要感谢一辉。从使rmarkdown、bookdown、blogdown、knit，为了那个文学编程，害我还学习了lantex、html、css、pandoc登等，可谓是一把辛酸泪啊😭。关于这段历程，后面还是计划开个新章好好记录。这篇文章主要记录下，自己使用blogdown+ hugo + netlify, 踩坑心得 建站历程。\n关于blogdown\rblogdown的具体功能我就累述了，希望多了解的请参考一辉大神的blogdown，我这里只是记录自己的心得坑：\n建立网站\r```\n\r\r",
-  "wordCount" : "10",
+  "articleBody": "\r\r在繁忙的工作中，断断续续、跌跌撞撞地自学R语言，翻资料，查英文。这一段历程对于一个大叔来说，作实有点辛苦，值得记录。还记得第一次正式接触和使用R还是2015年在上海工作期间。那时候也没有深入的了解和学习，只是基础的学习了平实在工作中可能会使用的基础功能。真正认真开始学习是2019年新冠疫情暴发之初，因为要处理大量数据、分析、绘图、建模，所以认真花费了一段时间来学习。在学习过程中参考了不少大牛的教材，书籍和参考资料等。尤其要感谢一辉。从rmarkdown、bookdown、blogdown、knit，为了那个文学编程，害我还学习了lantex、html、css、pandoc等，可谓是一把辛酸泪啊😭。关于这段历程，后面还是计划开个新章好好记录。这篇文章主要记录下，自己使用blogdown+ hugo + netlify, 踩坑心得 建站历程。\n关于blogdown\rblogdown的具体功能这里不赘述了，希望了解的请参考一辉大神的blogdown，我这里只是记录自己的心得坑：\n\r踩坑记录\r自定义“代码高亮”无效（待解决）\r根据hugopaper的教程设置发现下面代码有效，设置后代码无highlight。\nparams:\rassets:\rdisableHLJS: true\r\r下面这段代码无效，设置后无法显示，上传到netfily同样无效。\nmarkup:\rhighlight:\r# anchorLineNos: true\rcodeFences: true\rguessSyntax: true\rlineNos: true\r# noClasses: false\rstyle: monokai\r\r在highlightjs 网站下载相关的css样式后，将喜欢的样式名称改为an-old-hope.min后放在网站根目录/assets/css可以更改高亮样式，但是建议选择黑暗模式的样式。现在还未找到在网站白天/黑夜模式切换下。css下载地址\n\r更改样式后，白色字体貌似是hugo-paper主题重新定义了的，无法根据样式更改。待解决\n\r\r\rbaseURL\r如果根据教程提示将baseURL改为在netfily上提供的域名，在用自己的域名解析后，次级链接仍然会链接到原netfily域名上\n\r解决方案: 在config.yaml设置如下\r\rbaseURL: /\r\r\r\r",
+  "wordCount" : "41",
   "inLanguage": "en",
   "datePublished": "2022-01-12T00:00:00Z",
   "dateModified": "2022-01-12T00:00:00Z",
@@ -220,19 +222,70 @@
     <div class="post-meta"><span title='2022-01-12 00:00:00 +0000 UTC'>January 12, 2022</span>&nbsp;·&nbsp;Luo Fei
 
 </div>
-  </header> 
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#" aria-label="关于blogdown">关于blogdown</a></li>
+                <li>
+                    <a href="#" aria-label="踩坑记录">踩坑记录</a><ul>
+                        
+                <li>
+                    <a href="#" aria-label="自定义“代码高亮”无效（待解决）">自定义“代码高亮”无效（待解决）</a></li>
+                <li>
+                    <a href="#" aria-label="baseURL">baseURL</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
   <div class="post-content">
 <script src="../../post/build-site/index_files/header-attrs/header-attrs.js"></script>
 
 
-<p>在繁忙的工作中，断断续续、跌跌撞撞地自学R语言，翻资料，查英文。这一段历程对于一个老大叔来说，作实有点辛苦，值得记录。还记得第一次正式接触和使用R还是2015年在上海工作期间。那时候也没有深入的了解和学习，只是基础的学习了平实在工作中可能会使用的基础功能。真正认真开始学习是2019年新冠疫情暴发之初，因为要处理大量数据、分析、绘图、建模，所以认真花费了一段时间来学习。在学习过程中参考了不少大牛的教材，书籍和参考资料等。尤其要感谢一辉。从使<code>rmarkdown</code>、<code>bookdown</code>、<code>blogdown</code>、<code>knit</code>，为了那个<strong>文学编程</strong>，害我还学习了<code>lantex</code>、<code>html</code>、<code>css</code>、<code>pandoc</code>登等，可谓是一把辛酸泪啊😭。关于这段历程，后面还是计划开个新章好好记录。这篇文章主要记录下，自己使用<code>blogdown</code>+ <code>hugo</code> + <code>netlify</code>, <del>踩坑心得</del> 建站历程。</p>
+<p>在繁忙的工作中，断断续续、跌跌撞撞地自学R语言，翻资料，查英文。这一段历程对于一个大叔来说，作实有点辛苦，值得记录。还记得第一次正式接触和使用R还是2015年在上海工作期间。那时候也没有深入的了解和学习，只是基础的学习了平实在工作中可能会使用的基础功能。真正认真开始学习是2019年新冠疫情暴发之初，因为要处理大量数据、分析、绘图、建模，所以认真花费了一段时间来学习。在学习过程中参考了不少大牛的教材，书籍和参考资料等。尤其要感谢一辉。从<code>rmarkdown</code>、<code>bookdown</code>、<code>blogdown</code>、<code>knit</code>，为了那个<strong>文学编程</strong>，害我还学习了<code>lantex</code>、<code>html</code>、<code>css</code>、<code>pandoc</code>等，可谓是一把辛酸泪啊😭。关于这段历程，后面还是计划开个新章好好记录。这篇文章主要记录下，自己使用<code>blogdown</code>+ <code>hugo</code> + <code>netlify</code>, <del>踩坑心得</del> 建站历程。</p>
 <div id="关于blogdown" class="section level2">
 <h2>关于blogdown</h2>
-<p><code>blogdown</code>的具体功能我就累述了，希望多了解的请参考一辉大神的<a href="https://bookdown.org/yihui/blogdown/" title="guild">blogdown</a>，我这里只是记录自己的心得<del>坑</del>：</p>
-<div id="建立网站" class="section level3">
-<h3>建立网站</h3>
-<p><img src = "images/blogdown.png"></p>
-<p>```</p>
+<p><code>blogdown</code>的具体功能这里不赘述了，希望了解的请参考一辉大神的<a href="https://bookdown.org/yihui/blogdown/" title="guild">blogdown</a>，我这里只是记录自己的心得<del>坑</del>：</p>
+</div>
+<div id="踩坑记录" class="section level2">
+<h2>踩坑记录</h2>
+<div id="自定义代码高亮无效待解决" class="section level3">
+<h3>自定义“代码高亮”无效（待解决）</h3>
+<p>根据<code>hugopaper</code>的教程设置发现下面代码有效，设置后代码无highlight。</p>
+<pre><code>params:
+    assets:
+        disableHLJS: true
+</code></pre>
+<p>下面这段代码无效，设置后无法显示，上传到netfily同样无效。</p>
+<pre><code>markup:
+    highlight:
+        # anchorLineNos: true
+        codeFences: true
+        guessSyntax: true
+        lineNos: true
+        # noClasses: false
+        style: monokai</code></pre>
+<ul>
+<li><p>在highlightjs 网站下载相关的css样式后，将喜欢的样式名称改为<code>an-old-hope.min</code>后放在网站根目录<code>/assets/css</code>可以更改高亮样式，但是建议选择黑暗模式的样式。现在还未找到在网站<code>白天/黑夜</code>模式切换下。<a href="https://highlightjs.org/download/">css下载地址</a></p></li>
+<li><p>更改样式后，白色字体貌似是<code>hugo-paper</code>主题重新定义了的，无法根据样式更改。<strong>待解决</strong></p></li>
+</ul>
+</div>
+<div id="baseurl" class="section level3">
+<h3>baseURL</h3>
+<p>如果根据教程提示将<code>baseURL</code>改为在<code>netfily</code>上提供的域名，在用自己的域名解析后，次级链接仍然会链接到原<code>netfily</code>域名上</p>
+<ul>
+<li>解决方案: 在<code>config.yaml</code>设置如下</li>
+</ul>
+<pre><code>baseURL: /
+</code></pre>
 </div>
 </div>
 
@@ -255,6 +308,11 @@
       <li><a href="../../tags/tec/">Tec</a></li>
     </ul>
 <nav class="paginav">
+  <a class="prev" href="../../post/rcheatsheet/">
+    <span class="title">« Prev Page</span>
+    <br>
+    <span>R随手记</span>
+  </a>
   <a class="next" href="../../post/parasitebook/">
     <span class="title">Next Page »</span>
     <br>

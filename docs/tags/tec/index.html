@@ -10,7 +10,7 @@
 <meta name="description" content="Luo Fei&#39;s web site">
 <meta name="author" content="">
 <link rel="canonical" href="../../tags/tec/" />
-<link crossorigin="anonymous" href="../../assets/css/stylesheet.min.1e44d58192cbf6d7a4eb649bc43dbc3d4cc432677e5d8adc69b08c34cbe461ac.css" integrity="sha256-HkTVgZLL9tek62SbxD28PUzEMmd&#43;XYrcabCMNMvkYaw=" rel="preload stylesheet" as="style">
+<link crossorigin="anonymous" href="../../assets/css/stylesheet.min.6e4d9e97f662dc72dc5ba6f432488612c74255aa3906e0c67212af68894a9eb5.css" integrity="sha256-bk2el/Zi3HLcW6b0MkiGEsdCVao5BuDGchKvaIlKnrU=" rel="preload stylesheet" as="style">
 <link rel="preload" href="../../img/logo.png" as="image">
 <link rel="icon" href="../../favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="../../favicon-16x16.png">
@@ -146,10 +146,14 @@
     </h2>
   </header>
   <section class="entry-content">
-    <p>在繁忙的工作中，断断续续、跌跌撞撞地自学R语言，翻资料，查英文。这一段历程对于一个老大叔来说，作实有点辛苦，值得记录。还记得第一次正式接触和使用R还是2015年在上海工作期间。那时候也没有深入的了解和学习，只是基础的学习了平实在工作中可能会使用的基础功能。真正认真开始学习是2019年新冠疫情暴发之初，因为要处理大量数据、分析、绘图、建模，所以认真花费了一段时间来学习。在学习过程中参考了不少大牛的教材，书籍和参考资料等。尤其要感谢一辉。从使rmarkdown、bookdown、blogdown、knit，为了那个文学编程，害我还学习了lantex、html、css、pandoc登等，可谓是一把辛酸泪啊😭。关于这段历程，后面还是计划开个新章好好记录。这篇文章主要记录下，自己使用blogdown&#43; hugo &#43; netlify, 踩坑心得 建站历程。
-关于blogdownblogdown的具体功能我就累述了，希望多了解的请参考一辉大神的blogdown，我这里只是记录自己的心得坑：
-建立网站```
-</p>
+    <p>在繁忙的工作中，断断续续、跌跌撞撞地自学R语言，翻资料，查英文。这一段历程对于一个大叔来说，作实有点辛苦，值得记录。还记得第一次正式接触和使用R还是2015年在上海工作期间。那时候也没有深入的了解和学习，只是基础的学习了平实在工作中可能会使用的基础功能。真正认真开始学习是2019年新冠疫情暴发之初，因为要处理大量数据、分析、绘图、建模，所以认真花费了一段时间来学习。在学习过程中参考了不少大牛的教材，书籍和参考资料等。尤其要感谢一辉。从rmarkdown、bookdown、blogdown、knit，为了那个文学编程，害我还学习了lantex、html、css、pandoc等，可谓是一把辛酸泪啊😭。关于这段历程，后面还是计划开个新章好好记录。这篇文章主要记录下，自己使用blogdown&#43; hugo &#43; netlify, 踩坑心得 建站历程。
+关于blogdownblogdown的具体功能这里不赘述了，希望了解的请参考一辉大神的blogdown，我这里只是记录自己的心得坑：
+踩坑记录自定义“代码高亮”无效（待解决）根据hugopaper的教程设置发现下面代码有效，设置后代码无highlight。
+params:assets:disableHLJS: true下面这段代码无效，设置后无法显示，上传到netfily同样无效。
+markup:highlight:# anchorLineNos: truecodeFences: trueguessSyntax: truelineNos: true# noClasses: falsestyle: monokai在highlightjs 网站下载相关的css样式后，将喜欢的样式名称改为an-old-hope.min后放在网站根目录/assets/css可以更改高亮样式，但是建议选择黑暗模式的样式。现在还未找到在网站白天/黑夜模式切换下。css下载地址
+更改样式后，白色字体貌似是hugo-paper主题重新定义了的，无法根据样式更改。待解决
+baseURL如果根据教程提示将baseURL改为在netfily上提供的域名，在用自己的域名解析后，次级链接仍然会链接到原netfily域名上
+解决方案: 在config.yaml设置如下baseURL: /</p>
   </section>
   <footer class="entry-footer"><span title='2022-01-12 00:00:00 +0000 UTC'>January 12, 2022</span>&nbsp;·&nbsp;Luo Fei</footer>
   <a class="entry-link" aria-label="post link to 建站记录（踩坑心得）" href="../../post/build-site/"></a>

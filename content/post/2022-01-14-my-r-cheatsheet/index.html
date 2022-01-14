@@ -1,0 +1,86 @@
+---
+title: R随手记
+author: Luo Fei
+date: '2022-01-12'
+slug: Rcheatsheet
+categories:
+  - Tec
+tags:
+  - R
+math: true
+showToc: true
+TocOpen: false
+draft: true
+hidemeta: false
+comments: false
+description: "记录使用R过程一些记不住的技巧。"
+canonicalURL: ""
+disableShare: false
+hideSummary: false
+searchHidden: false
+ShowReadingTime: false
+ShowBreadCrumbs: true
+ShowPostNavLinks: true
+cover:
+    image: "" # image path/url
+    alt: "<alt text>" # alt text
+    caption: "<text>" # display caption under cover
+    relative: false # when using page bundles set this to true
+    hidden: true # only hide on current single page  
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+
+
+<div id="数据清理相关" class="section level1">
+<h1>数据清理相关</h1>
+</div>
+<div id="ggplot相关" class="section level1">
+<h1>ggplot相关</h1>
+</div>
+<div id="统计分析相关" class="section level1">
+<h1>统计分析相关</h1>
+</div>
+<div id="rmarkdown相关" class="section level1">
+<h1>rmarkdown相关</h1>
+<div id="表格" class="section level2">
+<h2>表格</h2>
+<p>除了<code>kable()</code>命令生成表格外,其他的表格生成如果要使其能被交叉引用,需要添加标签<code>label</code>,如:<code>Table:(\#tab:yourlabel)Caption</code>,然后使用<code>\@ref(tab:label)</code> 。例如：</p>
+<p>样本身高体重见表<a href="#tab:table001">1</a></p>
+<pre><code>Table: (\tab:table001)A simple table
+
+left  | center | right
+:----:|:------:|:-----:
+A     |   180  | 60
+B     |   160  | 50
+c     |   170  | 30     
+</code></pre>
+<table>
+<caption><span id="tab:table001">Table 1: </span>A simple table</caption>
+<thead>
+<tr class="header">
+<th align="left">left</th>
+<th align="center">center</th>
+<th align="right">right</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">A</td>
+<td align="center">180</td>
+<td align="right">60</td>
+</tr>
+<tr class="even">
+<td align="left">B</td>
+<td align="center">160</td>
+<td align="right">50</td>
+</tr>
+<tr class="odd">
+<td align="left">c</td>
+<td align="center">170</td>
+<td align="right">30</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>

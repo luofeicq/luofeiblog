@@ -10,8 +10,10 @@
 <meta name="description" content="mote carlo">
 <meta name="author" content="luofei">
 <link rel="canonical" href="../../post/2022-01-07-temp/" />
-<link crossorigin="anonymous" href="../../assets/css/stylesheet.min.1e44d58192cbf6d7a4eb649bc43dbc3d4cc432677e5d8adc69b08c34cbe461ac.css" integrity="sha256-HkTVgZLL9tek62SbxD28PUzEMmd&#43;XYrcabCMNMvkYaw=" rel="preload stylesheet" as="style">
+<link crossorigin="anonymous" href="../../assets/css/stylesheet.min.6e4d9e97f662dc72dc5ba6f432488612c74255aa3906e0c67212af68894a9eb5.css" integrity="sha256-bk2el/Zi3HLcW6b0MkiGEsdCVao5BuDGchKvaIlKnrU=" rel="preload stylesheet" as="style">
 <link rel="preload" href="../../img/logo.png" as="image">
+<script defer crossorigin="anonymous" src="../../assets/js/highlight.min.7680afc38aa6b15ddf158a4f3780b7b1f7dde7e91d26f073e6229bb7a0793c92.js" integrity="sha256-doCvw4qmsV3fFYpPN4C3sffd5&#43;kdJvBz5iKbt6B5PJI="
+    onload="hljs.initHighlightingOnLoad();"></script>
 <link rel="icon" href="../../favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="../../favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="../../favicon-32x32.png">
@@ -116,8 +118,8 @@
   "keywords": [
     "temp"
   ],
-  "articleBody": "\r\r1 蒙特卡洛法（Monte Carlo method）计算\\(\\pi\\)的值\r用随机函数runif()随机生成N个在1个单位正方形内的散点，根据三角公式筛选出在圆内的点,数据如下:\n## 生成基础数据\rset.seed(2021)\rN % mutate(\rz = if_else(\rx^2 + y ^2 \r\rTable 1.1: 随机数据\r\r散点X\r散点Y\r是否在圆内\r随机生成0-180度\r圆X\r圆Y\r\r\r\r-0.0487326\r-0.2075665\r1\r4.580134\r-0.0659349\r-0.4956335\r\r0.2837798\r0.2123884\r1\r4.174745\r-0.2560569\r-0.4294588\r\r0.2096822\r-0.3945003\r1\r1.947142\r-0.1837623\r0.4650069\r\r-0.1182557\r0.2040979\r1\r1.999538\r-0.2078633\r0.4547448\r\r0.1363238\r-0.2860130\r1\r2.294345\r-0.3310244\r0.3747304\r\r0.2013460\r0.4472050\r1\r4.295846\r-0.2023008\r-0.4572465\r\r\r\r1.1 绘图\r画出散点的分布图\n## 绘图\rdf01 %% ggplot() +\rgeom_point(aes(x, y, col= as.factor(z)),\ralpha = 0.5, size = 0.5, show.legend = F) + theme_bw() +\rgeom_point(aes(x2,y2), alpha = 0.5, size = 0.5)\r\rFigure 1.1: 1个单位正方形内的散点\r\r\r1.2 计算\\(\\hat\\pi\\)\r根据面积比可得\\(\\hat\\pi=4\\frac{^{ }S_c}{S_s}\\)。当投掷5000个点的时候,\\(\\hat\\pi=\\frac{3925\\times4}{5000}=\\) 3.14。以实验投掷散点数量为X轴，以估的\\(\\hat\\pi\\)为Y轴绘图如下。很明显地可以看出随着点的数量增多\\(\\hat\\pi\\)慢慢向真实的值（蓝线）逼近。\nestmatepi % ggplot(aes(x,y))+\rgeom_line()+\rgeom_hline(yintercept = pi, col = \"blue\") +\rtheme_classic() +\rxlab(\"N\") +\rylab(expression(hat(pi)))\r\rFigure 1.2: 估计圆周率与实验次数关系\r\r\r\r",
-  "wordCount" : "178",
+  "articleBody": "\r\r1 蒙特卡洛法（Monte Carlo method）计算\\(\\pi\\)的值\r用随机函数runif()随机生成N个在1个单位正方形内的散点，根据三角公式筛选出在圆内的点,数据如下:\n## 生成基础数据\rset.seed(2021)\rN % mutate(\rz = if_else(\rx^2 + y ^2 \r\r表1.1: 随机数据\r\r散点X\r散点Y\r是否在圆内\r随机生成0-180度\r圆X\r圆Y\r\r\r\r-0.049\r-0.208\r1\r4.580\r-0.066\r-0.496\r\r0.284\r0.212\r1\r4.175\r-0.256\r-0.429\r\r0.210\r-0.395\r1\r1.947\r-0.184\r0.465\r\r-0.118\r0.204\r1\r2.000\r-0.208\r0.455\r\r0.136\r-0.286\r1\r2.294\r-0.331\r0.375\r\r0.201\r0.447\r1\r4.296\r-0.202\r-0.457\r\r\r\r1.1 绘图\r画出散点的分布图。\n## 绘图\rdf01 %% ggplot() +\rgeom_point(aes(x, y, col= as.factor(z)),\ralpha = 0.5, size = 0.5, show.legend = F) + theme_bw() +\rgeom_point(aes(x2,y2), alpha = 0.5, size = 0.5)\r\r图1.1: 1个单位正方形内的散点\r\r\r1.2 计算\\(\\hat\\pi\\)\r根据面积比可得\\(\\hat\\pi=4\\frac{^{ }S_c}{S_s}\\)。当分布5000个点的时候,\\(\\hat\\pi=\\frac{3925\\times4}{5000}=\\) 3.14。以实验投掷散点数量为X轴，以估的\\(\\hat\\pi\\)为Y轴绘图如下。很明显地可以看出随着点的数量增多\\(\\hat\\pi\\)逐渐向\\(\\pi\\)真实值（蓝线）逼近。\nestmatepi % ggplot(aes(x,y))+\rgeom_line()+\rgeom_hline(yintercept = pi, col = \"blue\") +\rtheme_classic() +\rxlab(\"N\") +\rylab(expression(hat(pi)))\r\r图1.2: 估计圆周率与实验次数关系\r\r\r\r",
+  "wordCount" : "182",
   "inLanguage": "en",
   "datePublished": "2022-01-07T00:00:00Z",
   "dateModified": "2022-01-07T00:00:00Z",
@@ -268,73 +270,73 @@ df01 &lt;- tibble(
     )
 
 knitr::kable(head(df01), caption = &quot;随机数据&quot;, col.names = c(&quot;散点X&quot;, &quot;散点Y&quot;, &quot;是否在圆内&quot;,
-                                                          &quot;随机生成0-180度&quot;, &quot;圆X&quot;, &quot;圆Y&quot;))</code></pre>
+                                                          &quot;随机生成0-180度&quot;, &quot;圆X&quot;, &quot;圆Y&quot;), digits = 3, align = &quot;c&quot; )</code></pre>
 <table>
-<caption><span id="tab:unnamed-chunk-1">Table 1.1: </span>随机数据</caption>
+<caption><span id="tab:unnamed-chunk-1">表1.1: </span>随机数据</caption>
 <thead>
 <tr class="header">
-<th align="right">散点X</th>
-<th align="right">散点Y</th>
-<th align="right">是否在圆内</th>
-<th align="right">随机生成0-180度</th>
-<th align="right">圆X</th>
-<th align="right">圆Y</th>
+<th align="center">散点X</th>
+<th align="center">散点Y</th>
+<th align="center">是否在圆内</th>
+<th align="center">随机生成0-180度</th>
+<th align="center">圆X</th>
+<th align="center">圆Y</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="right">-0.0487326</td>
-<td align="right">-0.2075665</td>
-<td align="right">1</td>
-<td align="right">4.580134</td>
-<td align="right">-0.0659349</td>
-<td align="right">-0.4956335</td>
+<td align="center">-0.049</td>
+<td align="center">-0.208</td>
+<td align="center">1</td>
+<td align="center">4.580</td>
+<td align="center">-0.066</td>
+<td align="center">-0.496</td>
 </tr>
 <tr class="even">
-<td align="right">0.2837798</td>
-<td align="right">0.2123884</td>
-<td align="right">1</td>
-<td align="right">4.174745</td>
-<td align="right">-0.2560569</td>
-<td align="right">-0.4294588</td>
+<td align="center">0.284</td>
+<td align="center">0.212</td>
+<td align="center">1</td>
+<td align="center">4.175</td>
+<td align="center">-0.256</td>
+<td align="center">-0.429</td>
 </tr>
 <tr class="odd">
-<td align="right">0.2096822</td>
-<td align="right">-0.3945003</td>
-<td align="right">1</td>
-<td align="right">1.947142</td>
-<td align="right">-0.1837623</td>
-<td align="right">0.4650069</td>
+<td align="center">0.210</td>
+<td align="center">-0.395</td>
+<td align="center">1</td>
+<td align="center">1.947</td>
+<td align="center">-0.184</td>
+<td align="center">0.465</td>
 </tr>
 <tr class="even">
-<td align="right">-0.1182557</td>
-<td align="right">0.2040979</td>
-<td align="right">1</td>
-<td align="right">1.999538</td>
-<td align="right">-0.2078633</td>
-<td align="right">0.4547448</td>
+<td align="center">-0.118</td>
+<td align="center">0.204</td>
+<td align="center">1</td>
+<td align="center">2.000</td>
+<td align="center">-0.208</td>
+<td align="center">0.455</td>
 </tr>
 <tr class="odd">
-<td align="right">0.1363238</td>
-<td align="right">-0.2860130</td>
-<td align="right">1</td>
-<td align="right">2.294345</td>
-<td align="right">-0.3310244</td>
-<td align="right">0.3747304</td>
+<td align="center">0.136</td>
+<td align="center">-0.286</td>
+<td align="center">1</td>
+<td align="center">2.294</td>
+<td align="center">-0.331</td>
+<td align="center">0.375</td>
 </tr>
 <tr class="even">
-<td align="right">0.2013460</td>
-<td align="right">0.4472050</td>
-<td align="right">1</td>
-<td align="right">4.295846</td>
-<td align="right">-0.2023008</td>
-<td align="right">-0.4572465</td>
+<td align="center">0.201</td>
+<td align="center">0.447</td>
+<td align="center">1</td>
+<td align="center">4.296</td>
+<td align="center">-0.202</td>
+<td align="center">-0.457</td>
 </tr>
 </tbody>
 </table>
 <div id="绘图" class="section level2" number="1.1">
 <h2><span class="header-section-number">1.1</span> 绘图</h2>
-<p>画出散点的分布图</p>
+<p>画出散点的分布图。</p>
 <pre class="r"><code>## 绘图
 df01 %&gt;% ggplot() +
   geom_point(aes(x, y, col= as.factor(z)),
@@ -344,13 +346,13 @@ df01 %&gt;% ggplot() +
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:fig001"></span>
 <img src="../../post/2022-01-07-temp/index_files/figure-html/fig001-1.png" alt="1个单位正方形内的散点" width="576" />
 <p class="caption">
-Figure 1.1: 1个单位正方形内的散点
+图1.1: 1个单位正方形内的散点
 </p>
 </div>
 </div>
 <div id="计算hatpi" class="section level2" number="1.2">
 <h2><span class="header-section-number">1.2</span> 计算<span class="math inline">\(\hat\pi\)</span></h2>
-<p>根据面积比可得<span class="math inline">\(\hat\pi=4\frac{^{ }S_c}{S_s}\)</span>。当投掷5000个点的时候,<span class="math inline">\(\hat\pi=\frac{3925\times4}{5000}=\)</span> 3.14。以实验投掷散点数量为X轴，以估的<span class="math inline">\(\hat\pi\)</span>为Y轴绘图如下。很明显地可以看出随着点的数量增多<span class="math inline">\(\hat\pi\)</span>慢慢向真实的值（蓝线）逼近。</p>
+<p>根据面积比可得<span class="math inline">\(\hat\pi=4\frac{^{ }S_c}{S_s}\)</span>。当分布5000个点的时候,<span class="math inline">\(\hat\pi=\frac{3925\times4}{5000}=\)</span> 3.14。以实验投掷散点数量为X轴，以估的<span class="math inline">\(\hat\pi\)</span>为Y轴绘图如下。很明显地可以看出随着点的数量增多<span class="math inline">\(\hat\pi\)</span>逐渐向<span class="math inline">\(\pi\)</span>真实值（蓝线）逼近。</p>
 <pre class="r"><code>estmatepi &lt;- tibble(y = cumsum(df01$z)/(1:N)*4,
                     x = 1:N)
 estmatepi %&gt;% ggplot(aes(x,y))+
@@ -362,7 +364,7 @@ estmatepi %&gt;% ggplot(aes(x,y))+
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:unnamed-chunk-2"></span>
 <img src="../../post/2022-01-07-temp/index_files/figure-html/unnamed-chunk-2-1.png" alt="估计圆周率与实验次数关系" width="672" />
 <p class="caption">
-Figure 1.2: 估计圆周率与实验次数关系
+图1.2: 估计圆周率与实验次数关系
 </p>
 </div>
 </div>

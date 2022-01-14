@@ -7,9 +7,8 @@ categories:
   - 中文
 tags:
   - Tec
-  
 math: true
-showToc: false
+showToc: true
 TocOpen: false
 draft: true
 hidemeta: false
@@ -90,3 +89,9 @@ markup:
 baseURL: /
 
 ```
+
+
+
+
+
+

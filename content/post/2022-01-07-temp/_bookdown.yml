@@ -5,5 +5,11 @@ language:
     exm: '例'
     proof: '证明: '
     solution: '解: '
+    lem: "引理"
+    cor: "推论"
+    prp: "主张"
+    cnj: "推测"
+    exr: "实例"
     fig: '图'
+    hyp: "假设"
     tab: '表'

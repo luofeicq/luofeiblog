@@ -10,7 +10,7 @@
 <meta name="description" content="Luo Fei&#39;s web site">
 <meta name="author" content="">
 <link rel="canonical" href="../../categories/hogo/" />
-<link crossorigin="anonymous" href="../../assets/css/stylesheet.min.1e44d58192cbf6d7a4eb649bc43dbc3d4cc432677e5d8adc69b08c34cbe461ac.css" integrity="sha256-HkTVgZLL9tek62SbxD28PUzEMmd&#43;XYrcabCMNMvkYaw=" rel="preload stylesheet" as="style">
+<link crossorigin="anonymous" href="../../assets/css/stylesheet.min.6e4d9e97f662dc72dc5ba6f432488612c74255aa3906e0c67212af68894a9eb5.css" integrity="sha256-bk2el/Zi3HLcW6b0MkiGEsdCVao5BuDGchKvaIlKnrU=" rel="preload stylesheet" as="style">
 <link rel="preload" href="../../img/logo.png" as="image">
 <link rel="icon" href="../../favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="../../favicon-16x16.png">
@@ -147,7 +147,7 @@
   </header>
   <section class="entry-content">
     <p>1 蒙特卡洛法（Monte Carlo method）计算\(\pi\)的值用随机函数runif()随机生成N个在1个单位正方形内的散点，根据三角公式筛选出在圆内的点,数据如下:
-## 生成基础数据set.seed(2021)N &lt;- 5000df01 &lt;- tibble(x = runif(N, -0.5, 0.5),y = runif(N, -0.5, 0.5)) %&gt;% mutate(z = if_else(x^2 &#43; y ^2 &lt; 0.25, 1, 0),p = runif(N,0,2 * pi),x2 = cos(p) * 0.5,y2 = sin(p) * 0.5)knitr::kable(head(df01), caption = &#34;随机数据&#34;, col.names = c(&#34;散点X&#34;, &#34;散点Y&#34;, &#34;是否在圆内&#34;,&#34;随机生成0-180度&#34;, &#34;圆X&#34;, &#34;圆Y&#34;))Table 1....</p>
+## 生成基础数据set.seed(2021)N &lt;- 5000df01 &lt;- tibble(x = runif(N, -0.5, 0.5),y = runif(N, -0.5, 0.5)) %&gt;% mutate(z = if_else(x^2 &#43; y ^2 &lt; 0.25, 1, 0),p = runif(N,0,2 * pi),x2 = cos(p) * 0.5,y2 = sin(p) * 0.5)knitr::kable(head(df01), caption = &#34;随机数据&#34;, col.names = c(&#34;散点X&#34;, &#34;散点Y&#34;, &#34;是否在圆内&#34;,&#34;随机生成0-180度&#34;, &#34;圆X&#34;, &#34;圆Y&#34;), digits = 3, align = &#34;c&#34; )表1....</p>
   </section>
   <footer class="entry-footer"><span title='2022-01-07 00:00:00 +0000 UTC'>January 7, 2022</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;luofei</footer>
   <a class="entry-link" aria-label="post link to Monte Carlo method" href="../../post/2022-01-07-temp/"></a>
