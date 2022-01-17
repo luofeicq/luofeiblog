@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Novel on Home</title>
+    <link>/tags/novel/</link>
+    <description>Recent content in Novel on Home</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Fri, 14 Jan 2022 00:00:00 +0000</lastBuildDate><atom:link href="/tags/novel/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>20年前的坑</title>
+      <link>/post/2022-01-14-/</link>
+      <pubDate>Fri, 14 Jan 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2022-01-14-/</guid>
+      <description>My first novel</description>
+    </item>
+    
+  </channel>
+</rss>

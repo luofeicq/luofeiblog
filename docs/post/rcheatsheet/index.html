@@ -10,7 +10,7 @@
 <meta name="description" content="记录使用R过程一些记不住的技巧。">
 <meta name="author" content="Luo Fei">
 <link rel="canonical" href="../../post/rcheatsheet/" />
-<link crossorigin="anonymous" href="../../assets/css/stylesheet.min.6e4d9e97f662dc72dc5ba6f432488612c74255aa3906e0c67212af68894a9eb5.css" integrity="sha256-bk2el/Zi3HLcW6b0MkiGEsdCVao5BuDGchKvaIlKnrU=" rel="preload stylesheet" as="style">
+<link crossorigin="anonymous" href="../../assets/css/stylesheet.min.36576da6636b1bd9cb15cdb1c3c5faec659da9854adec98272daf598339d993b.css" integrity="sha256-NldtpmNrG9nLFc2xw8X67GWdqYVK3smCctr1mDOdmTs=" rel="preload stylesheet" as="style">
 <link rel="preload" href="../../img/logo.png" as="image">
 <script defer crossorigin="anonymous" src="../../assets/js/highlight.min.7680afc38aa6b15ddf158a4f3780b7b1f7dde7e91d26f073e6229bb7a0793c92.js" integrity="sha256-doCvw4qmsV3fFYpPN4C3sffd5&#43;kdJvBz5iKbt6B5PJI="
     onload="hljs.initHighlightingOnLoad();"></script>
@@ -118,8 +118,8 @@
   "keywords": [
     "R"
   ],
-  "articleBody": "\r\r数据清理相关\r\rggplot相关\r\r统计分析相关\r\rrmarkdown相关\r表格\r除了kable()命令生成表格外,其他的表格生成如果要使其能被交叉引用,需要添加标签label,如:Table:(\\#tab:yourlabel)Caption,然后使用\\@ref(tab:label) 。例如：\n样本身高体重见表1\nTable: (\\tab:table001)A simple table\rleft | center | right\r:----:|:------:|:-----:\rA | 180 | 60\rB | 160 | 50\rc | 170 | 30 \r\rTable 1: A simple table\r\rleft\rcenter\rright\r\r\r\rA\r180\r60\r\rB\r160\r50\r\rc\r170\r30\r\r\r\r\r\r",
-  "wordCount" : "50",
+  "articleBody": "\r\r1 数据清理相关\r\r2 ggplot相关\r\r3 统计分析相关\r\r4 rmarkdown相关\r4.1 表格\r除了kable()命令生成表格外,其他的表格生成如果要使其能被交叉引用,需要添加标签label,如:Table:(\\#tab:yourlabel)Caption,然后使用\\@ref(tab:label) 。例如：\n样本身高体重见表4.1\nTable:(\\#tab:table001)A simple table\rleft | center | right\r:-----|:------:|------:\rA | 180 | 60\rB | 160 | 50\rc | 170 | 30 \r\rTable 4.1: A simple table\r\rleft\rcenter\rright\r\r\r\rA\r180\r60\r\rB\r160\r50\r\rc\r170\r30\r\r\r\r\r4.2 图片\r微信截图的图片不能被knit正确读取，会提示找不到文件，需要更改文件类型或者名字？\n\r\r",
+  "wordCount" : "57",
   "inLanguage": "en",
   "datePublished": "2022-01-12T00:00:00Z",
   "dateModified": "2022-01-12T00:00:00Z",
@@ -230,16 +230,18 @@
 
         <div class="inner"><ul>
                 <li>
-                    <a href="#" aria-label="数据清理相关">数据清理相关</a></li>
+                    <a href="#" aria-label="1 数据清理相关"><span class="header-section-number">1</span> 数据清理相关</a></li>
                 <li>
-                    <a href="#" aria-label="ggplot相关">ggplot相关</a></li>
+                    <a href="#" aria-label="2 ggplot相关"><span class="header-section-number">2</span> ggplot相关</a></li>
                 <li>
-                    <a href="#" aria-label="统计分析相关">统计分析相关</a></li>
+                    <a href="#" aria-label="3 统计分析相关"><span class="header-section-number">3</span> 统计分析相关</a></li>
                 <li>
-                    <a href="#" aria-label="rmarkdown相关">rmarkdown相关</a><ul>
+                    <a href="#" aria-label="4 rmarkdown相关"><span class="header-section-number">4</span> rmarkdown相关</a><ul>
                         
                 <li>
-                    <a href="#" aria-label="表格">表格</a>
+                    <a href="#" aria-label="4.1 表格"><span class="header-section-number">4.1</span> 表格</a></li>
+                <li>
+                    <a href="#" aria-label="4.2 图片"><span class="header-section-number">4.2</span> 图片</a>
                 </li>
             </ul>
             </li>
@@ -252,31 +254,31 @@
 <script src="../../post/rcheatsheet/index_files/header-attrs/header-attrs.js"></script>
 
 
-<div id="数据清理相关" class="section level1">
-<h1>数据清理相关</h1>
+<div id="数据清理相关" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> 数据清理相关</h1>
 </div>
-<div id="ggplot相关" class="section level1">
-<h1>ggplot相关</h1>
+<div id="ggplot相关" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> ggplot相关</h1>
 </div>
-<div id="统计分析相关" class="section level1">
-<h1>统计分析相关</h1>
+<div id="统计分析相关" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> 统计分析相关</h1>
 </div>
-<div id="rmarkdown相关" class="section level1">
-<h1>rmarkdown相关</h1>
-<div id="表格" class="section level2">
-<h2>表格</h2>
+<div id="rmarkdown相关" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> rmarkdown相关</h1>
+<div id="表格" class="section level2" number="4.1">
+<h2><span class="header-section-number">4.1</span> 表格</h2>
 <p>除了<code>kable()</code>命令生成表格外,其他的表格生成如果要使其能被交叉引用,需要添加标签<code>label</code>,如:<code>Table:(\#tab:yourlabel)Caption</code>,然后使用<code>\@ref(tab:label)</code> 。例如：</p>
-<p>样本身高体重见表<a href="#tab:table001">1</a></p>
-<pre><code>Table: (\tab:table001)A simple table
+<p>样本身高体重见表<a href="#tab:table001">4.1</a></p>
+<pre><code>Table:(\#tab:table001)A simple table
 
 left  | center | right
-:----:|:------:|:-----:
+:-----|:------:|------:
 A     |   180  | 60
 B     |   160  | 50
-c     |   170  | 30     
+c     |   170  | 30        
 </code></pre>
 <table>
-<caption><span id="tab:table001">Table 1: </span>A simple table</caption>
+<caption><span id="tab:table001">Table 4.1: </span>A simple table</caption>
 <thead>
 <tr class="header">
 <th align="left">left</th>
@@ -303,6 +305,10 @@ c     |   170  | 30
 </tbody>
 </table>
 </div>
+<div id="图片" class="section level2" number="4.2">
+<h2><span class="header-section-number">4.2</span> 图片</h2>
+<p>微信截图的图片不能被<code>knit</code>正确读取，会提示找不到文件，需要更改文件类型或者名字？</p>
+</div>
 </div>
 
 
@@ -324,6 +330,11 @@ c     |   170  | 30
       <li><a href="../../tags/r/">R</a></li>
     </ul>
 <nav class="paginav">
+  <a class="prev" href="../../post/2022-01-14-/">
+    <span class="title">« Prev Page</span>
+    <br>
+    <span>20年前的坑</span>
+  </a>
   <a class="next" href="../../post/build-site/">
     <span class="title">Next Page »</span>
     <br>
