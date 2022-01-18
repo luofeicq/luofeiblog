@@ -138,11 +138,11 @@
     padding: 12px 5px;
     line-height: 1.5;
     border-bottom: 1px solid var(--border);
-	font-size: 14px;
+	font-size: 16px;
 }
 
 .post-content table th {
-    font-size: 14px;
+    font-size: 16px;
     text-align: center;
 }
 
@@ -247,14 +247,14 @@
 
 .post-content figure > figcaption {
     color: var(--primary);
-    font-size: 14px;
+    font-size: 16px;
     font-weight: bold;
     margin: 8px 0 16px;
 }
 
 .post-content figure > figcaption > p {
     color: var(--secondary);
-    font-size: 14px;
+    font-size: 16px;
     font-weight: normal;
 }
 
