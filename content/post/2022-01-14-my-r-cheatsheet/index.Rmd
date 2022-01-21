@@ -9,8 +9,7 @@ tags:
   - R
 output:
     blogdown::html_page:
-      number_sections: true
-math: true
+        number_sections: true  
 showToc: true
 TocOpen: false
 toc-title: "目录"
@@ -34,6 +33,7 @@ cover:
 ---
 
 ```{r,setup,include=FALSE}
+library(tidyverse)
 options(digits = 3)
 
 ##knitr设置
@@ -52,15 +52,17 @@ knitr::opts_chunk$set(
 
 # R基础相关
 
+为啥公式不行了？
+
+$x^2+y^2=z^2$
+
 ## 逻辑运算符号
 
 R中基础逻辑运算符号有（`=`;`!=`;`>`;`<`;`>=`;`<=`），返回的值是`true`和`false`，也可分别作为为数字`1`和`0`进行数学运算：
 
 ```{r}
 x <- c(1,2,3,4,5,6)
-
 x > 3
-
 sum(x > 3)
 ```
 
@@ -98,7 +100,7 @@ m %*% m
 ```
 ## 向量操作
 
-增加向量的几种操作
+增加向量元素的几种操作
 
 - 直接使用`c()`
 
@@ -172,17 +174,23 @@ b <- seq(from = 1, to = 10, by = 1)
 identical(a, b)
 ```
 
-
-# 数据清理相关
-
-## `tidyvers()`
-
-
-
-
-# ggplot相关
-
 # 统计分析相关
+
+## 概率
+
+R中有关概率分布相关
+
+
+Table:(\#tab:tabprob) 正态分布相关函数
+
+| 函数    |  功能|
+|:-------|:-------|
+|dnorm(x, mean = 0, sd = 1, log = FALSE)|返回值正态分布概率密度函数值，比如dnorm（z）表示：标准正态分布密度函f(x)在x=z处的函数值。|
+|pnorm(q, mean = 0, sd = 1, lower.tail = TRUE, log.p = FALSE)  | 返回值是正态分布的分布函数值，比如pnorm（z）等价于P[X ≤ z]|
+|qnorm(p, mean = 0, sd = 1, lower.tail = TRUE, log.p = FALSE)  |返回值是给定概率p后的下分位点.|
+|rnorm(n, mean = 0, sd = 1)|返回值是n个正态分布随机数构成的向量。|
+
+
 
 ## 基础统计
 

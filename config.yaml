@@ -40,6 +40,7 @@ menu:
           url: /search/
           weight: 40
 params:
+    math: true
     assets:
         disableHLJS: false
     utteranc:
@@ -70,7 +71,7 @@ params:
             
             -  I am learing using R language  for statistical analysis in infectious diseses. 
             
-            -  I l recorded the issues encountered during the learning process and my solutions. 
+            -  I will record the issues encountered during the learning process as well as my solutions. 
             You are welcome to leave your valuable comments
             
             -  Many thanks for your visting  ! 

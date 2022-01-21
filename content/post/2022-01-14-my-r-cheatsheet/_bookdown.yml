@@ -13,5 +13,3 @@ language:
     fig: '图'
     hyp: "假设"
     tab: '表'
-  ui:  
-    toc-title: "目录"

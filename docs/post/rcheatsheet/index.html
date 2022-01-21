@@ -118,8 +118,8 @@
   "keywords": [
     "R"
   ],
-  "articleBody": "\r\r1 R基础相关\r1.1 逻辑运算符号\rR中基础逻辑运算符号有（=;!=;;;=;），返回的值是true和false，也可分别作为为数字1和0进行数学运算：\nx 3\r# [1] FALSE FALSE FALSE TRUE TRUE TRUE\rsum(x  3)\r# [1] 3\r\r1.2 数学运算\r\r%% 两个向量求余\r\rx \r# [1] 0 1 0\r\r%/% 两个向量相除求商\r\rx \r# [1] 4 2 2\r\r%*% 两个向量的内积，也称为点乘，可用于矩阵\n\r对于向量\r\r\rx \r# [,1]\r# [1,] 32\r\r对于矩阵\r\rm \r# [,1] [,2]\r# [1,] 7 15\r# [2,] 10 22\r\r1.3 向量操作\r增加向量的几种操作\n\r直接使用c()\r\rx \r# [1] 1 2 3 4 5 6 7 8 9\r\r在末尾添加\r\rx \r# [1] 1 2 3 99\r\r在指定位置增加append(VEC, newvalues, after = N)：\r\rx \r# [1] 1 2 55 66 77 3\r\r1.4 []和[[]]取值的区别,[[]]等价与$取元素:\rx \r# [1] 1\rx[[1]]\r# [1] 1\rlsx \r# $score\r# [1] 98 80 95\rlsx[[2]][1]\r# [1] 98\rlsx$score[1]\r# [1] 98\r\r1.5 list的一些操作和理解\rlist作为特殊的变量，它可以存储任意类型的数据，包括其他的list，也就是列表列。R中列表的高端操作有些抽象，不太好理解，需要自己动手多操作。\n\r1.6 print()和cat()的区别\r主要是输出内容的形式，直观来说cat()输入的内容更复核自然阅读的习惯,而print()输入的内容更类似程序的语法结构\n1.6.1 这是print()输出的结果\rprint(c(\"hello\", \"world\", \"!\"))\r# [1] \"hello\" \"world\" \"!\"\r\r1.6.2 这是cat()输出的结果\rcat(c(\"hello\", \"world\", \"!\"))\r# hello world !\r\r\r1.7 创建序列的区别\r使用:创建的都是整数序列，使用seq()创建的序列是double。\na \r# [1] FALSE\r\r\r2 数据清理相关\r2.1 tidyvers()\r\r\r3 ggplot相关\r\r4 统计分析相关\r4.1 基础统计\r\rsd()和var()分别计算标准差和方差\r\rx \r# [1] 0.299\rvar(x)\r# [1] 0.0896\r\rcor()和cov()函数可以分别计算两个向量之间的相关性和协方差：\r\rcor(x, y)\r# [1] 1\rcov(x, y)\r# [1] 0.179\r\r\r5 rmarkdown相关\r5.1 表格\r除了kable()命令生成表格外,其他的表格生成如果要使其能被交叉引用,需要添加标签label,如:Table:(\\#tab:yourlabel)Caption,然后使用\\@ref(tab:label) 。例如：\n样本身高体重见表5.1\nTable:(\\#tab:table001)A simple table\rleft | center | right\r:-----|:------:|------:\rA | 180 | 60\rB | 160 | 50\rc | 170 | 30 \r\r表5.1: A simple table\r\rleft\rcenter\rright\r\r\r\rA\r180\r60\r\rB\r160\r50\r\rc\r170\r30\r\r\r\r\r5.2 图片\r微信截图的图片不能被knit正确读取，会提示找不到文件，需要更改文件类型或者名字？\n\r\r",
-  "wordCount" : "359",
+  "articleBody": "\r\r1 R基础相关\r为啥公式不行了？\n\\(x^2+y^2=z^2\\)\n1.1 逻辑运算符号\rR中基础逻辑运算符号有（=;!=;;;=;），返回的值是true和false，也可分别作为为数字1和0进行数学运算：\nx 3\r# [1] FALSE FALSE FALSE TRUE TRUE TRUE\rsum(x  3)\r# [1] 3\r\r1.2 数学运算\r\r%% 两个向量求余\r\rx \r# [1] 0 1 0\r\r%/% 两个向量相除求商\r\rx \r# [1] 4 2 2\r\r%*% 两个向量的内积，也称为点乘，可用于矩阵\n\r对于向量\r\r\rx \r# [,1]\r# [1,] 32\r\r对于矩阵\r\rm \r# [,1] [,2]\r# [1,] 7 15\r# [2,] 10 22\r\r1.3 向量操作\r增加向量元素的几种操作\n\r直接使用c()\r\rx \r# [1] 1 2 3 4 5 6 7 8 9\r\r在末尾添加\r\rx \r# [1] 1 2 3 99\r\r在指定位置增加append(VEC, newvalues, after = N)：\r\rx \r# [1] 1 2 55 66 77 3\r\r1.4 []和[[]]取值的区别,[[]]等价与$取元素:\rx \r# [1] 1\rx[[1]]\r# [1] 1\rlsx \r# $score\r# [1] 98 80 95\rlsx[[2]][1]\r# [1] 98\rlsx$score[1]\r# [1] 98\r\r1.5 list的一些操作和理解\rlist作为特殊的变量，它可以存储任意类型的数据，包括其他的list，也就是列表列。R中列表的高端操作有些抽象，不太好理解，需要自己动手多操作。\n\r1.6 print()和cat()的区别\r主要是输出内容的形式，直观来说cat()输入的内容更复核自然阅读的习惯,而print()输入的内容更类似程序的语法结构\n1.6.1 这是print()输出的结果\rprint(c(\"hello\", \"world\", \"!\"))\r# [1] \"hello\" \"world\" \"!\"\r\r1.6.2 这是cat()输出的结果\rcat(c(\"hello\", \"world\", \"!\"))\r# hello world !\r\r\r1.7 创建序列的区别\r使用:创建的都是整数序列，使用seq()创建的序列是double。\na \r# [1] FALSE\r\r\r2 统计分析相关\r2.1 概率\rR中有关概率分布相关\n\r表2.1:  正态分布相关函数\r\r\r\r函数\r功能\r\r\r\rdnorm(x, mean = 0, sd = 1, log = FALSE)\r返回值正态分布概率密度函数值，比如dnorm（z）表示：标准正态分布密度函f(x)在x=z处的函数值。\r\rpnorm(q, mean = 0, sd = 1, lower.tail = TRUE, log.p = FALSE)\r返回值是正态分布的分布函数值，比如pnorm（z）等价于P[X ≤ z]\r\rqnorm(p, mean = 0, sd = 1, lower.tail = TRUE, log.p = FALSE)\r返回值是给定概率p后的下分位点.\r\rrnorm(n, mean = 0, sd = 1)\r返回值是n个正态分布随机数构成的向量。\r\r\r\r\r2.2 基础统计\r\rsd()和var()分别计算标准差和方差\r\rx \r# [1] 0.261\rvar(x)\r# [1] 0.0682\r\rcor()和cov()函数可以分别计算两个向量之间的相关性和协方差：\r\rcor(x, y)\r# [1] 1\rcov(x, y)\r# [1] 0.136\r\r\r3 rmarkdown相关\r3.1 表格\r除了kable()命令生成表格外,其他的表格生成如果要使其能被交叉引用,需要添加标签label,如:Table:(\\#tab:yourlabel)Caption,然后使用\\@ref(tab:label) 。例如：\n样本身高体重见表3.1\nTable:(\\#tab:table001)A simple table\rleft | center | right\r:-----|:------:|------:\rA | 180 | 60\rB | 160 | 50\rc | 170 | 30 \r\r表3.1: A simple table\r\rleft\rcenter\rright\r\r\r\rA\r180\r60\r\rB\r160\r50\r\rc\r170\r30\r\r\r\r\r3.2 图片\r微信截图的图片不能被knit正确读取，会提示找不到文件，需要更改文件类型或者名字？\n\r\r",
+  "wordCount" : "411",
   "inLanguage": "en",
   "datePublished": "2022-01-12T00:00:00Z",
   "dateModified": "2022-01-12T00:00:00Z",
@@ -254,26 +254,20 @@
                     <a href="#" aria-label="1.7 创建序列的区别"><span class="header-section-number">1.7</span> 创建序列的区别</a></li></ul>
                 </li>
                 <li>
-                    <a href="#" aria-label="2 数据清理相关"><span class="header-section-number">2</span> 数据清理相关</a><ul>
+                    <a href="#" aria-label="2 统计分析相关"><span class="header-section-number">2</span> 统计分析相关</a><ul>
                         
                 <li>
-                    <a href="#" aria-label="2.1 tidyvers()"><span class="header-section-number">2.1</span> <code>tidyvers()</code></a></li></ul>
+                    <a href="#" aria-label="2.1 概率"><span class="header-section-number">2.1</span> 概率</a></li>
+                <li>
+                    <a href="#" aria-label="2.2 基础统计"><span class="header-section-number">2.2</span> 基础统计</a></li></ul>
                 </li>
                 <li>
-                    <a href="#" aria-label="3 ggplot相关"><span class="header-section-number">3</span> ggplot相关</a></li>
-                <li>
-                    <a href="#" aria-label="4 统计分析相关"><span class="header-section-number">4</span> 统计分析相关</a><ul>
+                    <a href="#" aria-label="3 rmarkdown相关"><span class="header-section-number">3</span> rmarkdown相关</a><ul>
                         
                 <li>
-                    <a href="#" aria-label="4.1 基础统计"><span class="header-section-number">4.1</span> 基础统计</a></li></ul>
-                </li>
+                    <a href="#" aria-label="3.1 表格"><span class="header-section-number">3.1</span> 表格</a></li>
                 <li>
-                    <a href="#" aria-label="5 rmarkdown相关"><span class="header-section-number">5</span> rmarkdown相关</a><ul>
-                        
-                <li>
-                    <a href="#" aria-label="5.1 表格"><span class="header-section-number">5.1</span> 表格</a></li>
-                <li>
-                    <a href="#" aria-label="5.2 图片"><span class="header-section-number">5.2</span> 图片</a>
+                    <a href="#" aria-label="3.2 图片"><span class="header-section-number">3.2</span> 图片</a>
                 </li>
             </ul>
             </li>
@@ -288,11 +282,12 @@
 
 <div id="r基础相关" class="section level1" number="1">
 <h1><span class="header-section-number">1</span> R基础相关</h1>
+<p>为啥公式不行了？</p>
+<p><span class="math inline">\(x^2+y^2=z^2\)</span></p>
 <div id="逻辑运算符号" class="section level2" number="1.1">
 <h2><span class="header-section-number">1.1</span> 逻辑运算符号</h2>
 <p>R中基础逻辑运算符号有（<code>=</code>;<code>!=</code>;<code>&gt;</code>;<code>&lt;</code>;<code>&gt;=</code>;<code>&lt;=</code>），返回的值是<code>true</code>和<code>false</code>，也可分别作为为数字<code>1</code>和<code>0</code>进行数学运算：</p>
 <pre class="r"><code>x &lt;- c(1, 2, 3, 4, 5, 6)
-
 x &gt; 3</code></pre>
 <pre><code># [1] FALSE FALSE FALSE  TRUE  TRUE  TRUE</code></pre>
 <pre class="r"><code>sum(x &gt; 3)</code></pre>
@@ -336,7 +331,7 @@ m %*% m</code></pre>
 </div>
 <div id="向量操作" class="section level2" number="1.3">
 <h2><span class="header-section-number">1.3</span> 向量操作</h2>
-<p>增加向量的几种操作</p>
+<p>增加向量元素的几种操作</p>
 <ul>
 <li>直接使用<code>c()</code></li>
 </ul>
@@ -402,43 +397,69 @@ identical(a, b)</code></pre>
 <pre><code># [1] FALSE</code></pre>
 </div>
 </div>
-<div id="数据清理相关" class="section level1" number="2">
-<h1><span class="header-section-number">2</span> 数据清理相关</h1>
-<div id="tidyvers" class="section level2" number="2.1">
-<h2><span class="header-section-number">2.1</span> <code>tidyvers()</code></h2>
+<div id="统计分析相关" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> 统计分析相关</h1>
+<div id="概率" class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> 概率</h2>
+<p>R中有关概率分布相关</p>
+<table>
+<caption><span id="tab:tabprob">表2.1: </span> 正态分布相关函数</caption>
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">函数</th>
+<th align="left">功能</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">dnorm(x, mean = 0, sd = 1, log = FALSE)</td>
+<td align="left">返回值正态分布概率密度函数值，比如dnorm（z）表示：标准正态分布密度函f(x)在x=z处的函数值。</td>
+</tr>
+<tr class="even">
+<td align="left">pnorm(q, mean = 0, sd = 1, lower.tail = TRUE, log.p = FALSE)</td>
+<td align="left">返回值是正态分布的分布函数值，比如pnorm（z）等价于P[X ≤ z]</td>
+</tr>
+<tr class="odd">
+<td align="left">qnorm(p, mean = 0, sd = 1, lower.tail = TRUE, log.p = FALSE)</td>
+<td align="left">返回值是给定概率p后的下分位点.</td>
+</tr>
+<tr class="even">
+<td align="left">rnorm(n, mean = 0, sd = 1)</td>
+<td align="left">返回值是n个正态分布随机数构成的向量。</td>
+</tr>
+</tbody>
+</table>
 </div>
-</div>
-<div id="ggplot相关" class="section level1" number="3">
-<h1><span class="header-section-number">3</span> ggplot相关</h1>
-</div>
-<div id="统计分析相关" class="section level1" number="4">
-<h1><span class="header-section-number">4</span> 统计分析相关</h1>
-<div id="基础统计" class="section level2" number="4.1">
-<h2><span class="header-section-number">4.1</span> 基础统计</h2>
+<div id="基础统计" class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span> 基础统计</h2>
 <ul>
 <li><code>sd()</code>和<code>var()</code>分别计算标准差和方差</li>
 </ul>
 <pre class="r"><code>x &lt;- runif(20)
 y &lt;- 2 * (x + 1)
 sd(x)</code></pre>
-<pre><code># [1] 0.299</code></pre>
+<pre><code># [1] 0.261</code></pre>
 <pre class="r"><code>var(x)</code></pre>
-<pre><code># [1] 0.0896</code></pre>
+<pre><code># [1] 0.0682</code></pre>
 <ul>
 <li><code>cor()</code>和<code>cov()</code>函数可以分别计算两个向量之间的相关性和协方差：</li>
 </ul>
 <pre class="r"><code>cor(x, y)</code></pre>
 <pre><code># [1] 1</code></pre>
 <pre class="r"><code>cov(x, y)</code></pre>
-<pre><code># [1] 0.179</code></pre>
+<pre><code># [1] 0.136</code></pre>
 </div>
 </div>
-<div id="rmarkdown相关" class="section level1" number="5">
-<h1><span class="header-section-number">5</span> rmarkdown相关</h1>
-<div id="表格" class="section level2" number="5.1">
-<h2><span class="header-section-number">5.1</span> 表格</h2>
+<div id="rmarkdown相关" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> rmarkdown相关</h1>
+<div id="表格" class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span> 表格</h2>
 <p>除了<code>kable()</code>命令生成表格外,其他的表格生成如果要使其能被交叉引用,需要添加标签<code>label</code>,如:<code>Table:(\#tab:yourlabel)Caption</code>,然后使用<code>\@ref(tab:label)</code> 。例如：</p>
-<p>样本身高体重见表<a href="#tab:table001">5.1</a></p>
+<p>样本身高体重见表<a href="#tab:table001">3.1</a></p>
 <pre><code>Table:(\#tab:table001)A simple table
 
 left  | center | right
@@ -448,7 +469,7 @@ B     |   160  | 50
 c     |   170  | 30        
 </code></pre>
 <table>
-<caption><span id="tab:table001">表5.1: </span>A simple table</caption>
+<caption><span id="tab:table001">表3.1: </span>A simple table</caption>
 <thead>
 <tr class="header">
 <th align="left">left</th>
@@ -475,8 +496,8 @@ c     |   170  | 30
 </tbody>
 </table>
 </div>
-<div id="图片" class="section level2" number="5.2">
-<h2><span class="header-section-number">5.2</span> 图片</h2>
+<div id="图片" class="section level2" number="3.2">
+<h2><span class="header-section-number">3.2</span> 图片</h2>
 <p>微信截图的图片不能被<code>knit</code>正确读取，会提示找不到文件，需要更改文件类型或者名字？</p>
 </div>
 </div>
