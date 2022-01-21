@@ -1,5 +1,5 @@
 ---
-title: R随手记
+title: R随手记（1）
 author: Luo Fei
 date: '2022-01-12'
 slug: Rcheatsheet
@@ -13,6 +13,7 @@ output:
 math: true
 showToc: true
 TocOpen: false
+toc-title: "目录"
 draft: true
 hidemeta: false
 comments: false
@@ -33,21 +34,148 @@ cover:
 ---
 
 ```{r,setup,include=FALSE}
+options(digits = 3)
+
 ##knitr设置
 knitr::opts_chunk$set(
-  fig.cap = TRUE,
   prompt = FALSE,
-  comment = "",
-  results = "asis",
+  comment = "#",
+  results = "markup",
   error = FALSE,
   message = FALSE,
   fig.align = "center",
-  collapse = TRUE
+  collapse = FALSE,
+  tidy = TRUE
   )
 
 ```
 
+# R基础相关
+
+## 逻辑运算符号
+
+R中基础逻辑运算符号有（`=`;`!=`;`>`;`<`;`>=`;`<=`），返回的值是`true`和`false`，也可分别作为为数字`1`和`0`进行数学运算：
+
+```{r}
+x <- c(1,2,3,4,5,6)
+
+x > 3
+
+sum(x > 3)
+```
+
+
+## 数学运算
+
+- %% 两个向量求余
+```{r}
+x <- c(1, 2, 3)
+y <- c(4, 5, 6)
+y %% x
+```
+- %/% 两个向量相除求商
+```{r}
+x <- c(1, 2, 3)
+y <- c(4, 5, 6)
+y %/% x
+```
+
+- %*% 两个向量的内积，也称为点乘，可用于矩阵
+
+  - 对于向量
+  
+```{r}
+x <- c(1, 2, 3)
+y <- c(4, 5, 6)
+y %*% x
+```
+  
+  - 对于矩阵
+  
+```{r}
+m <- matrix(c(1:4), ncol = 2)
+m %*% m
+```
+## 向量操作
+
+增加向量的几种操作
+
+- 直接使用`c()`
+
+```{r}
+x <- c(1, 2, 3)
+newvalues <- 4:9
+c(x, newvalues)
+
+```
+
+- 在末尾添加
+
+```{r}
+x <- c(1, 2, 3)
+x[length(x)+1] <- 99
+x
+```
+ 
+- 在指定位置增加`append(VEC, newvalues, after = N)`：
+
+```{r}
+x <- c(1, 2, 3)
+newvalues <- c(55, 66, 77)
+append(x, newvalues, 2)
+```
+
+## `[]`和`[[]]`取值的区别,`[[]]`等价与`$`取元素:
+
+```{r}
+x <- c(1, 2, 3)
+x[1]
+x[[1]]
+lsx <- list(name = c("tom", "jimy", "tod"), score = c(98, 80, 95))
+lsx[2][1]
+lsx[[2]][1]
+lsx$score[1]
+```
+
+
+
+## `list`的一些操作和理解
+
+`list`作为特殊的变量，它可以存储任意类型的数据，包括其他的`list`，也就是列表列。R中列表的高端操作有些抽象，不太好理解，需要自己动手多操作。
+
+
+## `print()`和`cat()`的区别
+
+主要是输出内容的形式，直观来说`cat()`输入的内容更复核自然阅读的习惯,而`print()`输入的内容更类似程序的语法结构
+
+### 这是`print()`输出的结果
+
+```{r}
+print(c("hello", "world","!"))
+
+```
+
+### 这是`cat()`输出的结果
+
+```{r}
+cat(c("hello", "world","!"))
+
+```
+
+## 创建序列的区别
+
+使用`:`创建的都是整数序列，使用`seq()`创建的序列是`double`。
+
+```{r}
+a <- 1:10
+b <- seq(from = 1, to = 10, by = 1)
+identical(a, b)
+```
+
+
 # 数据清理相关
+
+## `tidyvers()`
 
 
 
@@ -55,6 +183,31 @@ knitr::opts_chunk$set(
 # ggplot相关
 
 # 统计分析相关
+
+## 基础统计
+
+- `sd()`和`var()`分别计算标准差和方差
+
+```{r}
+x <- runif(20)
+y <- 2*(x+1)
+sd(x)
+var(x)
+
+
+```
+
+
+- `cor()`和`cov()`函数可以分别计算两个向量之间的相关性和协方差：
+
+
+```{r}
+cor(x, y)
+cov(x, y)
+```
+
+
+
 
 # rmarkdown相关
 
