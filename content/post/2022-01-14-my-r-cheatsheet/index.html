@@ -11,6 +11,7 @@ output:
     blogdown::html_page:
         number_sections: true  
 showToc: true
+math: true
 TocOpen: false
 toc-title: "目录"
 draft: true
@@ -37,8 +38,6 @@ cover:
 
 <div id="r基础相关" class="section level1" number="1">
 <h1><span class="header-section-number">1</span> R基础相关</h1>
-<p>katex除问题了吗？？？</p>
-<p><span class="math inline">\(x^2+y^2=z^2\)</span></p>
 <div id="逻辑运算符号" class="section level2" number="1.1">
 <h2><span class="header-section-number">1.1</span> 逻辑运算符号</h2>
 <p>R中基础逻辑运算符号有（<code>=</code>;<code>!=</code>;<code>&gt;</code>;<code>&lt;</code>;<code>&gt;=</code>;<code>&lt;=</code>），返回的值是<code>true</code>和<code>false</code>，也可分别作为为数字<code>1</code>和<code>0</code>进行数学运算：</p>
@@ -172,11 +171,11 @@ identical(a, b)</code></pre>
 <tbody>
 <tr class="odd">
 <td align="left">dnorm(x, mean = 0, sd = 1, log = FALSE)</td>
-<td align="left">返回值正态分布概率密度函数值，比如dnorm（z）表示：标准正态分布密度函f(x)在x=z处的函数值。</td>
+<td align="left">返回值正态分布概率密度函数值，比如dnorm（z）表示：标准正态分布密度函<span class="math inline">\(f(x)\)</span>在<span class="math inline">\(x=z\)</span>处的函数值。</td>
 </tr>
 <tr class="even">
 <td align="left">pnorm(q, mean = 0, sd = 1, lower.tail = TRUE, log.p = FALSE)</td>
-<td align="left">返回值是正态分布的分布函数值，比如pnorm（z）等价于P[X ≤ z]</td>
+<td align="left">返回值是正态分布的分布函数值，比如pnorm(z)等价于<span class="math inline">\(P[X ≤ z]\)</span></td>
 </tr>
 <tr class="odd">
 <td align="left">qnorm(p, mean = 0, sd = 1, lower.tail = TRUE, log.p = FALSE)</td>
@@ -197,16 +196,16 @@ identical(a, b)</code></pre>
 <pre class="r"><code>x &lt;- runif(20)
 y &lt;- 2 * (x + 1)
 sd(x)</code></pre>
-<pre><code># [1] 0.271</code></pre>
+<pre><code># [1] 0.237</code></pre>
 <pre class="r"><code>var(x)</code></pre>
-<pre><code># [1] 0.0736</code></pre>
+<pre><code># [1] 0.0563</code></pre>
 <ul>
 <li><code>cor()</code>和<code>cov()</code>函数可以分别计算两个向量之间的相关性和协方差：</li>
 </ul>
 <pre class="r"><code>cor(x, y)</code></pre>
 <pre><code># [1] 1</code></pre>
 <pre class="r"><code>cov(x, y)</code></pre>
-<pre><code># [1] 0.147</code></pre>
+<pre><code># [1] 0.113</code></pre>
 </div>
 </div>
 <div id="rmarkdown相关" class="section level1" number="3">

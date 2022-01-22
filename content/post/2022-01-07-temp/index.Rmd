@@ -13,6 +13,7 @@ output:
 # weight: 1
 # aliases: ["/first"]
 showToc: true
+math: true
 TocOpen: false
 draft: false
 hidemeta: false
