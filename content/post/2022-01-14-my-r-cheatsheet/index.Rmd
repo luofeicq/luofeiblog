@@ -52,7 +52,7 @@ knitr::opts_chunk$set(
 
 # R基础相关
 
-为啥公式不行了？
+katex除问题了吗？？？
 
 $x^2+y^2=z^2$
 
