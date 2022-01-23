@@ -182,10 +182,10 @@ identical(a, b)
 
 ## 概率
 
-R中有关概率分布相关
+- R中有关概率分布相关函数（\@ref(tab:tabprob)）
 
 
-Table:(\#tab:tabprob) 正态分布相关函数
+Table:(\#tab:tabprob) 正态分布相关函数用法
 
 | 函数    |  功能|
 |:-------|:-------|
@@ -194,7 +194,26 @@ Table:(\#tab:tabprob) 正态分布相关函数
 |qnorm(p, mean = 0, sd = 1, lower.tail = TRUE, log.p = FALSE)  |返回值是给定概率p后的下分位点.|
 |rnorm(n, mean = 0, sd = 1)|返回值是n个正态分布随机数构成的向量。|
 
+- 其他概率分布（\@ref(tab:tabprob2)），其命令用法与正态分布函数类似。
 
+
+Table:(\#tab:tabprob2) R中其他概率分布相关函数
+
+|概率分布|	R 命令名 | 参数
+|:-------:|:-------:|:-------
+Beta	|beta	|shape1; shape2
+Cauchy|	cauchy	|location; scale
+Chi-squared (Chisquare)|	chisq	|df = degrees of freedom
+Exponential	|exp|	rate
+F|	f|df1 and df2 = degrees of freedom
+Gamma|	gamma|	rate; either rate or scale
+Log-normal (Lognormal)	|lnorm|meanlog = mean on logarithmic scale; sdlog = standard deviation on logarithmic scale
+Logistic|	logis	|location; scale
+Normal|	norm	|mean; sd = standard deviation
+Student’s| t |(TDist)	t	df = degrees of freedom
+Uniform|	unif|	min = lower limit; max = upper limit
+Weibull|	weibull	|shape; scale
+Wilcoxon|	wilcox|	m = number of observations in first sample; n = number of observations in second sample
 
 ## 基础统计
 
@@ -225,7 +244,14 @@ cov(x, y)
 
 ## 表格
 
-除了`kable()`命令生成表格外,其他的表格生成如果要使其能被交叉引用,需要添加标签`label`,如:`Table:(\#tab:yourlabel)Caption`,然后使用`\@ref(tab:label)` 。例如：
+- `kable()`
+
+```{r}
+knitr::kable(head(mtcars))
+```
+
+
+- 除了`kable()`命令生成表格外,其他的表格生成如果要使其能被交叉引用,需要添加标签`label`,如:`Table:(\#tab:yourlabel)Caption`,然后使用`\@ref(tab:label)` 。例如：
 
 样本身高体重见表\@ref(tab:table001)
 
@@ -247,6 +273,8 @@ left  | center | right
 A     |   180  | 60
 B     |   160  | 50
 c     |   170  | 30     
+
+
 
 ## 图片
 

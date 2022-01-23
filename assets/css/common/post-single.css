@@ -136,7 +136,7 @@
 .post-content table:not(.highlighttable, .highlight table, .gist .highlight) td {
     min-width: 80px;
     padding: 12px 5px;
-    line-height: 1.5;
+    line-height: 1.0;
     border-bottom: 1px solid var(--border);
 	font-size: 16px;
 }
@@ -144,7 +144,16 @@
 .post-content table th {
     font-size: 16px;
     text-align: center;
+    background-color: #3f3f3f;
+    color: white;
 }
+
+.post-content table tr:nth-child(even){
+    background-color: #F5F5F5;
+}
+
+.post-content table tr:hover {
+    background-color: #DEEBF7;}
 
 .post-content table:not(.highlighttable) td code:only-child {
     margin: auto 0;

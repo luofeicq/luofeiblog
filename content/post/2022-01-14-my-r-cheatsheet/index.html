@@ -160,9 +160,11 @@ identical(a, b)</code></pre>
 <h1><span class="header-section-number">2</span> 统计分析相关</h1>
 <div id="概率" class="section level2" number="2.1">
 <h2><span class="header-section-number">2.1</span> 概率</h2>
-<p>R中有关概率分布相关</p>
+<ul>
+<li>R中有关概率分布相关函数（<a href="#tab:tabprob">2.1</a>）</li>
+</ul>
 <table>
-<caption><span id="tab:tabprob">表2.1: </span> 正态分布相关函数</caption>
+<caption><span id="tab:tabprob">表2.1: </span> 正态分布相关函数用法</caption>
 <colgroup>
 <col width="50%" />
 <col width="50%" />
@@ -192,6 +194,91 @@ identical(a, b)</code></pre>
 </tr>
 </tbody>
 </table>
+<ul>
+<li>其他概率分布（<a href="#tab:tabprob2">2.2</a>），其命令用法与正态分布函数类似。</li>
+</ul>
+<table>
+<caption><span id="tab:tabprob2">表2.2: </span> R中其他概率分布相关函数</caption>
+<colgroup>
+<col width="34%" />
+<col width="34%" />
+<col width="30%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">概率分布</th>
+<th align="center">R 命令名</th>
+<th align="left">参数</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">Beta</td>
+<td align="center">beta</td>
+<td align="left">shape1; shape2</td>
+</tr>
+<tr class="even">
+<td align="center">Cauchy</td>
+<td align="center">cauchy</td>
+<td align="left">location; scale</td>
+</tr>
+<tr class="odd">
+<td align="center">Chi-squared (Chisquare)</td>
+<td align="center">chisq</td>
+<td align="left">df = degrees of freedom</td>
+</tr>
+<tr class="even">
+<td align="center">Exponential</td>
+<td align="center">exp</td>
+<td align="left">rate</td>
+</tr>
+<tr class="odd">
+<td align="center">F</td>
+<td align="center">f</td>
+<td align="left">df1 and df2 = degrees of freedom</td>
+</tr>
+<tr class="even">
+<td align="center">Gamma</td>
+<td align="center">gamma</td>
+<td align="left">rate; either rate or scale</td>
+</tr>
+<tr class="odd">
+<td align="center">Log-normal (Lognormal)</td>
+<td align="center">lnorm</td>
+<td align="left">meanlog = mean on logarithmic scale; sdlog = standard deviation on logarithmic scale</td>
+</tr>
+<tr class="even">
+<td align="center">Logistic</td>
+<td align="center">logis</td>
+<td align="left">location; scale</td>
+</tr>
+<tr class="odd">
+<td align="center">Normal</td>
+<td align="center">norm</td>
+<td align="left">mean; sd = standard deviation</td>
+</tr>
+<tr class="even">
+<td align="center">Student’s</td>
+<td align="center">t</td>
+<td align="left">(TDist) t df = degrees of freedom</td>
+</tr>
+<tr class="odd">
+<td align="center">Uniform</td>
+<td align="center">unif</td>
+<td align="left">min = lower limit; max = upper limit</td>
+</tr>
+<tr class="even">
+<td align="center">Weibull</td>
+<td align="center">weibull</td>
+<td align="left">shape; scale</td>
+</tr>
+<tr class="odd">
+<td align="center">Wilcoxon</td>
+<td align="center">wilcox</td>
+<td align="left">m = number of observations in first sample; n = number of observations in second sample</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div id="基础统计" class="section level2" number="2.2">
 <h2><span class="header-section-number">2.2</span> 基础统计</h2>
@@ -201,23 +288,133 @@ identical(a, b)</code></pre>
 <pre class="r"><code>x &lt;- runif(20)
 y &lt;- 2 * (x + 1)
 sd(x)</code></pre>
-<pre><code># [1] 0.321</code></pre>
+<pre><code># [1] 0.265</code></pre>
 <pre class="r"><code>var(x)</code></pre>
-<pre><code># [1] 0.103</code></pre>
+<pre><code># [1] 0.07</code></pre>
 <ul>
 <li><code>cor()</code>和<code>cov()</code>函数可以分别计算两个向量之间的相关性和协方差：</li>
 </ul>
 <pre class="r"><code>cor(x, y)</code></pre>
 <pre><code># [1] 1</code></pre>
 <pre class="r"><code>cov(x, y)</code></pre>
-<pre><code># [1] 0.206</code></pre>
+<pre><code># [1] 0.14</code></pre>
 </div>
 </div>
 <div id="rmarkdown相关" class="section level1" number="3">
 <h1><span class="header-section-number">3</span> rmarkdown相关</h1>
 <div id="表格" class="section level2" number="3.1">
 <h2><span class="header-section-number">3.1</span> 表格</h2>
-<p>除了<code>kable()</code>命令生成表格外,其他的表格生成如果要使其能被交叉引用,需要添加标签<code>label</code>,如:<code>Table:(\#tab:yourlabel)Caption</code>,然后使用<code>\@ref(tab:label)</code> 。例如：</p>
+<ul>
+<li><code>kable()</code></li>
+</ul>
+<pre class="r"><code>knitr::kable(head(mtcars))</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="right">mpg</th>
+<th align="right">cyl</th>
+<th align="right">disp</th>
+<th align="right">hp</th>
+<th align="right">drat</th>
+<th align="right">wt</th>
+<th align="right">qsec</th>
+<th align="right">vs</th>
+<th align="right">am</th>
+<th align="right">gear</th>
+<th align="right">carb</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Mazda RX4</td>
+<td align="right">21.0</td>
+<td align="right">6</td>
+<td align="right">160</td>
+<td align="right">110</td>
+<td align="right">3.90</td>
+<td align="right">2.62</td>
+<td align="right">16.5</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">4</td>
+<td align="right">4</td>
+</tr>
+<tr class="even">
+<td align="left">Mazda RX4 Wag</td>
+<td align="right">21.0</td>
+<td align="right">6</td>
+<td align="right">160</td>
+<td align="right">110</td>
+<td align="right">3.90</td>
+<td align="right">2.88</td>
+<td align="right">17.0</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">4</td>
+<td align="right">4</td>
+</tr>
+<tr class="odd">
+<td align="left">Datsun 710</td>
+<td align="right">22.8</td>
+<td align="right">4</td>
+<td align="right">108</td>
+<td align="right">93</td>
+<td align="right">3.85</td>
+<td align="right">2.32</td>
+<td align="right">18.6</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">4</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">Hornet 4 Drive</td>
+<td align="right">21.4</td>
+<td align="right">6</td>
+<td align="right">258</td>
+<td align="right">110</td>
+<td align="right">3.08</td>
+<td align="right">3.21</td>
+<td align="right">19.4</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">Hornet Sportabout</td>
+<td align="right">18.7</td>
+<td align="right">8</td>
+<td align="right">360</td>
+<td align="right">175</td>
+<td align="right">3.15</td>
+<td align="right">3.44</td>
+<td align="right">17.0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">Valiant</td>
+<td align="right">18.1</td>
+<td align="right">6</td>
+<td align="right">225</td>
+<td align="right">105</td>
+<td align="right">2.76</td>
+<td align="right">3.46</td>
+<td align="right">20.2</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">1</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>除了<code>kable()</code>命令生成表格外,其他的表格生成如果要使其能被交叉引用,需要添加标签<code>label</code>,如:<code>Table:(\#tab:yourlabel)Caption</code>,然后使用<code>\@ref(tab:label)</code> 。例如：</li>
+</ul>
 <p>样本身高体重见表<a href="#tab:table001">3.1</a></p>
 <pre><code>Table:(\#tab:table001)A simple table
 
