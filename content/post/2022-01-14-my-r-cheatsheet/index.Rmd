@@ -217,6 +217,7 @@ Wilcoxon|	wilcox|	m = number of observations in first sample; n = number of obse
 
 ## 基础统计
 
+
 - `sd()`和`var()`分别计算标准差和方差
 
 ```{r}
@@ -238,6 +239,33 @@ cov(x, y)
 ```
 
 
+## 线性回归
+
+- 线性回归语法`lm()`
+
+### 一简单线性模型
+
+```
+lm(y ~ x1 + x2, date = sim)
+
+```
+对应建模公式为：$$y=\alpha+\beta_1x_1+\beta_2x_2+\varepsilon$$
+
+### 交互变量性模型
+
+```
+lm(y ~ x1 * x2, date = sim)
+
+```
+对应建模公式为：$$y=\alpha+\beta_1x_1+\beta_2x_2++\beta_3x_1x_2+\varepsilon$$
+
+### 虚拟变量
+
+```
+lm(y ~ x1 + x1:x2, date = sim)
+
+```
+对应建模公式为：$$y=\alpha+\beta_1x_1+\beta_2x_1x_2+\varepsilon$$
 
 
 # rmarkdown相关

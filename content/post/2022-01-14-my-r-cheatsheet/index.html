@@ -288,16 +288,40 @@ identical(a, b)</code></pre>
 <pre class="r"><code>x &lt;- runif(20)
 y &lt;- 2 * (x + 1)
 sd(x)</code></pre>
-<pre><code># [1] 0.265</code></pre>
+<pre><code># [1] 0.281</code></pre>
 <pre class="r"><code>var(x)</code></pre>
-<pre><code># [1] 0.07</code></pre>
+<pre><code># [1] 0.079</code></pre>
 <ul>
 <li><code>cor()</code>和<code>cov()</code>函数可以分别计算两个向量之间的相关性和协方差：</li>
 </ul>
 <pre class="r"><code>cor(x, y)</code></pre>
 <pre><code># [1] 1</code></pre>
 <pre class="r"><code>cov(x, y)</code></pre>
-<pre><code># [1] 0.14</code></pre>
+<pre><code># [1] 0.158</code></pre>
+</div>
+<div id="线性回归" class="section level2" number="2.3">
+<h2><span class="header-section-number">2.3</span> 线性回归</h2>
+<ul>
+<li>线性回归语法<code>lm()</code></li>
+</ul>
+<div id="一简单线性模型" class="section level3" number="2.3.1">
+<h3><span class="header-section-number">2.3.1</span> 一简单线性模型</h3>
+<pre><code>lm(y ~ x1 + x2, date = sim)
+</code></pre>
+<p>对应建模公式为：<span class="math display">\[y=\alpha+\beta_1x_1+\beta_2x_2+\varepsilon\]</span></p>
+</div>
+<div id="交互变量性模型" class="section level3" number="2.3.2">
+<h3><span class="header-section-number">2.3.2</span> 交互变量性模型</h3>
+<pre><code>lm(y ~ x1 * x2, date = sim)
+</code></pre>
+<p>对应建模公式为：<span class="math display">\[y=\alpha+\beta_1x_1+\beta_2x_2++\beta_3x_1x_2+\varepsilon\]</span></p>
+</div>
+<div id="虚拟变量" class="section level3" number="2.3.3">
+<h3><span class="header-section-number">2.3.3</span> 虚拟变量</h3>
+<pre><code>lm(y ~ x1 + x1:x2, date = sim)
+</code></pre>
+<p>对应建模公式为：<span class="math display">\[y=\alpha+\beta_1x_1+\beta_2x_1x_2+\varepsilon\]</span></p>
+</div>
 </div>
 </div>
 <div id="rmarkdown相关" class="section level1" number="3">
