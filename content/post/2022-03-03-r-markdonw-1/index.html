@@ -1,0 +1,125 @@
+---
+title: 基于Rmrakdwon的可重复文档
+author: Luo Fei
+date: '2022-03-03'
+slug: []
+categories:
+  - Tec
+tags:
+  - R
+output:
+    blogdown::html_page:
+        number_sections: true  
+math: true
+showToc: true
+TocOpen: false
+toc-title: "目录"
+draft: true
+hidemeta: false
+comments: false
+description: "使用R编写可重复文档的基础"
+canonicalURL: ""
+disableShare: false
+hideSummary: false
+searchHidden: false
+ShowReadingTime: false
+ShowBreadCrumbs: true
+ShowPostNavLinks: true
+cover:
+    image: "" # image path/url
+    alt: "<alt text>" # alt text
+    caption: "<text>" # display caption under cover
+    relative: false # when using page bundles set this to true
+    hidden: true # only hide on current single page    
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+
+
+<p>对于一个公卫狗来说，很多工作都在分析数据、撰写报告总结的内容。这些文档有周报、月报、季报、年报。在使用R之前，经常会对同样架构的不同时间的的数据进行重复的分析和撰写。Rmarkdwon提供了非常便利的可重复复文档，简单来说就是根据跟新的数据库一键生成同样格式的文档。文档的类型可以是PDF和WORD。非常的便利。</p>
+<div id="rmarkdown基础" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Rmarkdown基础</h1>
+<div id="markdown" class="section level2" number="1.1">
+<h2><span class="header-section-number">1.1</span> markdown</h2>
+<p>Markdown是一种轻量级标记语言，排版语法简洁，让人们更多地关注内容本身而非排版。它使用易读易写的纯文本格式编写文档，可与HTML混编，可导出HTML、PDF以及本身的<code>.md</code>格式的文件。因简洁、高效、易读、易写，Markdown被大量使用，如Github、Wikipedia、简书等。</p>
+<p>Markdown已经是一种轻量化的语言，他的不足在于当需要转换为PDF或者WORD格式时有点力不从心了。针对这问题，目前供职与Rstudio的谢益辉大神在Markdown的基础上开发了rmarkdwon包。Rmarkdown的优点有：</p>
+<ul>
+<li><p>具备markdown简单的文本标记语言；</p></li>
+<li><p>相较于markdown有更丰富的文档排版能力；</p></li>
+<li><p>可以在生成文档时直接运行插入的代码块，并将运行结果输出在最终文档中。</p></li>
+</ul>
+</div>
+<div id="基本语法" class="section level2" number="1.2">
+<h2><span class="header-section-number">1.2</span> 基本语法</h2>
+<p>Rmarkdown的基本语法与markdwon相同，几乎所有markdown能用的语法都可以在其中使用。</p>
+<p>常用的markdown语法见表<a href="#tab:table001">1.1</a>，更详细的语法请参考<a href="https://markdown.com.cn/basic-syntax/">Markdown官方教程</a></p>
+<table>
+<caption><span id="tab:table001">表1.1: </span>Rmarkdown的优点</caption>
+<thead>
+<tr class="header">
+<th align="left">输入</th>
+<th align="center">结果</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">普通文本</td>
+<td align="center">普通文本</td>
+</tr>
+<tr class="even">
+<td align="left">*斜体文本*</td>
+<td align="center"><em>斜体文本</em></td>
+</tr>
+<tr class="odd">
+<td align="left">**加粗文本**</td>
+<td align="center"><strong>加粗文本</strong></td>
+</tr>
+<tr class="even">
+<td align="left">***斜体加粗文本***</td>
+<td align="center"><strong><em>斜体加粗文本</em></strong></td>
+</tr>
+<tr class="odd">
+<td align="left">~~删除线文本~~</td>
+<td align="center"><del>删除线文本</del></td>
+</tr>
+<tr class="even">
+<td align="left">上标^文本^</td>
+<td align="center">上标<sup>文本</sup></td>
+</tr>
+<tr class="odd">
+<td align="left">`代码文本`</td>
+<td align="center"><code>代码文本</code></td>
+</tr>
+<tr class="even">
+<td align="left"># 一级标题</td>
+<td align="center"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="建立rmarkdwon文件" class="section level2" number="1.3">
+<h2><span class="header-section-number">1.3</span> 建立Rmarkdwon文件</h2>
+<p>在RStudio选择<code>文件-新建-Rmarkdown</code>就可以建立一个最简单的rmarkdown的模板。（图 <a href="#fig:fig001">1.1</a>）</p>
+<pre class="r"><code>knitr::include_graphics(&quot;./images/rmarkdown01.png&quot;)</code></pre>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:fig001"></span>
+<img src="images/rmarkdown01.png" alt="新建rmarkdown文件"  />
+<p class="caption">
+图1.1: 新建rmarkdown文件
+</p>
+</div>
+<p>新建文件后会弹出新的窗口，如图<a href="#fig:fig002">1.2</a>所示。窗口中可以设置标题、作者和输出文件类型。在左边栏选择”From Template”会有更多的模板更选择。你也可以安装相应的R包扩展更多的模板。</p>
+<pre class="r"><code>knitr::include_graphics(&quot;./images/rmarkdown02.png&quot;)</code></pre>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:fig002"></span>
+<img src="images/rmarkdown02.png" alt="新建文件窗口"  />
+<p class="caption">
+图1.2: 新建文件窗口
+</p>
+</div>
+</div>
+</div>
+<div id="word格式文件输出" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> WORD格式文件输出</h1>
+</div>
+<div id="pdf格式文件输出" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> PDF格式文件输出</h1>
+</div>
