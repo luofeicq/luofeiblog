@@ -89,13 +89,13 @@ Table:(\#tab:table001)Rmarkdown的优点
 
 在RStudio选择`文件-新建-Rmarkdown`就可以建立一个最简单的rmarkdown的模板。（图 \@ref(fig:fig001)）
 
-```{r ,fig001, fig.cap="新建rmarkdown文件"}
+```{r ,fig001, fig.cap="新建rmarkdown文件", echo=FALSE}
 knitr::include_graphics("./images/rmarkdown01.png")
 ```
 
 新建文件后会弹出新的窗口，如图\@ref(fig:fig002)所示。窗口中可以设置标题、作者和输出文件类型。在左边栏选择"From Template"会有更多的模板更选择。你也可以安装相应的R包扩展更多的模板。
 
-```{r, fig002, fig.cap="新建文件窗口"}
+```{r, fig002, fig.cap="新建文件窗口", echo=FALSE}
 knitr::include_graphics("./images/rmarkdown02.png")
 ```
 

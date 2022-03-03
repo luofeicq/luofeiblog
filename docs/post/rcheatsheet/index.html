@@ -10,7 +10,7 @@
 <meta name="description" content="记录使用R过程一些记不住的技巧。">
 <meta name="author" content="Luo Fei">
 <link rel="canonical" href="../../post/rcheatsheet/" />
-<link crossorigin="anonymous" href="../../assets/css/stylesheet.min.d9b388b14db14c5e0fad9bc09740d984f181828761ff1b21235c22034dcf6dfa.css" integrity="sha256-2bOIsU2xTF4PrZvAl0DZhPGBgodh/xshI1wiA03Pbfo=" rel="preload stylesheet" as="style">
+<link crossorigin="anonymous" href="../../assets/css/stylesheet.min.972dfe2480ca64b774331abd9d43d15c08c2994d00937a3f9fc8418364e0fea9.css" integrity="sha256-ly3&#43;JIDKZLd0Mxq9nUPRXAjCmU0Ak3o/n8hBg2Tg/qk=" rel="preload stylesheet" as="style">
 <link rel="preload" href="../../img/logo.png" as="image">
 <script defer crossorigin="anonymous" src="../../assets/js/highlight.min.7680afc38aa6b15ddf158a4f3780b7b1f7dde7e91d26f073e6229bb7a0793c92.js" integrity="sha256-doCvw4qmsV3fFYpPN4C3sffd5&#43;kdJvBz5iKbt6B5PJI="
     onload="hljs.initHighlightingOnLoad();"></script>
@@ -116,8 +116,8 @@ code.has-jax {
   "keywords": [
     "R"
   ],
-  "articleBody": "\r\r1 R基础相关\r1.1 数学公式测试\r行内公式\\(x^2+y^2=z^2\\)\n行间公式:\\[f(x)=ax+b\\]\n\r1.2 逻辑运算符号\rR中基础逻辑运算符号有（=;!=;;;=;），返回的值是true和false，也可分别作为为数字1和0进行数学运算：\nx 3\r# [1] FALSE FALSE FALSE TRUE TRUE TRUE\rsum(x  3)\r# [1] 3\r\r1.3 数学运算\r\r%% 两个向量求余\r\rx \r# [1] 0 1 0\r\r%/% 两个向量相除求商\r\rx \r# [1] 4 2 2\r\r%*% 两个向量的内积，也称为点乘，可用于矩阵\n\r对于向量\r\r\rx \r# [,1]\r# [1,] 32\r\r对于矩阵\r\rm \r# [,1] [,2]\r# [1,] 7 15\r# [2,] 10 22\r\r1.4 向量操作\r增加向量元素的几种操作\n\r直接使用c()\r\rx \r# [1] 1 2 3 4 5 6 7 8 9\r\r在末尾添加\r\rx \r# [1] 1 2 3 99\r\r在指定位置增加append(VEC, newvalues, after = N)：\r\rx \r# [1] 1 2 55 66 77 3\r\r1.5 []和[[]]取值的区别,[[]]等价与$取元素:\rx \r# [1] 1\rx[[1]]\r# [1] 1\rlsx \r# $score\r# [1] 98 80 95\rlsx[[2]][1]\r# [1] 98\rlsx$score[1]\r# [1] 98\r\r1.6 list的一些操作和理解\rlist作为特殊的变量，它可以存储任意类型的数据，包括其他的list，也就是列表列。R中列表的高端操作有些抽象，不太好理解，需要自己动手多操作。\n\r1.7 print()和cat()的区别\r主要是输出内容的形式，直观来说cat()输入的内容更复核自然阅读的习惯,而print()输入的内容更类似程序的语法结构\n1.7.1 这是print()输出的结果\rprint(c(\"hello\", \"world\", \"!\"))\r# [1] \"hello\" \"world\" \"!\"\r\r1.7.2 这是cat()输出的结果\rcat(c(\"hello\", \"world\", \"!\"))\r# hello world !\r\r\r1.8 创建序列的区别\r使用:创建的都是整数序列，使用seq()创建的序列是double。\na \r# [1] FALSE\r\r\r2 统计分析相关\r2.1 概率\rR中有关概率分布相关\n\r表2.1:  正态分布相关函数\r\r\r\r函数\r功能\r\r\r\rdnorm(x, mean = 0, sd = 1, log = FALSE)\r返回值正态分布概率密度函数值，比如dnorm（z）表示：标准正态分布密度函\\(f(x)\\)在x=z处的函数值。\r\rpnorm(q, mean = 0, sd = 1, lower.tail = TRUE, log.p = FALSE)\r返回值是正态分布的分布函数值，比如pnorm(z)等价于\\(P[X ≤ z]\\)\r\rqnorm(p, mean = 0, sd = 1, lower.tail = TRUE, log.p = FALSE)\r返回值是给定概率p后的下分位点.\r\rrnorm(n, mean = 0, sd = 1)\r返回值是n个正态分布随机数构成的向量。\r\r\r\r\r2.2 基础统计\r\rsd()和var()分别计算标准差和方差\r\rx \r# [1] 0.321\rvar(x)\r# [1] 0.103\r\rcor()和cov()函数可以分别计算两个向量之间的相关性和协方差：\r\rcor(x, y)\r# [1] 1\rcov(x, y)\r# [1] 0.206\r\r\r3 rmarkdown相关\r3.1 表格\r除了kable()命令生成表格外,其他的表格生成如果要使其能被交叉引用,需要添加标签label,如:Table:(\\#tab:yourlabel)Caption,然后使用\\@ref(tab:label) 。例如：\n样本身高体重见表3.1\nTable:(\\#tab:table001)A simple table\rleft | center | right\r:-----|:------:|------:\rA | 180 | 60\rB | 160 | 50\rc | 170 | 30 \r\r表3.1: A simple table\r\rleft\rcenter\rright\r\r\r\rA\r180\r60\r\rB\r160\r50\r\rc\r170\r30\r\r\r\r\r3.2 图片\r微信截图的图片不能被knit正确读取，会提示找不到文件，需要更改文件类型或者名字？\n\r\r",
-  "wordCount" : "413",
+  "articleBody": "\r\r1 R基础相关\r1.1 数学公式测试\r行内公式\\(x^2+y^2=z^2\\)\n行间公式:\\[f(x)=ax+b\\]\n\r1.2 逻辑运算符号\rR中基础逻辑运算符号有（=;!=;;;=;），返回的值是true和false，也可分别作为为数字1和0进行数学运算：\nx 3\r# [1] FALSE FALSE FALSE TRUE TRUE TRUE\rsum(x  3)\r# [1] 3\r\r1.3 数学运算\r\r%% 两个向量求余\r\rx \r# [1] 0 1 0\r\r%/% 两个向量相除求商\r\rx \r# [1] 4 2 2\r\r%*% 两个向量的内积，也称为点乘，可用于矩阵\n\r对于向量\r\r\rx \r# [,1]\r# [1,] 32\r\r对于矩阵\r\rm \r# [,1] [,2]\r# [1,] 7 15\r# [2,] 10 22\r\r1.4 向量操作\r增加向量元素的几种操作\n\r直接使用c()\r\rx \r# [1] 1 2 3 4 5 6 7 8 9\r\r在末尾添加\r\rx \r# [1] 1 2 3 99\r\r在指定位置增加append(VEC, newvalues, after = N)：\r\rx \r# [1] 1 2 55 66 77 3\r\r1.5 []和[[]]取值的区别,[[]]等价与$取元素:\rx \r# [1] 1\rx[[1]]\r# [1] 1\rlsx \r# $score\r# [1] 98 80 95\rlsx[[2]][1]\r# [1] 98\rlsx$score[1]\r# [1] 98\r\r1.6 list的一些操作和理解\rlist作为特殊的变量，它可以存储任意类型的数据，包括其他的list，也就是列表列。R中列表的高端操作有些抽象，不太好理解，需要自己动手多操作。\n\r1.7 print()和cat()的区别\r主要是输出内容的形式，直观来说cat()输入的内容更复核自然阅读的习惯,而print()输入的内容更类似程序的语法结构\n1.7.1 这是print()输出的结果\rprint(c(\"hello\", \"world\", \"!\"))\r# [1] \"hello\" \"world\" \"!\"\r\r1.7.2 这是cat()输出的结果\rcat(c(\"hello\", \"world\", \"!\"))\r# hello world !\r\r\r1.8 创建序列的区别\r使用:创建的都是整数序列，使用seq()创建的序列是double。\na \r# [1] FALSE\r\r\r2 统计分析相关\r2.1 概率\r\rR中有关概率分布相关函数（2.1）\r\r\r表2.1:  正态分布相关函数用法\r\r\r\r函数\r功能\r\r\r\rdnorm(x, mean = 0, sd = 1, log = FALSE)\r返回值正态分布概率密度函数值，比如dnorm（z）表示：标准正态分布密度函\\(f(x)\\)在x=z处的函数值。\r\rpnorm(q, mean = 0, sd = 1, lower.tail = TRUE, log.p = FALSE)\r返回值是正态分布的分布函数值，比如pnorm(z)等价于\\(P[X ≤ z]\\)\r\rqnorm(p, mean = 0, sd = 1, lower.tail = TRUE, log.p = FALSE)\r返回值是给定概率p后的下分位点.\r\rrnorm(n, mean = 0, sd = 1)\r返回值是n个正态分布随机数构成的向量。\r\r\r\r\r其他概率分布（2.2），其命令用法与正态分布函数类似。\r\r\r表2.2:  R中其他概率分布相关函数\r\r\r\r概率分布\rR 命令名\r参数\r\r\r\rBeta\rbeta\rshape1; shape2\r\rCauchy\rcauchy\rlocation; scale\r\rChi-squared (Chisquare)\rchisq\rdf = degrees of freedom\r\rExponential\rexp\rrate\r\rF\rf\rdf1 and df2 = degrees of freedom\r\rGamma\rgamma\rrate; either rate or scale\r\rLog-normal (Lognormal)\rlnorm\rmeanlog = mean on logarithmic scale; sdlog = standard deviation on logarithmic scale\r\rLogistic\rlogis\rlocation; scale\r\rNormal\rnorm\rmean; sd = standard deviation\r\rStudent’s\rt\r(TDist) t df = degrees of freedom\r\rUniform\runif\rmin = lower limit; max = upper limit\r\rWeibull\rweibull\rshape; scale\r\rWilcoxon\rwilcox\rm = number of observations in first sample; n = number of observations in second sample\r\r\r\r\r2.2 基础统计\r\rsd()和var()分别计算标准差和方差\r\rx \r# [1] 0.281\rvar(x)\r# [1] 0.079\r\rcor()和cov()函数可以分别计算两个向量之间的相关性和协方差：\r\rcor(x, y)\r# [1] 1\rcov(x, y)\r# [1] 0.158\r\r2.3 线性回归\r\r线性回归语法lm()\r\r2.3.1 一简单线性模型\rlm(y ~ x1 + x2, date = sim)\r\r对应建模公式为：\\[y=\\alpha+\\beta_1x_1+\\beta_2x_2+\\varepsilon\\]\n\r2.3.2 交互变量性模型\rlm(y ~ x1 * x2, date = sim)\r\r对应建模公式为：\\[y=\\alpha+\\beta_1x_1+\\beta_2x_2++\\beta_3x_1x_2+\\varepsilon\\]\n\r2.3.3 虚拟变量\rlm(y ~ x1 + x1:x2, date = sim)\r\r对应建模公式为：\\[y=\\alpha+\\beta_1x_1+\\beta_2x_1x_2+\\varepsilon\\]\n\r\r\r3 rmarkdown相关\r3.1 表格\r\rkable()\r\rknitr::kable(head(mtcars))\r\r\r\rmpg\rcyl\rdisp\rhp\rdrat\rwt\rqsec\rvs\ram\rgear\rcarb\r\r\r\rMazda RX4\r21.0\r6\r160\r110\r3.90\r2.62\r16.5\r0\r1\r4\r4\r\rMazda RX4 Wag\r21.0\r6\r160\r110\r3.90\r2.88\r17.0\r0\r1\r4\r4\r\rDatsun 710\r22.8\r4\r108\r93\r3.85\r2.32\r18.6\r1\r1\r4\r1\r\rHornet 4 Drive\r21.4\r6\r258\r110\r3.08\r3.21\r19.4\r1\r0\r3\r1\r\rHornet Sportabout\r18.7\r8\r360\r175\r3.15\r3.44\r17.0\r0\r0\r3\r2\r\rValiant\r18.1\r6\r225\r105\r2.76\r3.46\r20.2\r1\r0\r3\r1\r\r\r\r\r除了kable()命令生成表格外,其他的表格生成如果要使其能被交叉引用,需要添加标签label,如:Table:(\\#tab:yourlabel)Caption,然后使用\\@ref(tab:label) 。例如：\r\r样本身高体重见表3.1\nTable:(\\#tab:table001)A simple table\rleft | center | right\r:-----|:------:|------:\rA | 180 | 60\rB | 160 | 50\rc | 170 | 30 \r\r表3.1: A simple table\r\rleft\rcenter\rright\r\r\r\rA\r180\r60\r\rB\r160\r50\r\rc\r170\r30\r\r\r\r\r3.2 图片\r微信截图的图片不能被knit正确读取，会提示找不到文件，需要更改文件类型或者名字？\n\r\r",
+  "wordCount" : "651",
   "inLanguage": "en",
   "datePublished": "2022-01-12T00:00:00Z",
   "dateModified": "2022-01-12T00:00:00Z",
@@ -259,7 +259,17 @@ code.has-jax {
                 <li>
                     <a href="#" aria-label="2.1 概率"><span class="header-section-number">2.1</span> 概率</a></li>
                 <li>
-                    <a href="#" aria-label="2.2 基础统计"><span class="header-section-number">2.2</span> 基础统计</a></li></ul>
+                    <a href="#" aria-label="2.2 基础统计"><span class="header-section-number">2.2</span> 基础统计</a></li>
+                <li>
+                    <a href="#" aria-label="2.3 线性回归"><span class="header-section-number">2.3</span> 线性回归</a><ul>
+                        
+                <li>
+                    <a href="#" aria-label="2.3.1 一简单线性模型"><span class="header-section-number">2.3.1</span> 一简单线性模型</a></li>
+                <li>
+                    <a href="#" aria-label="2.3.2 交互变量性模型"><span class="header-section-number">2.3.2</span> 交互变量性模型</a></li>
+                <li>
+                    <a href="#" aria-label="2.3.3 虚拟变量"><span class="header-section-number">2.3.3</span> 虚拟变量</a></li></ul>
+                </li></ul>
                 </li>
                 <li>
                     <a href="#" aria-label="3 rmarkdown相关"><span class="header-section-number">3</span> rmarkdown相关</a><ul>
@@ -404,9 +414,11 @@ identical(a, b)</code></pre>
 <h1><span class="header-section-number">2</span> 统计分析相关</h1>
 <div id="概率" class="section level2" number="2.1">
 <h2><span class="header-section-number">2.1</span> 概率</h2>
-<p>R中有关概率分布相关</p>
+<ul>
+<li>R中有关概率分布相关函数（<a href="#tab:tabprob">2.1</a>）</li>
+</ul>
 <table>
-<caption><span id="tab:tabprob">表2.1: </span> 正态分布相关函数</caption>
+<caption><span id="tab:tabprob">表2.1: </span> 正态分布相关函数用法</caption>
 <colgroup>
 <col width="50%" />
 <col width="50%" />
@@ -436,6 +448,91 @@ identical(a, b)</code></pre>
 </tr>
 </tbody>
 </table>
+<ul>
+<li>其他概率分布（<a href="#tab:tabprob2">2.2</a>），其命令用法与正态分布函数类似。</li>
+</ul>
+<table>
+<caption><span id="tab:tabprob2">表2.2: </span> R中其他概率分布相关函数</caption>
+<colgroup>
+<col width="34%" />
+<col width="34%" />
+<col width="30%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">概率分布</th>
+<th align="center">R 命令名</th>
+<th align="left">参数</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">Beta</td>
+<td align="center">beta</td>
+<td align="left">shape1; shape2</td>
+</tr>
+<tr class="even">
+<td align="center">Cauchy</td>
+<td align="center">cauchy</td>
+<td align="left">location; scale</td>
+</tr>
+<tr class="odd">
+<td align="center">Chi-squared (Chisquare)</td>
+<td align="center">chisq</td>
+<td align="left">df = degrees of freedom</td>
+</tr>
+<tr class="even">
+<td align="center">Exponential</td>
+<td align="center">exp</td>
+<td align="left">rate</td>
+</tr>
+<tr class="odd">
+<td align="center">F</td>
+<td align="center">f</td>
+<td align="left">df1 and df2 = degrees of freedom</td>
+</tr>
+<tr class="even">
+<td align="center">Gamma</td>
+<td align="center">gamma</td>
+<td align="left">rate; either rate or scale</td>
+</tr>
+<tr class="odd">
+<td align="center">Log-normal (Lognormal)</td>
+<td align="center">lnorm</td>
+<td align="left">meanlog = mean on logarithmic scale; sdlog = standard deviation on logarithmic scale</td>
+</tr>
+<tr class="even">
+<td align="center">Logistic</td>
+<td align="center">logis</td>
+<td align="left">location; scale</td>
+</tr>
+<tr class="odd">
+<td align="center">Normal</td>
+<td align="center">norm</td>
+<td align="left">mean; sd = standard deviation</td>
+</tr>
+<tr class="even">
+<td align="center">Student’s</td>
+<td align="center">t</td>
+<td align="left">(TDist) t df = degrees of freedom</td>
+</tr>
+<tr class="odd">
+<td align="center">Uniform</td>
+<td align="center">unif</td>
+<td align="left">min = lower limit; max = upper limit</td>
+</tr>
+<tr class="even">
+<td align="center">Weibull</td>
+<td align="center">weibull</td>
+<td align="left">shape; scale</td>
+</tr>
+<tr class="odd">
+<td align="center">Wilcoxon</td>
+<td align="center">wilcox</td>
+<td align="left">m = number of observations in first sample; n = number of observations in second sample</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div id="基础统计" class="section level2" number="2.2">
 <h2><span class="header-section-number">2.2</span> 基础统计</h2>
@@ -445,23 +542,157 @@ identical(a, b)</code></pre>
 <pre class="r"><code>x &lt;- runif(20)
 y &lt;- 2 * (x + 1)
 sd(x)</code></pre>
-<pre><code># [1] 0.321</code></pre>
+<pre><code># [1] 0.281</code></pre>
 <pre class="r"><code>var(x)</code></pre>
-<pre><code># [1] 0.103</code></pre>
+<pre><code># [1] 0.079</code></pre>
 <ul>
 <li><code>cor()</code>和<code>cov()</code>函数可以分别计算两个向量之间的相关性和协方差：</li>
 </ul>
 <pre class="r"><code>cor(x, y)</code></pre>
 <pre><code># [1] 1</code></pre>
 <pre class="r"><code>cov(x, y)</code></pre>
-<pre><code># [1] 0.206</code></pre>
+<pre><code># [1] 0.158</code></pre>
+</div>
+<div id="线性回归" class="section level2" number="2.3">
+<h2><span class="header-section-number">2.3</span> 线性回归</h2>
+<ul>
+<li>线性回归语法<code>lm()</code></li>
+</ul>
+<div id="一简单线性模型" class="section level3" number="2.3.1">
+<h3><span class="header-section-number">2.3.1</span> 一简单线性模型</h3>
+<pre><code>lm(y ~ x1 + x2, date = sim)
+</code></pre>
+<p>对应建模公式为：<span class="math display">\[y=\alpha+\beta_1x_1+\beta_2x_2+\varepsilon\]</span></p>
+</div>
+<div id="交互变量性模型" class="section level3" number="2.3.2">
+<h3><span class="header-section-number">2.3.2</span> 交互变量性模型</h3>
+<pre><code>lm(y ~ x1 * x2, date = sim)
+</code></pre>
+<p>对应建模公式为：<span class="math display">\[y=\alpha+\beta_1x_1+\beta_2x_2++\beta_3x_1x_2+\varepsilon\]</span></p>
+</div>
+<div id="虚拟变量" class="section level3" number="2.3.3">
+<h3><span class="header-section-number">2.3.3</span> 虚拟变量</h3>
+<pre><code>lm(y ~ x1 + x1:x2, date = sim)
+</code></pre>
+<p>对应建模公式为：<span class="math display">\[y=\alpha+\beta_1x_1+\beta_2x_1x_2+\varepsilon\]</span></p>
+</div>
 </div>
 </div>
 <div id="rmarkdown相关" class="section level1" number="3">
 <h1><span class="header-section-number">3</span> rmarkdown相关</h1>
 <div id="表格" class="section level2" number="3.1">
 <h2><span class="header-section-number">3.1</span> 表格</h2>
-<p>除了<code>kable()</code>命令生成表格外,其他的表格生成如果要使其能被交叉引用,需要添加标签<code>label</code>,如:<code>Table:(\#tab:yourlabel)Caption</code>,然后使用<code>\@ref(tab:label)</code> 。例如：</p>
+<ul>
+<li><code>kable()</code></li>
+</ul>
+<pre class="r"><code>knitr::kable(head(mtcars))</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="right">mpg</th>
+<th align="right">cyl</th>
+<th align="right">disp</th>
+<th align="right">hp</th>
+<th align="right">drat</th>
+<th align="right">wt</th>
+<th align="right">qsec</th>
+<th align="right">vs</th>
+<th align="right">am</th>
+<th align="right">gear</th>
+<th align="right">carb</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Mazda RX4</td>
+<td align="right">21.0</td>
+<td align="right">6</td>
+<td align="right">160</td>
+<td align="right">110</td>
+<td align="right">3.90</td>
+<td align="right">2.62</td>
+<td align="right">16.5</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">4</td>
+<td align="right">4</td>
+</tr>
+<tr class="even">
+<td align="left">Mazda RX4 Wag</td>
+<td align="right">21.0</td>
+<td align="right">6</td>
+<td align="right">160</td>
+<td align="right">110</td>
+<td align="right">3.90</td>
+<td align="right">2.88</td>
+<td align="right">17.0</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">4</td>
+<td align="right">4</td>
+</tr>
+<tr class="odd">
+<td align="left">Datsun 710</td>
+<td align="right">22.8</td>
+<td align="right">4</td>
+<td align="right">108</td>
+<td align="right">93</td>
+<td align="right">3.85</td>
+<td align="right">2.32</td>
+<td align="right">18.6</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">4</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">Hornet 4 Drive</td>
+<td align="right">21.4</td>
+<td align="right">6</td>
+<td align="right">258</td>
+<td align="right">110</td>
+<td align="right">3.08</td>
+<td align="right">3.21</td>
+<td align="right">19.4</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">Hornet Sportabout</td>
+<td align="right">18.7</td>
+<td align="right">8</td>
+<td align="right">360</td>
+<td align="right">175</td>
+<td align="right">3.15</td>
+<td align="right">3.44</td>
+<td align="right">17.0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">Valiant</td>
+<td align="right">18.1</td>
+<td align="right">6</td>
+<td align="right">225</td>
+<td align="right">105</td>
+<td align="right">2.76</td>
+<td align="right">3.46</td>
+<td align="right">20.2</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">1</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>除了<code>kable()</code>命令生成表格外,其他的表格生成如果要使其能被交叉引用,需要添加标签<code>label</code>,如:<code>Table:(\#tab:yourlabel)Caption</code>,然后使用<code>\@ref(tab:label)</code> 。例如：</li>
+</ul>
 <p>样本身高体重见表<a href="#tab:table001">3.1</a></p>
 <pre><code>Table:(\#tab:table001)A simple table
 
