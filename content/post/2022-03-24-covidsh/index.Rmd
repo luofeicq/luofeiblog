@@ -70,7 +70,6 @@ knitr::opts_chunk$set(
 library(rvest)
 library(tidyverse)
 library(lubridate)
-library(patchwork)
 
 ```
 
@@ -79,7 +78,7 @@ library(patchwork)
 使用`selectorgadget`找到，需要的变量“时间”和“标题”，对应的node分别是`.time`和`.list-data a`，只用使用`rvest`抓取后，转为文本存储在列表中。
 
 
-```{r, eval=FALSE}
+```{r, eval=FALSE, echo=TRUE}
 ## 设置url
 url <- "https://wsjkw.sh.gov.cn/xwfb/index.html"
 ## 获取首页信息
@@ -90,11 +89,11 @@ basedata <- tibble(reportdate = reportdate, title = title)
 
 ```
 
-## 使用`for`循环，获取2到200页的信息
+## 获取所有数据
 
 上海的疫情变化主要从3月开始，但为了查看之前的变化，是否输入病例压力增大导致本次疫情，因此爬取了2到200页到2020年的数据。使用`for`循环，`rbind`组合成基础数据。
 
-```{r, eval=FALSE}
+```{r, eval=FALSE, echo=TRUE}
 ##使用循环爬取2到200也网页信息
 
 for (i in 2:200) {  
@@ -107,14 +106,11 @@ for (i in 2:200) {
 ## 写出数据
 write.csv(basedata,"data/basedata.csv")
 
-
-
-
 ```
 
 ## 数据清洗
 
-这一步比较麻烦的是，对标题中截止统计日期的整理。使用`str_extract_all`命令后提取的日期，变成了列表。再合并为向量形势的日期格式数据时出了点麻烦。最后使用了笨办法`for`循环`unlist`后再`paste0`合并。其实直接用标题前的日期-1没什么大的误差，就是更自己较劲搞得这么麻烦。
+这一步比较麻烦的是，对标题中截止统计日期的整理。使用`str_extract_all`命令后提取的日期，变成了列表。再合并为向量形势的日期格式数据时出了点麻烦。最后使用了笨办法`for`循环`unlist`后再`paste0`合并。其实直接用标题前的日期-1没什么大的误差，主要是在跟自己较劲搞得这么麻烦。
 
 ```{r, include=FALSE, message=FALSE}
 basedata <- read.csv("data/basedata.csv")
@@ -275,13 +271,13 @@ covidsh <-  sh_long %>% filter(reportdate > as.Date.character("2022-3-1")) %>%
   geom_line(size = 1) +
    geom_point( size = 0.5)+
   geom_smooth(aes(group = 病例类型 ) , col = "grey", linetype = "dashed", alpha = 0.2, se = T) +
-  scale_x_date(date_breaks = "1 day", date_labels = "%d") +
+  scale_x_date(date_breaks = "2 day", date_labels = "%m/%d") +
   theme_bw() +
   theme(
         axis.text = element_text(size = 16),
         legend.title = element_blank(),
         legend.text = element_text(size = 16),
-        panel.grid.minor = element_blank(),
+        panel.grid = element_blank(),
         legend.position = "top")
 covidsh
 ```

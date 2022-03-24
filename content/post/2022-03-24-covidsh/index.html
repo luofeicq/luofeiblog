@@ -48,20 +48,48 @@ cover:
 <p>首先加载需要用到的包，主要使用<code>rvest</code>包获取静态网页信息，谷歌浏览器<code>selectorgadget</code>获取需要信息的节点，<code>tidyverse</code>整理数据，<code>lubridate</code>包处理日期变量</p>
 <pre class="r"><code>library(rvest)
 library(tidyverse)
-library(lubridate)
-library(patchwork)</code></pre>
+library(lubridate)</code></pre>
 </div>
 <div id="主页信息获取" class="section level2" number="0.3">
 <h2><span class="header-section-number">0.3</span> 主页信息获取</h2>
 <p>使用<code>selectorgadget</code>找到，需要的变量“时间”和“标题”，对应的node分别是<code>.time</code>和<code>.list-data a</code>，只用使用<code>rvest</code>抓取后，转为文本存储在列表中。</p>
+<pre class="r"><code>## 设置url
+url &lt;- &quot;https://wsjkw.sh.gov.cn/xwfb/index.html&quot;
+## 获取首页信息
+content &lt;- read_html(url)
+reportdate &lt;- content %&gt;%
+    html_nodes(&quot;.time&quot;) %&gt;%
+    html_text() %&gt;%
+    as.Date.character()
+title &lt;- content %&gt;%
+    html_nodes(&quot;.list-date a&quot;) %&gt;%
+    html_text()
+basedata &lt;- tibble(reportdate = reportdate, title = title)</code></pre>
 </div>
-<div id="使用for循环获取2到200页的信息" class="section level2" number="0.4">
-<h2><span class="header-section-number">0.4</span> 使用<code>for</code>循环，获取2到200页的信息</h2>
+<div id="获取所有数据" class="section level2" number="0.4">
+<h2><span class="header-section-number">0.4</span> 获取所有数据</h2>
 <p>上海的疫情变化主要从3月开始，但为了查看之前的变化，是否输入病例压力增大导致本次疫情，因此爬取了2到200页到2020年的数据。使用<code>for</code>循环，<code>rbind</code>组合成基础数据。</p>
+<pre class="r"><code>## 使用循环爬取2到200也网页信息
+
+for (i in 2:200) {
+    url = paste0(&quot;https://wsjkw.sh.gov.cn/xwfb/index_&quot;, i, &quot;.html&quot;)
+    content &lt;- read_html(url)
+    reportdate &lt;- content %&gt;%
+        html_nodes(&quot;.time&quot;) %&gt;%
+        html_text() %&gt;%
+        as.Date.character()
+    title &lt;- content %&gt;%
+        html_nodes(&quot;.list-date a&quot;) %&gt;%
+        html_text()
+    basedata &lt;- basedata %&gt;%
+        rbind(tibble(reportdate = reportdate, title = title))
+}
+## 写出数据
+write.csv(basedata, &quot;data/basedata.csv&quot;)</code></pre>
 </div>
 <div id="数据清洗" class="section level2" number="0.5">
 <h2><span class="header-section-number">0.5</span> 数据清洗</h2>
-<p>这一步比较麻烦的是，对标题中截止统计日期的整理。使用<code>str_extract_all</code>命令后提取的日期，变成了列表。再合并为向量形势的日期格式数据时出了点麻烦。最后使用了笨办法<code>for</code>循环<code>unlist</code>后再<code>paste0</code>合并。其实直接用标题前的日期-1没什么大的误差，就是更自己较劲搞得这么麻烦。</p>
+<p>这一步比较麻烦的是，对标题中截止统计日期的整理。使用<code>str_extract_all</code>命令后提取的日期，变成了列表。再合并为向量形势的日期格式数据时出了点麻烦。最后使用了笨办法<code>for</code>循环<code>unlist</code>后再<code>paste0</code>合并。其实直接用标题前的日期-1没什么大的误差，主要是在跟自己较劲搞得这么麻烦。</p>
 </div>
 <div id="好了开始分析吧" class="section level1" number="1">
 <h1><span class="header-section-number">1</span> 好了，开始分析吧</h1>
