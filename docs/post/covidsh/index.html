@@ -116,8 +116,8 @@ code.has-jax {
   "keywords": [
     "Tec", "R"
   ],
-  "articleBody": "\r\r今天本地的疫情终于没有增加，又闲情来仔细关注一下其他地区的疫情形势。看看了官方通报的数据，发现上海的数据非常有意思。无症状感染者比例已经超过95%，这么有特征的数据，势必要仔细看看。\r# 数据获取\n0.1 数据来源\r要获取准确的数据，当然是上官方网站。打开上海市卫健委的官网(https://markdown.com.cn/basic-syntax/)，疫情数据公告都在“新闻发布”栏目中，再仔细一看，疫情信息的标题中就包含了所有新增、确诊数据。真是太方便了。新闻页面也是连续的以_[num]为页码的编号，这种页爬起来不要太省事。\n\r0.2 R包\r首先加载需要用到的包，主要使用rvest包获取静态网页信息，谷歌浏览器selectorgadget获取需要信息的节点，tidyverse整理数据，lubridate包处理日期变量\nlibrary(rvest)\rlibrary(tidyverse)\rlibrary(lubridate)\rlibrary(patchwork)\r\r0.3 主页信息获取\r使用selectorgadget找到，需要的变量“时间”和“标题”，对应的node分别是.time和.list-data a，只用使用rvest抓取后，转为文本存储在列表中。\n\r0.4 使用for循环，获取2到200页的信息\r上海的疫情变化主要从3月开始，但为了查看之前的变化，是否输入病例压力增大导致本次疫情，因此爬取了2到200页到2020年的数据。使用for循环，rbind组合成基础数据。\n\r0.5 数据清洗\r这一步比较麻烦的是，对标题中截止统计日期的整理。使用str_extract_all命令后提取的日期，变成了列表。再合并为向量形势的日期格式数据时出了点麻烦。最后使用了笨办法for循环unlist后再paste0合并。其实直接用标题前的日期-1没什么大的误差，就是更自己较劲搞得这么麻烦。\n\r1 好了，开始分析吧\r1.1 先画个简单的图看看大趋势\r以报告病例类型为颜色看，从20年1月到21年12月期间，上海的感染人数几乎在处于一个长期稳定的状态，从2022年3月开始呈直升飞机式的增长。奇怪的是中间咋有个空白区，没有数据。查看原始网页，发现网站从2021年11月6日-2022年1月1日没有更新数据。这是一个奇怪的现象。不过没关系，这不影响我们后面的分析。\n\r1.2 输入感染者的趋势\r对上海这波疫情有个合理的猜测是，1月初上海接纳大量某地的航班的，导致上海市输入疫情压力陡增，再加上Omicron变异株超强传播能力，双重压力下导致这个模范城市失守。好吧，我们来看看是否能验证输入压力陡增这个猜测。从图上看好像跟上图颇像，鉴于确诊和无症状都属与感染这，下一步我们把本地和输入的感染者的总数做个对比看看。\n\r1.3 感染者总数\r先用二者做个散点图看看,如图，完全看不出啥关系啊。。。。输入感染者较多的时候，反而本地感染处于低水平。这个图像，线性回归暂时也不考虑。我们还是从感染者数量和时间的关系看看。\n画出来如下，大致能看从1月到3月二者都在上升，但到了3月后，二者分道扬镳了。我们把时间尺度拉大到三月份看看。\n\r1.4 2022年1到三月\r好吧，放大后可以看到从2月10日起到2月21日之间，二者几乎是呈线性相关，到2月22日，输入感染人数开始上升，此时上海本地感染数量仍然与差别不大，处于平稳状态，输入感染者数量是大于本地感染。一直到3月6日左右，出现了反转的情况，本地感染者数量快速上升，迅速大幅度超过输入感染者。\n\r1.5 简单总结\r从上面的简单分析可得知，上海市境外输入感染者数量，从去年2月20日左右开始上升，增加的幅度从平均12例左右，到2月24左右达到85例左右。确实有一个快速增加的阶段。过了大概一周的时间上海本地感染者开始快速上升，我们不得不区猜测这二者之间可能存在某种联系。最后一张图添加了平滑曲线，做一个大致的预测。从图可见上海这一波疫情可能还没有达到所谓的“拐点”。但随着检测人数的增加，防控措施的进一步加码和落实，相信这一波疫情会逐渐得到控制。\n\r\r",
-  "wordCount" : "41",
+  "articleBody": "\r\r今天本地的疫情终于没有增加，又闲情来仔细关注一下其他地区的疫情形势。看看了官方通报的数据，发现上海的数据非常有意思。无症状感染者比例已经超过95%，这么有特征的数据，势必要仔细看看。\r# 数据获取\n0.1 数据来源\r要获取准确的数据，当然是上官方网站。打开上海市卫健委的官网(https://markdown.com.cn/basic-syntax/)，疫情数据公告都在“新闻发布”栏目中，再仔细一看，疫情信息的标题中就包含了所有新增、确诊数据。真是太方便了。新闻页面也是连续的以_[num]为页码的编号，这种页爬起来不要太省事。\n\r0.2 R包\r首先加载需要用到的包，主要使用rvest包获取静态网页信息，谷歌浏览器selectorgadget获取需要信息的节点，tidyverse整理数据，lubridate包处理日期变量\nlibrary(rvest)\rlibrary(tidyverse)\rlibrary(lubridate)\r\r0.3 主页信息获取\r使用selectorgadget找到，需要的变量“时间”和“标题”，对应的node分别是.time和.list-data a，只用使用rvest抓取后，转为文本存储在列表中。\n## 设置url\rurl %\rhtml_nodes(\".time\") %%\rhtml_text() %%\ras.Date.character()\rtitle %\rhtml_nodes(\".list-date a\") %%\rhtml_text()\rbasedata \r\r0.4 获取所有数据\r上海的疫情变化主要从3月开始，但为了查看之前的变化，是否输入病例压力增大导致本次疫情，因此爬取了2到200页到2020年的数据。使用for循环，rbind组合成基础数据。\n## 使用循环爬取2到200也网页信息\rfor (i in 2:200) {\rurl = paste0(\"https://wsjkw.sh.gov.cn/xwfb/index_\", i, \".html\")\rcontent %\rhtml_nodes(\".time\") %%\rhtml_text() %%\ras.Date.character()\rtitle %\rhtml_nodes(\".list-date a\") %%\rhtml_text()\rbasedata %\rrbind(tibble(reportdate = reportdate, title = title))\r}\r## 写出数据\rwrite.csv(basedata, \"data/basedata.csv\")\r\r0.5 数据清洗\r这一步比较麻烦的是，对标题中截止统计日期的整理。使用str_extract_all命令后提取的日期，变成了列表。再合并为向量形势的日期格式数据时出了点麻烦。最后使用了笨办法for循环unlist后再paste0合并。其实直接用标题前的日期-1没什么大的误差，主要是在跟自己较劲搞得这么麻烦。\n\r1 好了，开始分析吧\r1.1 先画个简单的图看看大趋势\r以报告病例类型为颜色看，从20年1月到21年12月期间，上海的感染人数几乎在处于一个长期稳定的状态，从2022年3月开始呈直升飞机式的增长。奇怪的是中间咋有个空白区，没有数据。查看原始网页，发现网站从2021年11月6日-2022年1月1日没有更新数据。这是一个奇怪的现象。不过没关系，这不影响我们后面的分析。\n\r1.2 输入感染者的趋势\r对上海这波疫情有个合理的猜测是，1月初上海接纳大量某地的航班的，导致上海市输入疫情压力陡增，再加上Omicron变异株超强传播能力，双重压力下导致这个模范城市失守。好吧，我们来看看是否能验证输入压力陡增这个猜测。从图上看好像跟上图颇像，鉴于确诊和无症状都属与感染这，下一步我们把本地和输入的感染者的总数做个对比看看。\n\r1.3 感染者总数\r先用二者做个散点图看看,如图，完全看不出啥关系啊。。。。输入感染者较多的时候，反而本地感染处于低水平。这个图像，线性回归暂时也不考虑。我们还是从感染者数量和时间的关系看看。\n画出来如下，大致能看从1月到3月二者都在上升，但到了3月后，二者分道扬镳了。我们把时间尺度拉大到三月份看看。\n\r1.4 2022年1到三月\r好吧，放大后可以看到从2月10日起到2月21日之间，二者几乎是呈线性相关，到2月22日，输入感染人数开始上升，此时上海本地感染数量仍然与差别不大，处于平稳状态，输入感染者数量是大于本地感染。一直到3月6日左右，出现了反转的情况，本地感染者数量快速上升，迅速大幅度超过输入感染者。\n\r1.5 简单总结\r从上面的简单分析可得知，上海市境外输入感染者数量，从去年2月20日左右开始上升，增加的幅度从平均12例左右，到2月24左右达到85例左右。确实有一个快速增加的阶段。过了大概一周的时间上海本地感染者开始快速上升，我们不得不区猜测这二者之间可能存在某种联系。最后一张图添加了平滑曲线，做一个大致的预测。从图可见上海这一波疫情可能还没有达到所谓的“拐点”。但随着检测人数的增加，防控措施的进一步加码和落实，相信这一波疫情会逐渐得到控制。\n\r\r",
+  "wordCount" : "122",
   "inLanguage": "en",
   "datePublished": "2022-03-24T00:00:00Z",
   "dateModified": "2022-03-24T00:00:00Z",
@@ -234,7 +234,7 @@ code.has-jax {
                 <li>
                     <a href="#" aria-label="0.3 主页信息获取"><span class="header-section-number">0.3</span> 主页信息获取</a></li>
                 <li>
-                    <a href="#" aria-label="0.4 使用for循环，获取2到200页的信息"><span class="header-section-number">0.4</span> 使用<code>for</code>循环，获取2到200页的信息</a></li>
+                    <a href="#" aria-label="0.4 获取所有数据"><span class="header-section-number">0.4</span> 获取所有数据</a></li>
                 <li>
                     <a href="#" aria-label="0.5 数据清洗"><span class="header-section-number">0.5</span> 数据清洗</a></li></ul>
                     
@@ -274,20 +274,48 @@ code.has-jax {
 <p>首先加载需要用到的包，主要使用<code>rvest</code>包获取静态网页信息，谷歌浏览器<code>selectorgadget</code>获取需要信息的节点，<code>tidyverse</code>整理数据，<code>lubridate</code>包处理日期变量</p>
 <pre class="r"><code>library(rvest)
 library(tidyverse)
-library(lubridate)
-library(patchwork)</code></pre>
+library(lubridate)</code></pre>
 </div>
 <div id="主页信息获取" class="section level2" number="0.3">
 <h2><span class="header-section-number">0.3</span> 主页信息获取</h2>
 <p>使用<code>selectorgadget</code>找到，需要的变量“时间”和“标题”，对应的node分别是<code>.time</code>和<code>.list-data a</code>，只用使用<code>rvest</code>抓取后，转为文本存储在列表中。</p>
+<pre class="r"><code>## 设置url
+url &lt;- &quot;https://wsjkw.sh.gov.cn/xwfb/index.html&quot;
+## 获取首页信息
+content &lt;- read_html(url)
+reportdate &lt;- content %&gt;%
+    html_nodes(&quot;.time&quot;) %&gt;%
+    html_text() %&gt;%
+    as.Date.character()
+title &lt;- content %&gt;%
+    html_nodes(&quot;.list-date a&quot;) %&gt;%
+    html_text()
+basedata &lt;- tibble(reportdate = reportdate, title = title)</code></pre>
 </div>
-<div id="使用for循环获取2到200页的信息" class="section level2" number="0.4">
-<h2><span class="header-section-number">0.4</span> 使用<code>for</code>循环，获取2到200页的信息</h2>
+<div id="获取所有数据" class="section level2" number="0.4">
+<h2><span class="header-section-number">0.4</span> 获取所有数据</h2>
 <p>上海的疫情变化主要从3月开始，但为了查看之前的变化，是否输入病例压力增大导致本次疫情，因此爬取了2到200页到2020年的数据。使用<code>for</code>循环，<code>rbind</code>组合成基础数据。</p>
+<pre class="r"><code>## 使用循环爬取2到200也网页信息
+
+for (i in 2:200) {
+    url = paste0(&quot;https://wsjkw.sh.gov.cn/xwfb/index_&quot;, i, &quot;.html&quot;)
+    content &lt;- read_html(url)
+    reportdate &lt;- content %&gt;%
+        html_nodes(&quot;.time&quot;) %&gt;%
+        html_text() %&gt;%
+        as.Date.character()
+    title &lt;- content %&gt;%
+        html_nodes(&quot;.list-date a&quot;) %&gt;%
+        html_text()
+    basedata &lt;- basedata %&gt;%
+        rbind(tibble(reportdate = reportdate, title = title))
+}
+## 写出数据
+write.csv(basedata, &quot;data/basedata.csv&quot;)</code></pre>
 </div>
 <div id="数据清洗" class="section level2" number="0.5">
 <h2><span class="header-section-number">0.5</span> 数据清洗</h2>
-<p>这一步比较麻烦的是，对标题中截止统计日期的整理。使用<code>str_extract_all</code>命令后提取的日期，变成了列表。再合并为向量形势的日期格式数据时出了点麻烦。最后使用了笨办法<code>for</code>循环<code>unlist</code>后再<code>paste0</code>合并。其实直接用标题前的日期-1没什么大的误差，就是更自己较劲搞得这么麻烦。</p>
+<p>这一步比较麻烦的是，对标题中截止统计日期的整理。使用<code>str_extract_all</code>命令后提取的日期，变成了列表。再合并为向量形势的日期格式数据时出了点麻烦。最后使用了笨办法<code>for</code>循环<code>unlist</code>后再<code>paste0</code>合并。其实直接用标题前的日期-1没什么大的误差，主要是在跟自己较劲搞得这么麻烦。</p>
 </div>
 <div id="好了开始分析吧" class="section level1" number="1">
 <h1><span class="header-section-number">1</span> 好了，开始分析吧</h1>
