@@ -1,0 +1,293 @@
+---
+title: R爬上海疫情数据简单可视化分析
+author: Luo Fei
+date: '2022-03-24'
+slug: covidsh
+categories:
+  - 中文
+tags:
+  - Tec
+  - R
+output:
+    blogdown::html_page:
+        number_sections: true  
+math: true
+showToc: true
+TocOpen: false
+toc-title: "目录"
+draft: false
+hidemeta: false
+comments: false
+description: "记录使用R过程一些记不住的技巧。"
+canonicalURL: ""
+disableShare: false
+hideSummary: false
+searchHidden: false
+ShowReadingTime: false
+ShowBreadCrumbs: true
+ShowPostNavLinks: true
+cover:
+    image: "" # image path/url
+    alt: "<alt text>" # alt text
+    caption: "<text>" # display caption under cover
+    relative: false # when using page bundles set this to true
+    hidden: true # only hide on current single page    
+---
+
+```{r,setup,include=FALSE}
+library(tidyverse)
+options(digits = 3)
+
+##knitr设置
+knitr::opts_chunk$set(
+  prompt = FALSE,
+  comment = "#",
+  results = "markup",
+  error = FALSE,
+  message = FALSE,
+  fig.align = "center",
+  collapse = FALSE,
+  tidy = TRUE,
+  echo = F,
+  message = F,
+  results = "hide",
+  warning = F
+  )
+
+```
+今天本地的疫情终于没有增加，又闲情来仔细关注一下其他地区的疫情形势。看看了官方通报的数据，发现上海的数据非常有意思。无症状感染者比例已经超过95%，这么有特征的数据，势必要仔细看看。
+# 数据获取
+
+## 数据来源
+
+要获取准确的数据，当然是上官方网站。打开上海市卫健委的官网(https://markdown.com.cn/basic-syntax/)，疫情数据公告都在“新闻发布”栏目中，再仔细一看，疫情信息的标题中就包含了所有新增、确诊数据。真是太方便了。新闻页面也是连续的以`_[num]`为页码的编号，这种页爬起来不要太省事。
+
+## R包
+
+首先加载需要用到的包，主要使用`rvest`包获取静态网页信息，谷歌浏览器`selectorgadget`获取需要信息的节点，`tidyverse`整理数据，`lubridate`包处理日期变量
+
+```{r, eval=TRUE, include=TRUE, warning=FALSE, echo=TRUE}
+library(rvest)
+library(tidyverse)
+library(lubridate)
+library(patchwork)
+
+```
+
+## 主页信息获取
+
+使用`selectorgadget`找到，需要的变量“时间”和“标题”，对应的node分别是`.time`和`.list-data a`，只用使用`rvest`抓取后，转为文本存储在列表中。
+
+
+```{r, eval=FALSE}
+## 设置url
+url <- "https://wsjkw.sh.gov.cn/xwfb/index.html"
+## 获取首页信息
+content <- read_html(url)
+reportdate <- content %>%  html_nodes(".time") %>% html_text() %>% as.Date.character()
+title <-  content %>% html_nodes(".list-date a") %>% html_text() 
+basedata <- tibble(reportdate = reportdate, title = title)
+
+```
+
+## 使用`for`循环，获取2到200页的信息
+
+上海的疫情变化主要从3月开始，但为了查看之前的变化，是否输入病例压力增大导致本次疫情，因此爬取了2到200页到2020年的数据。使用`for`循环，`rbind`组合成基础数据。
+
+```{r, eval=FALSE}
+##使用循环爬取2到200也网页信息
+
+for (i in 2:200) {  
+  url = paste0("https://wsjkw.sh.gov.cn/xwfb/index_", i, ".html")
+  content <- read_html(url)
+  reportdate <- content %>%  html_nodes(".time") %>% html_text() %>% as.Date.character()
+  title <-  content %>% html_nodes(".list-date a") %>% html_text() 
+  basedata <- basedata %>% rbind(  tibble(reportdate = reportdate, title = title))
+}
+## 写出数据
+write.csv(basedata,"data/basedata.csv")
+
+
+
+
+```
+
+## 数据清洗
+
+这一步比较麻烦的是，对标题中截止统计日期的整理。使用`str_extract_all`命令后提取的日期，变成了列表。再合并为向量形势的日期格式数据时出了点麻烦。最后使用了笨办法`for`循环`unlist`后再`paste0`合并。其实直接用标题前的日期-1没什么大的误差，就是更自己较劲搞得这么麻烦。
+
+```{r, include=FALSE, message=FALSE}
+basedata <- read.csv("data/basedata.csv")
+## 筛选出包含疫情信息的标题
+sh01 <-  basedata %>% filter(str_detect(title, "新冠肺炎确诊病例"))
+
+## 统一规范标题中的关键字段
+sh01 <-  sh01 %>% mutate(
+  title = if_else(str_detect(title, "本地"), str_replace(title, "本地", "本土"), title)
+)
+##空格替换为逗号，方便拆分。
+sh01 <-  sh01 %>% mutate(
+  title = str_replace_all(title, " +", "，")
+)
+## 跟excel类似的拆分列
+sh01 <-  sh01 %>% separate(title,
+                  into = c("日期", "新增确诊", "新增无症状", "新增境外确诊输入", "新增境外无症状输入", 
+ 
+                                                     "治愈", "解除"), sep = "，")
+## 提取变量中的数字，生成新变量
+sh01 <-  sh01 %>% mutate(
+  across(新增确诊:解除, ~ str_extract(.x, "[0-9]+"), .names = "{.col}_病例数")
+)
+## 麻烦的合并日期
+caselist <- str_extract_all(sh01$日期, "\\d+")
+casedate <- c()
+
+for (i in 1:length(caselist)) {
+  
+  casedate[i] <- caselist[i] %>% unlist() %>% paste0(collapse = "-")
+  
+}
+
+casedate <- as.Date.character(casedate)
+
+sh01 <-  sh01 %>% mutate(
+  caserepdate  = casedate
+)
+
+## 统一更列名
+
+sh02 <-  sh01 %>% select(reportdate, caserepdate, contains("病例数"))
+
+## 计算本地感染者合计
+sh02 <-  sh02 %>% mutate(
+  across(新增确诊_病例数:解除_病例数, as.numeric)
+)
+## 替换缺失值为0
+sh02 <-  sh02 %>% mutate(
+  across(新增确诊_病例数:解除_病例数, ~ replace_na(., 0))
+)
+
+## 计算感染者合计
+sh02 <- sh02 %>% mutate(
+  新增本地感染_病例数 = 新增确诊_病例数 + 新增无症状_病例数,
+  新增境外输入感染_病例数 = 新增境外确诊输入_病例数 + 新增境外无症状输入_病例数,
+  reportdate = as.Date.character(reportdate),
+  检出阳性日期 = reportdate - 1
+)
+
+
+## 转换为长数据
+
+sh_long <-  sh02 %>% pivot_longer(cols =  contains("病例数"), names_to = "病例类型", values_to = "病例数" )
+
+## 去除列名后坠
+sh_long <-  sh_long %>% mutate(
+  病例类型 = str_replace(病例类型, "_病例数", ""),
+  )
+
+
+```
+
+# 好了，开始分析吧
+
+## 先画个简单的图看看大趋势
+
+以报告病例类型为颜色看，从20年1月到21年12月期间，上海的感染人数几乎在处于一个长期稳定的状态，从2022年3月开始呈直升飞机式的增长。奇怪的是中间咋有个空白区，没有数据。查看原始网页，发现网站从2021年11月6日-2022年1月1日没有更新数据。这是一个奇怪的现象。不过没关系，这不影响我们后面的分析。
+
+```{r, results='asis'}
+
+sh_long %>% ggplot(aes(x = 检出阳性日期, y = 病例数, col = 病例类型)) +
+  geom_point(alpha = 0.2) + 
+  scale_x_date(date_breaks = "3 month", date_labels = "%y-%m")
+```
+
+##  输入感染者的趋势
+
+
+对上海这波疫情有个合理的猜测是，1月初上海接纳大量某地的航班的，导致上海市输入疫情压力陡增，再加上Omicron变异株超强传播能力，双重压力下导致这个模范城市失守。好吧，我们来看看是否能验证输入压力陡增这个猜测。从图上看好像跟上图颇像，鉴于确诊和无症状都属与感染这，下一步我们把本地和输入的感染者的总数做个对比看看。
+
+```{r, results='asis'}
+
+sh_long %>% filter( str_detect(病例类型 , "境外")  ) %>% 
+  ggplot(aes(x = 检出阳性日期, y = 病例数, col = 病例类型)) +
+  geom_point(alpha = 0.2) + 
+  scale_x_date(date_breaks = "3 month", date_labels = "%y-%m")
+
+```
+
+## 感染者总数
+
+先用二者做个散点图看看,如图，完全看不出啥关系啊。。。。输入感染者较多的时候，反而本地感染处于低水平。这个图像，线性回归暂时也不考虑。我们还是从感染者数量和时间的关系看看。
+
+
+
+```{r, results='asis'}
+sh_long %>% filter(检出阳性日期 > as.Date("2022-2-11")) %>% 
+  filter(病例类型 == "新增境外输入感染"|病例类型 == "新增本地感染") %>% 
+  select(检出阳性日期, 病例类型, 病例数) %>% pivot_wider(names_from = 病例类型, values_from = 病例数) %>% 
+  ggplot() +
+  geom_point(aes(x = 新增本地感染, y = 新增境外输入感染))
+```
+
+画出来如下，大致能看从1月到3月二者都在上升，但到了3月后，二者分道扬镳了。我们把时间尺度拉大到三月份看看。
+
+```{r, results='asis'}
+sh_long %>% filter(病例类型 == "新增境外输入感染"|病例类型 == "新增本地感染")  %>% 
+  ggplot(aes(x = 检出阳性日期, y = 病例数, col = 病例类型)) +
+  geom_point(alpha = 0.5) + 
+  geom_line(alpha = 0.5) +
+  scale_x_date(date_breaks = "3 month", date_labels = "%y-%m") 
+
+```
+
+## 2022年1到三月
+
+
+
+
+好吧，放大后可以看到从2月10日起到2月21日之间，二者几乎是呈线性相关，到2月22日，输入感染人数开始上升，此时上海本地感染数量仍然与差别不大，处于平稳状态，输入感染者数量是大于本地感染。一直到3月6日左右，出现了反转的情况，本地感染者数量快速上升，迅速大幅度超过输入感染者。
+
+```{r results='asis'}
+fig1 <- sh_long %>% filter(检出阳性日期 > as.Date("2022-2-11")) %>% filter(病例类型 == "新增境外输入感染"|病例类型 == "新增本地感染")  %>% 
+  ggplot(aes(x = 检出阳性日期, y = 病例数, col = 病例类型)) +
+  geom_point(alpha = 0.5) + 
+  geom_line(alpha = 0.5) +
+  scale_x_date(date_breaks = "1 week", date_labels = "%m-%d") +
+  theme(legend.position = "top")
+fig2 <- sh_long %>% filter(检出阳性日期 > as.Date("2022-2-11")) %>% filter(病例类型 == "新增境外输入感染"|病例类型 == "新增本地感染")  %>% 
+  ggplot(aes(x = 检出阳性日期, y = 病例数, col = 病例类型)) +
+  geom_point(alpha = 0.5) + 
+  geom_line(alpha = 0.5) +
+  scale_x_date(date_breaks = "1 week", date_labels = "%m-%d") +
+  ylim(c(0,100)) + theme(legend.position = "none")
+fig1 
+fig2
+
+```
+
+## 简单总结
+
+从上面的简单分析可得知，上海市境外输入感染者数量，从去年2月20日左右开始上升，增加的幅度从平均12例左右，到2月24左右达到85例左右。确实有一个快速增加的阶段。过了大概一周的时间上海本地感染者开始快速上升，我们不得不区猜测这二者之间可能存在某种联系。最后一张图添加了平滑曲线，做一个大致的预测。从图可见上海这一波疫情可能还没有达到所谓的“拐点”。但随着检测人数的增加，防控措施的进一步加码和落实，相信这一波疫情会逐渐得到控制。
+
+```{r, results='asis'}
+covidsh <-  sh_long %>% filter(reportdate > as.Date.character("2022-3-1")) %>% 
+  ggplot(aes(x = 检出阳性日期, y = 病例数, col = 病例类型)) +
+  geom_line(size = 1) +
+   geom_point( size = 0.5)+
+  geom_smooth(aes(group = 病例类型 ) , col = "grey", linetype = "dashed", alpha = 0.2, se = T) +
+  scale_x_date(date_breaks = "1 day", date_labels = "%d") +
+  theme_bw() +
+  theme(
+        axis.text = element_text(size = 16),
+        legend.title = element_blank(),
+        legend.text = element_text(size = 16),
+        panel.grid.minor = element_blank(),
+        legend.position = "top")
+covidsh
+```
+
+
+
+
+
+

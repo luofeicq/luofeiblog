@@ -6,7 +6,16 @@
     <description>Recent content in R on Home</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Thu, 03 Mar 2022 00:00:00 +0000</lastBuildDate><atom:link href="/tags/r/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 24 Mar 2022 00:00:00 +0000</lastBuildDate><atom:link href="/tags/r/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>R爬上海疫情数据简单可视化分析</title>
+      <link>/post/covidsh/</link>
+      <pubDate>Thu, 24 Mar 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/post/covidsh/</guid>
+      <description>记录使用R过程一些记不住的技巧。</description>
+    </item>
+    
     <item>
       <title>基于Rmrakdwon的可重复文档</title>
       <link>/post/2022-03-03-r-markdonw-1/</link>
