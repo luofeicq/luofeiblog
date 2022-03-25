@@ -189,10 +189,10 @@ Table:(\#tab:tabprob) 正态分布相关函数用法
 
 | 函数    |  功能|
 |:-------|:-------|
-|dnorm(x, mean = 0, sd = 1, log = FALSE)|返回值正态分布概率密度函数值，比如dnorm（z）表示：标准正态分布密度函$f(x)$在x=z处的函数值。|
-|pnorm(q, mean = 0, sd = 1, lower.tail = TRUE, log.p = FALSE)  | 返回值是正态分布的分布函数值，比如pnorm(z)等价于$P[X ≤ z]$|
-|qnorm(p, mean = 0, sd = 1, lower.tail = TRUE, log.p = FALSE)  |返回值是给定概率p后的下分位点.|
-|rnorm(n, mean = 0, sd = 1)|返回值是n个正态分布随机数构成的向量。|
+|dnorm(x, mean = 0, sd = 1, log = FALSE)|返回值正态分布概率密度函数值，比如dnorm（z）表示：标准正态分布密度函$f(x)$在x=z处的函数值。
+|pnorm(q, mean = 0, sd = 1, lower.tail = TRUE, log.p = FALSE)  | 返回值是正态分布的分布函数值，比如pnorm(z)等价于$P[X ≤ z]$
+|qnorm(p, mean = 0, sd = 1, lower.tail = TRUE, log.p = FALSE)  |返回值是给定概率p后的下分位点.
+|rnorm(n, mean = 0, sd = 1)|返回值是n个正态分布随机数构成的向量。
 
 - 其他概率分布（\@ref(tab:tabprob2)），其命令用法与正态分布函数类似。
 
