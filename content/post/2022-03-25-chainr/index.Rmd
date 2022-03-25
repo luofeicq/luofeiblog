@@ -1,0 +1,164 @@
+---
+title: R社交网络分析包在传染病传播链可视化的应用
+author: Luo Fei
+date: '2022-03-25'
+slug: chainR
+categories:
+  - Tec
+  - 中文
+tags:
+  - R
+  - Tec
+output:
+    blogdown::html_page:
+        number_sections: false 
+math: true
+showToc: true
+TocOpen: false
+toc-title: "目录"
+draft: true
+hidemeta: false
+comments: false
+description: "跨专业的尝试"
+canonicalURL: ""
+disableShare: false
+hideSummary: false
+searchHidden: false
+ShowReadingTime: false
+ShowBreadCrumbs: true
+ShowPostNavLinks: true
+cover:
+    image: "" # image path/url
+    alt: "<alt text>" # alt text
+    caption: "<text>" # display caption under cover
+    relative: false # when using page bundles set this to true
+    hidden: true # only hide on current single page    
+---
+
+```{r,setup,include=FALSE}
+options(digits = 2)
+
+##knitr设置
+knitr::opts_chunk$set(
+  prompt = FALSE,
+  comment = "#",
+  results = "markup",
+  error = FALSE,
+  message = FALSE,
+  fig.align = "center",
+  collapse = FALSE,
+  tidy = TRUE,
+  echo = F,
+  message = F,
+  results = "hide",
+  warning = F
+  )
+
+```
+
+
+
+```{r}
+library(tidyverse)
+library(readxl)
+library(igraph)
+library(networkD3)
+library(RColorBrewer)
+library(ggraph)
+library(tidygraph)
+```
+## 目的
+
+在这次疫情处理过程中，了解到在清理传播链的过程中，很多时候仍然是用手工或者`powerpoint`等软件绘制传播链的。采用这种方式的优点在，能够在图中加入很多信息，比如：人员大致位置分布，接触的途径和强度等信息。但是不足之处在于，在链条上节点（感染者）较少的时候还能够梳理得很明确，但一旦节点达到一定数量，且其中关系变得复杂（比如1人传多个，1人与多个感染者有接触之类）。在这种情况下，单纯的手工整理，将耗费非常多的人力。最严重的缺点是，当现场流调信息变更，对链条进行修订的时，其中一个节点或链接的变化，会因连锁作用导致整个链条的变化。节点越多，变化的影响范围越大，越复杂。当感染者人数上升到一定数量时，手动整理已经变成了一件难以完成的事情。由于本人对R的热衷，探索了一下能不能使用软件自动化的方式绘制传播链，使用`igraph``ggraph`和`networkD3`最终效果如下33图,个人觉得还是`networkD3`炫酷的互动效果最好。
+
+
+```{r}
+
+node <- read_xlsx("data/net/node_df.xlsx") # 读取节点数据
+line <- read_xlsx("data/net/line_df.xlsx") # 读取边数据
+g <- graph_from_data_frame(d =line, vertices = node,  directed = T) #转换为graph对象
+
+
+
+## 计算节点的度
+
+deg <- degree(g, mode = "all")
+
+## 设置颜色
+  
+vcolour <-  palette(brewer.pal(8 , "Set1"))
+
+V(g)$colour <- vcolour[factor(V(g)$group)]
+
+## 指定边的颜色
+
+ecolour <- vcolour[factor(E(g)$value)]
+
+
+#画图 
+
+plot.igraph(g, 
+            vertex.color = vcolour,
+            vertex.frame.color = "white",
+            vertex.shape = "circle",
+            vertex.size = 25,
+            vertex.size2 = 15,
+            vertex.alpha = 0.5,
+            #vertex.label = "name",
+            #vertex.label.family = "Times",
+            #vertex.label.font = ""，
+            vertex.label.dist = 2,
+            verex.label.degree = pi/2,
+            vertex.label.color = "black",
+            edge.color = ecolour,
+            edeg.width = 0.8,
+            edge.arrow.size = 0.8,
+            edge.arrow.width = 0.8,
+            edge.lty = 1,
+            edge.label.cex = 0.8,
+            edge.label.color = 1,
+            arrow.mode = 2,
+            edge.curved = 0.2,
+            loop.angle = 0.2,
+            frame = T,
+            palette = vcolour,
+            asp = 16/9,
+            #main = "主标题",
+            #sub = "副标题",
+            bf = "grey") 
+
+
+ggraph(g) + 
+geom_edge_fan(color="grey",show.legend=T) + 
+geom_node_point(aes(size = size,fill=factor(group)),shape=21)+ 
+geom_node_text(aes(filter= deg>2,label=name),size=2.5)+
+geom_edge_link(aes(),color="lightblue",
+                arrow = arrow(length = unit(2, 'mm')), 
+                end_cap = circle(3, 'mm')) +
+scale_color_discrete()+
+scale_edge_width(range=c(0.2,3))+
+guides(size=F,fill=F)+ theme_graph()
+
+```
+
+```{r, results='asis'}
+## ggraph
+
+g <- g %>% as_tbl_graph(g)
+group <- g %>% cluster_walktrap() %>% membership()
+
+gd3 <- igraph_to_networkD3(g, group = group)
+
+gd3$nodes["size"] <- node$size
+forceNetwork(Links = gd3$links, Nodes = gd3$nodes, Source = "source", Target = "target", Value = "value", NodeID = "name", Group = "group", Nodesize = "size", opacity = 2, zoom = T, arrows = T, legend = F, opacityNoHover = 1, bounded = F,fontSize = 12 )
+
+sankeyNetwork(Links = gd3$links, Nodes = gd3$nodes,Source = "source", Target = "target",
+              NodeID = "name", Value = "value", fontSize = 16, unit = "Letter(s)", iterations = 20)
+
+
+```
+
+# 具体制作过程
+
+参见我使用的3个包的说明。。。。。详细步骤待补充。
+

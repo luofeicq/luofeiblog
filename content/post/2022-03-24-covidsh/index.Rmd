@@ -35,8 +35,7 @@ cover:
 ---
 
 ```{r,setup,include=FALSE}
-library(tidyverse)
-options(digits = 3)
+options(digits = 2)
 
 ##knitr设置
 knitr::opts_chunk$set(
