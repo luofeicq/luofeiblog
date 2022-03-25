@@ -16,7 +16,7 @@ math: true
 showToc: true
 TocOpen: false
 toc-title: "目录"
-draft: true
+draft: false
 hidemeta: false
 comments: false
 description: "跨专业的尝试"
@@ -186,7 +186,7 @@ sankeyNetwork(Links = gd3$links, Nodes = gd3$nodes,Source = "source", Target = "
 
 首先使用`graph_from_data_frame(d =line, vertices = node,  directed = T)`将节点和边转换成`igraph`，就可以直接`plot`第一张图, 参数自己可以调节。
 
-```{r}
+```{r, fig.width=20,fig.height=16}
 node <- read_xlsx("data/net/node_df.xlsx") # 读取节点数据
 line <- read_xlsx("data/net/line_df.xlsx") # 读取边数据
 g <- graph_from_data_frame(d =line, vertices = node,  directed = T) #转换为graph对象
@@ -211,8 +211,8 @@ plot.igraph(g,
             #vertex.label = "name",
             #vertex.label.family = "Times",
             #vertex.label.font = ""，
-            vertex.label.dist = 0.2,
-            vertex.label.cex = 0.5,
+            vertex.label.dist = 1,
+            vertex.label.cex = 1.5,
             verex.label.degree = pi/2,
             vertex.label.color = "black",
             edge.color = ecolour,
