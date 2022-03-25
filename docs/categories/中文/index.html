@@ -146,7 +146,7 @@
   </header>
   <section class="entry-content">
     <p>今天本地的疫情终于没有增加，抽了点时间关注其他地区的疫情形势。看官方通报的数据，对曾经的模范城市的疫情有兴趣，决定来简单看看。
-数据获取数据来源要获取准确的数据，当然是上官方网站。打开上海市卫健委的官网(https://markdown.com.cn/basic-syntax/)，疫情数据公告都在“新闻发布”栏目中，再仔细一看，疫情信息的标题中就包含了所有新增、确诊数据。真是太方便了。新闻页面也是连续的以_[num]为页码的编号，这种页爬起来不要太省事。
+数据获取数据来源要获取准确的数据，当然是上官方网站。打开上海市卫健委的官网(https://markdown.com.cn/basic-syntax/)，疫情数据公告都在“新闻发布”栏目中，再仔细一看，疫情信息的标题中就包含了所有新增、确诊数据。真是太方便了。新闻页面也是连续的以_[num]为页码的编号，这种页面爬起来不要太省事。
 R包首先加载需要用到的包，主要使用rvest包获取静态网页信息，谷歌浏览器selectorgadget插件获取需要信息的节点，tidyverse整理数据，绘图，lubridate包处理日期变量。
 library(rvest)library(tidyverse)library(lubridate)主页信息获取使用selectorgadget在网页上找到需要的变量“时间”和“标题”，对应的node分别是.time和.list-data a，使用rvest抓取后，转为文本存储在列表中。
 ## 设置urlurl &lt;- &#34;https://wsjkw.sh.gov.cn/xwfb/index.html&#34;## 获取首页信息content &lt;- read_html(url)reportdate &lt;- content %&gt;%html_nodes(&#34;.time&#34;) %&gt;%html_text() %&gt;%as.Date.character()title &lt;- content %&gt;%html_nodes(&#34;.list-date a&#34;) %&gt;%html_text()basedata &lt;- tibble(reportdate = reportdate, title = title)爬取所有数据上海的疫情变化主要从3月开始，但为了查看之前的变化，是否输入病例压力增大导致本次疫情，因此爬取了2到200页到的数据。使用for循环，rbind组合成基础数据。
