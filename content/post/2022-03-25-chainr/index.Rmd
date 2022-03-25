@@ -234,6 +234,21 @@ plot.igraph(g,
 ```
 
 
+### netwokd3
+
+个人最喜欢的效果，使用`igraph_to_networkD3`命令，将`igraph`数据转换一下，就可以使用`simpleNetwork`,`forceNetwork`，`sankeyNetwork(`画出交互性网络图了。试验了下，手机浏览器一样可以互动，包括拖动节点，放大，移动等，非常棒的体验。
+
+```{r, results='asis'}
+
+
+gd3$nodes["size"] <- node$size
+forceNetwork(Links = gd3$links, Nodes = gd3$nodes, Source = "source", Target = "target", Value = "value", NodeID = "name", Group = "group", Nodesize = "size", opacity = 2, zoom = T, arrows = T, legend = F, opacityNoHover = 1, bounded = F,fontSize = 12 )
+
+sankeyNetwork(Links = gd3$links, Nodes = gd3$nodes,Source = "source", Target = "target",
+              NodeID = "name", Value = "value", fontSize = 16, unit = "Letter(s)", iterations = 20)
+
+```
+
 ### ggraph
 
 `ggraph`基本研用了`ggplot2`绘图的方式，画出来的图也相对更漂亮。首先使用`tidygraph`包将`igraph`类型的数据转换为`ggraph`更合适的元数据。然后可以愉快地使用`ggplot2`的方式画图了。
@@ -254,18 +269,4 @@ scale_edge_width(range=c(0.2,3))+
 guides(size=F,fill=F)+ theme_graph()
 ```
 
-### netwokd3
-
-个人最喜欢的效果，使用`igraph_to_networkD3`命令，将`igraph`数据转换一下，就可以使用`simpleNetwork`,`forceNetwork`，`sankeyNetwork(`画出交互性网络图了。
-
-```{r, results='asis'}
-
-
-gd3$nodes["size"] <- node$size
-forceNetwork(Links = gd3$links, Nodes = gd3$nodes, Source = "source", Target = "target", Value = "value", NodeID = "name", Group = "group", Nodesize = "size", opacity = 2, zoom = T, arrows = T, legend = F, opacityNoHover = 1, bounded = F,fontSize = 12 )
-
-sankeyNetwork(Links = gd3$links, Nodes = gd3$nodes,Source = "source", Target = "target",
-              NodeID = "name", Value = "value", fontSize = 16, unit = "Letter(s)", iterations = 20)
-
-```
 
