@@ -6,22 +6,22 @@
     <description>Recent content in Categories on Home</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Thu, 24 Mar 2022 00:00:00 +0000</lastBuildDate><atom:link href="/categories/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 25 Mar 2022 00:00:00 +0000</lastBuildDate><atom:link href="/categories/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>中文</title>
-      <link>/categories/%E4%B8%AD%E6%96%87/</link>
-      <pubDate>Thu, 24 Mar 2022 00:00:00 +0000</pubDate>
+      <title>Tec</title>
+      <link>/categories/tec/</link>
+      <pubDate>Fri, 25 Mar 2022 00:00:00 +0000</pubDate>
       
-      <guid>/categories/%E4%B8%AD%E6%96%87/</guid>
+      <guid>/categories/tec/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>Tec</title>
-      <link>/categories/tec/</link>
-      <pubDate>Thu, 03 Mar 2022 00:00:00 +0000</pubDate>
+      <title>中文</title>
+      <link>/categories/%E4%B8%AD%E6%96%87/</link>
+      <pubDate>Fri, 25 Mar 2022 00:00:00 +0000</pubDate>
       
-      <guid>/categories/tec/</guid>
+      <guid>/categories/%E4%B8%AD%E6%96%87/</guid>
       <description></description>
     </item>
     
