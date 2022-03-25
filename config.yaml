@@ -57,6 +57,7 @@ params:
     hideSummary: false
     showtoc: true
     tocopen: false
+    fancybox: true
     label:
         icon: /img/logo.png
         iconHeight: 35
