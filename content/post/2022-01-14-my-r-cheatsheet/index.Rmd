@@ -34,7 +34,7 @@ cover:
 ---
 
 ```{r,setup,include=FALSE}
-library(tidyverse)
+
 options(digits = 3)
 
 ##knitr设置
@@ -51,7 +51,37 @@ knitr::opts_chunk$set(
 
 ```
 
+加载常用的包
+```{r}
+library(tidyverse)
+library(readxl)
+library(openxlsx)
+library(lubridate)
+```
+
 # R基础相关
+
+## 基础命令
+
+### set_names命令
+
+`set_names()`命令可以很方便的创建带名称的向量，`set_names(x, nm = x, ...)`其中`x`表示需要赋名的变量，`nm`表示向量的名称，示例：
+
+
+```{r}
+set_names(1:4, letters[1:4])
+```
+
+### 交集并集
+`interesect()`求交集，`union()`并集,`setdiff()`补，结果如图\@ref(fig:jihe)：
+
+```{r,jihe,fig.cap="R集合运算命令", echo=FALSE}
+
+knitr::include_graphics("fig/jihe.png")
+
+```
+
+
 
 ## 数学公式测试
 
@@ -308,3 +338,29 @@ c     |   170  | 30
 
 微信截图的图片不能被`knit`正确读取，会提示找不到文件，需要更改文件类型或者名字？
 
+# R对Excel的操作
+
+Excel是平实工作中用得最多的存储数据文件，有时候会牵涉合并、汇总等等操作。使用R的一些包能非常方便的批量操作Excel文件。
+## 读取Excel
+
+推荐使用`opnexlsx`、`readxl`包,常用的有以下操作
+
+- `excel_sheets()`可以获取工作簿的名称
+- `list.dirs()`, 获取文件夹名，`fullname = T`获取带完整路径的名称
+- `list.files()`,获取文件目录中所有文件名称，同样有`fullname`参数。
+- `read_excel`读取不同版本Excel文件。`read.xlsx`其中`detectDates`参数在读取含有日期变量的文件时非常有用。
+
+```{r}
+
+test <-  read.xlsx("data/testdata.xlsx", detectDates = T)
+read.xlsx("data/testdata.xlsx", detectDates = F)
+test %>% mutate(
+  Time2 = as.Date(Time, origin = "1899-12-30 00:00:00" )
+)
+
+
+
+```
+
+
+# shinyapp相关

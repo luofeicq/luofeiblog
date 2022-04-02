@@ -33,18 +33,42 @@ cover:
     hidden: true # only hide on current single page  
 ---
 
-<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
 
 
+<p>加载常用的包</p>
+<pre class="r"><code>library(tidyverse)
+library(readxl)
+library(openxlsx)
+library(lubridate)</code></pre>
 <div id="r基础相关" class="section level1" number="1">
 <h1><span class="header-section-number">1</span> R基础相关</h1>
-<div id="数学公式测试" class="section level2" number="1.1">
-<h2><span class="header-section-number">1.1</span> 数学公式测试</h2>
+<div id="基础命令" class="section level2" number="1.1">
+<h2><span class="header-section-number">1.1</span> 基础命令</h2>
+<div id="set_names命令" class="section level3" number="1.1.1">
+<h3><span class="header-section-number">1.1.1</span> set_names命令</h3>
+<p><code>set_names()</code>命令可以很方便的创建带名称的向量，<code>set_names(x, nm = x, ...)</code>其中<code>x</code>表示需要赋名的变量，<code>nm</code>表示向量的名称，示例：</p>
+<pre class="r"><code>set_names(1:4, letters[1:4])</code></pre>
+<pre><code># a b c d 
+# 1 2 3 4</code></pre>
+</div>
+<div id="交集并集" class="section level3" number="1.1.2">
+<h3><span class="header-section-number">1.1.2</span> 交集并集</h3>
+<p><code>interesect()</code>求交集，<code>union()</code>并集,<code>setdiff()</code>补，结果如图<a href="#fig:jihe">1.1</a>：</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:jihe"></span>
+<img src="fig/jihe.png" alt="R集合运算命令" width="222" />
+<p class="caption">
+图1.1: R集合运算命令
+</p>
+</div>
+</div>
+</div>
+<div id="数学公式测试" class="section level2" number="1.2">
+<h2><span class="header-section-number">1.2</span> 数学公式测试</h2>
 <p>行内公式<span class="math inline">\(x^2+y^2=z^2\)</span></p>
 <p>行间公式:<span class="math display">\[f(x)=ax+b\]</span></p>
 </div>
-<div id="逻辑运算符号" class="section level2" number="1.2">
-<h2><span class="header-section-number">1.2</span> 逻辑运算符号</h2>
+<div id="逻辑运算符号" class="section level2" number="1.3">
+<h2><span class="header-section-number">1.3</span> 逻辑运算符号</h2>
 <p>R中基础逻辑运算符号有（<code>=</code>;<code>!=</code>;<code>&gt;</code>;<code>&lt;</code>;<code>&gt;=</code>;<code>&lt;=</code>），返回的值是<code>true</code>和<code>false</code>，也可分别作为为数字<code>1</code>和<code>0</code>进行数学运算：</p>
 <pre class="r"><code>x &lt;- c(1, 2, 3, 4, 5, 6)
 x &gt; 3</code></pre>
@@ -52,8 +76,8 @@ x &gt; 3</code></pre>
 <pre class="r"><code>sum(x &gt; 3)</code></pre>
 <pre><code># [1] 3</code></pre>
 </div>
-<div id="数学运算" class="section level2" number="1.3">
-<h2><span class="header-section-number">1.3</span> 数学运算</h2>
+<div id="数学运算" class="section level2" number="1.4">
+<h2><span class="header-section-number">1.4</span> 数学运算</h2>
 <ul>
 <li>%% 两个向量求余</li>
 </ul>
@@ -88,8 +112,8 @@ m %*% m</code></pre>
 # [1,]    7   15
 # [2,]   10   22</code></pre>
 </div>
-<div id="向量操作" class="section level2" number="1.4">
-<h2><span class="header-section-number">1.4</span> 向量操作</h2>
+<div id="向量操作" class="section level2" number="1.5">
+<h2><span class="header-section-number">1.5</span> 向量操作</h2>
 <p>增加向量元素的几种操作</p>
 <ul>
 <li>直接使用<code>c()</code></li>
@@ -113,8 +137,8 @@ newvalues &lt;- c(55, 66, 77)
 append(x, newvalues, 2)</code></pre>
 <pre><code># [1]  1  2 55 66 77  3</code></pre>
 </div>
-<div id="和取值的区别等价与取元素" class="section level2" number="1.5">
-<h2><span class="header-section-number">1.5</span> <code>[]</code>和<code>[[]]</code>取值的区别,<code>[[]]</code>等价与<code>$</code>取元素:</h2>
+<div id="和取值的区别等价与取元素" class="section level2" number="1.6">
+<h2><span class="header-section-number">1.6</span> <code>[]</code>和<code>[[]]</code>取值的区别,<code>[[]]</code>等价与<code>$</code>取元素:</h2>
 <pre class="r"><code>x &lt;- c(1, 2, 3)
 x[1]</code></pre>
 <pre><code># [1] 1</code></pre>
@@ -129,26 +153,26 @@ lsx[2][1]</code></pre>
 <pre class="r"><code>lsx$score[1]</code></pre>
 <pre><code># [1] 98</code></pre>
 </div>
-<div id="list的一些操作和理解" class="section level2" number="1.6">
-<h2><span class="header-section-number">1.6</span> <code>list</code>的一些操作和理解</h2>
+<div id="list的一些操作和理解" class="section level2" number="1.7">
+<h2><span class="header-section-number">1.7</span> <code>list</code>的一些操作和理解</h2>
 <p><code>list</code>作为特殊的变量，它可以存储任意类型的数据，包括其他的<code>list</code>，也就是列表列。R中列表的高端操作有些抽象，不太好理解，需要自己动手多操作。</p>
 </div>
-<div id="print和cat的区别" class="section level2" number="1.7">
-<h2><span class="header-section-number">1.7</span> <code>print()</code>和<code>cat()</code>的区别</h2>
+<div id="print和cat的区别" class="section level2" number="1.8">
+<h2><span class="header-section-number">1.8</span> <code>print()</code>和<code>cat()</code>的区别</h2>
 <p>主要是输出内容的形式，直观来说<code>cat()</code>输入的内容更复核自然阅读的习惯,而<code>print()</code>输入的内容更类似程序的语法结构</p>
-<div id="这是print输出的结果" class="section level3" number="1.7.1">
-<h3><span class="header-section-number">1.7.1</span> 这是<code>print()</code>输出的结果</h3>
+<div id="这是print输出的结果" class="section level3" number="1.8.1">
+<h3><span class="header-section-number">1.8.1</span> 这是<code>print()</code>输出的结果</h3>
 <pre class="r"><code>print(c(&quot;hello&quot;, &quot;world&quot;, &quot;!&quot;))</code></pre>
 <pre><code># [1] &quot;hello&quot; &quot;world&quot; &quot;!&quot;</code></pre>
 </div>
-<div id="这是cat输出的结果" class="section level3" number="1.7.2">
-<h3><span class="header-section-number">1.7.2</span> 这是<code>cat()</code>输出的结果</h3>
+<div id="这是cat输出的结果" class="section level3" number="1.8.2">
+<h3><span class="header-section-number">1.8.2</span> 这是<code>cat()</code>输出的结果</h3>
 <pre class="r"><code>cat(c(&quot;hello&quot;, &quot;world&quot;, &quot;!&quot;))</code></pre>
 <pre><code># hello world !</code></pre>
 </div>
 </div>
-<div id="创建序列的区别" class="section level2" number="1.8">
-<h2><span class="header-section-number">1.8</span> 创建序列的区别</h2>
+<div id="创建序列的区别" class="section level2" number="1.9">
+<h2><span class="header-section-number">1.9</span> 创建序列的区别</h2>
 <p>使用<code>:</code>创建的都是整数序列，使用<code>seq()</code>创建的序列是<code>double</code>。</p>
 <pre class="r"><code>a &lt;- 1:10
 b &lt;- seq(from = 1, to = 10, by = 1)
@@ -288,16 +312,16 @@ identical(a, b)</code></pre>
 <pre class="r"><code>x &lt;- runif(20)
 y &lt;- 2 * (x + 1)
 sd(x)</code></pre>
-<pre><code># [1] 0.294</code></pre>
+<pre><code># [1] 0.332</code></pre>
 <pre class="r"><code>var(x)</code></pre>
-<pre><code># [1] 0.0865</code></pre>
+<pre><code># [1] 0.11</code></pre>
 <ul>
 <li><code>cor()</code>和<code>cov()</code>函数可以分别计算两个向量之间的相关性和协方差：</li>
 </ul>
 <pre class="r"><code>cor(x, y)</code></pre>
 <pre><code># [1] 1</code></pre>
 <pre class="r"><code>cov(x, y)</code></pre>
-<pre><code># [1] 0.173</code></pre>
+<pre><code># [1] 0.22</code></pre>
 </div>
 <div id="线性回归" class="section level2" number="2.3">
 <h2><span class="header-section-number">2.3</span> 线性回归</h2>
@@ -480,4 +504,43 @@ c     |   170  | 30
 <h2><span class="header-section-number">3.2</span> 图片</h2>
 <p>微信截图的图片不能被<code>knit</code>正确读取，会提示找不到文件，需要更改文件类型或者名字？</p>
 </div>
+</div>
+<div id="r对excel的操作" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> R对Excel的操作</h1>
+<p>Excel是平实工作中用得最多的存储数据文件，有时候会牵涉合并、汇总等等操作。使用R的一些包能非常方便的批量操作Excel文件。
+## 读取Excel</p>
+<p>推荐使用<code>opnexlsx</code>、<code>readxl</code>包,常用的有以下操作</p>
+<ul>
+<li><code>excel_sheets()</code>可以获取工作簿的名称</li>
+<li><code>list.dirs()</code>, 获取文件夹名，<code>fullname = T</code>获取带完整路径的名称</li>
+<li><code>list.files()</code>,获取文件目录中所有文件名称，同样有<code>fullname</code>参数。</li>
+<li><code>read_excel</code>读取不同版本Excel文件。<code>read.xlsx</code>其中<code>detectDates</code>参数在读取含有日期变量的文件时非常有用。</li>
+</ul>
+<pre class="r"><code>test &lt;- read.xlsx(&quot;data/testdata.xlsx&quot;, detectDates = T)
+read.xlsx(&quot;data/testdata.xlsx&quot;, detectDates = F)</code></pre>
+<pre><code>#   name birthdata age group  Time
+# 1   aa     37157  20     A 44361
+# 2   bb     38960  15     A 44575
+# 3   cc     37887  18     B 44379
+# 4   dd     38367  17     A 44480
+# 5   ee     40254  12     B 44416
+# 6   ff     43741   2     C 44568
+# 7   gg     39348  14     B 44513
+# 8   hh     39847  13     C 44316
+# 9   ii     39223  15     C 44438</code></pre>
+<pre class="r"><code>test %&gt;%
+    mutate(Time2 = as.Date(Time, origin = &quot;1899-12-30 00:00:00&quot;))</code></pre>
+<pre><code>#   name  birthdata age group  Time      Time2
+# 1   aa 2001-09-23  20     A 44361 2021-06-13
+# 2   bb 2006-08-31  15     A 44575 2022-01-13
+# 3   cc 2003-09-23  18     B 44379 2021-07-01
+# 4   dd 2005-01-15  17     A 44480 2021-10-11
+# 5   ee 2010-03-17  12     B 44416 2021-08-07
+# 6   ff 2019-10-03   2     C 44568 2022-01-06
+# 7   gg 2007-09-23  14     B 44513 2021-11-12
+# 8   hh 2009-02-03  13     C 44316 2021-04-29
+# 9   ii 2007-05-21  15     C 44438 2021-08-29</code></pre>
+</div>
+<div id="shinyapp相关" class="section level1" number="5">
+<h1><span class="header-section-number">5</span> shinyapp相关</h1>
 </div>
