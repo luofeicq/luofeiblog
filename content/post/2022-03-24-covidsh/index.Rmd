@@ -363,7 +363,7 @@ final_df %>% ggplot(aes(x = factor(Date_rep), y = case_sum)) +
   theme(panel.background = element_blank(),
         panel.grid = element_blank(), 
         axis.title = element_blank(),
-        legend.position = c(0.8,0.5),
+        legend.position = c(0.9,0.5),
         axis.ticks = element_blank(),
         axis.text = element_blank(),
         legend.title = element_blank(),
