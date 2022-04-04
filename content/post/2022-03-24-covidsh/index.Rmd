@@ -72,6 +72,7 @@ library(tidyverse)
 library(lubridate)
 library(readxl)
 library(openxlsx)
+library(ggThemeAssist)
 ```
 
 ## 主页信息获取
@@ -337,6 +338,8 @@ final_df <- final_df %>% mutate(
                     Local == "奉贤无" ~ "奉贤区",
                     TRUE ~ Local)
 )
+final_df <-  final_df %>% distinct()
+write.xlsx(final_df, ("data/shcovid.xlsx"))
 ```
 
 ```{r, warning=FALSE, include=TRUE, results='asis' }
@@ -364,14 +367,17 @@ final_df %>% ggplot(aes(x = factor(Date_rep), y = case_sum)) +
         axis.ticks = element_blank(),
         axis.text = element_blank(),
         legend.title = element_blank(),
-        legend.text = element_text(size = 6),
+        legend.text = element_text(size = 5),
         text = element_text(family = "A")
-        )+
-  ylim(c(-300,13000)) + geom_text(data = final_df %>% dplyr::filter(Local == "浦东新区"), aes(label = Date_rep ),
+        )+ geom_text(data = final_df %>% dplyr::filter(Local == "浦东新区"), aes(label = Date_rep ),
                                   nudge_y = 3000,
                                   size = 2, 
                                   ) +
-  guides(fill = guide_legend(ncol = 2)) +
-  theme(plot.margin = unit(rep(0.1,4), "pt"))
+  guides(fill = guide_legend(ncol = 2) ) +
+  theme(plot.margin = unit(rep(0.5,4), "mm"),
+        legend.key.size = unit(5,"mm"),
+        aspect.ratio = 1) +
+  scale_y_continuous(expand = c(0,0), limits = c(-200,9100)) 
+
 ```
 
