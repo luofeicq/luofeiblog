@@ -70,7 +70,8 @@ knitr::opts_chunk$set(
 library(rvest)
 library(tidyverse)
 library(lubridate)
-
+library(readxl)
+library(openxlsx)
 ```
 
 ## 主页信息获取
@@ -282,7 +283,96 @@ covidsh
 ```
 
 
+# 重点关注3月数据
 
 
+重新爬了一下按地区分布的，画了个玫瑰图看看。
 
+```{r, echo=FALSE, eval=FALSE, include=FALSE}
+
+url_all <- paste0("https://wsjkw.sh.gov.cn/xwfb/index_",c(2:20),".html")
+url_all <- c("https://wsjkw.sh.gov.cn/xwfb/index.html", url_all)
+webfun <- function(url){
+pages <- read_html(url)
+url2_sh <-  pages  %>%  
+  html_nodes(".list-date a") %>% 
+  html_attr("href")
+title_sh <- pages %>% 
+  html_nodes(".list-date a") %>% 
+  html_attr("title")
+date_sh <- pages %>% 
+  html_node(".time") %>% 
+  html_text()
+data.frame( Date = date_sh,  Title = title_sh, Url = url2_sh)
+}
+
+pages_1 <- map_df(url_all, webfun)
+
+pages_1
+url_2 <-  pages_1 %>% dplyr::filter(str_detect(Title, "居住地信息")) %>% mutate(
+  url_2 = paste0("https://wsjkw.sh.gov.cn/", Url) ) %>% select(url_2) %>% unlist()
+
+
+webfun2 <- function(url){
+test <-  read_html(url) %>% html_nodes("p") %>% html_text() %>% tibble()
+colnames(test) <- "Text"
+test %>% 
+  dplyr::filter(str_detect(Text, "分别居住")) %>% 
+  separate(Text, c("Date", "col1", "col2"), sep = "，|、") %>% 
+  mutate(
+    Date_rep = as.Date.character(Date, "%Y年%m月%d日"),
+    Local = str_extract(col1, "..."), 
+    case_conf = str_extract(col1, "[0-9]+") %>% as.numeric(),
+    case_none = str_extract(col2, "[0-9]+") %>% as.numeric()
+  ) %>% select(Date_rep, Local, case_conf, case_none)
+}
+
+final_df <- map_df(url_2, webfun2)
+final_df <- final_df %>%  dplyr::filter(!is.na(Date_rep))  
+final_df[is.na(final_df)] <- 0
+final_df <- final_df %>% mutate(
+  case_sum = case_conf + case_none,
+  Local = case_when(Local == "浦东新" ~ "浦东新区",
+                    Local == "青浦新" ~ "青浦区",
+                    Local == "奉贤无" ~ "奉贤区",
+                    TRUE ~ Local)
+)
+write.xlsx(final_df, "data/shcovid.xlsx")
+```
+
+```{r, warning=FALSE, include=TRUE, results='asis' }
+final_df <- read_excel("data/shcovid.xlsx")
+```
+
+数据爬出来如下（前20行）：
+
+```{r, results='asis', results='asis'}
+
+knitr::kable(head(final_df,20))
+
+```
+
+
+```{r}
+windowsFonts(A = windowsFont("微软雅黑"))
+final_df %>% ggplot(aes(x = factor(Date_rep), y = case_sum)) +
+  geom_col(aes(fill = Local), width = 1.03) +
+  coord_polar(theta = "x", start = 0, direction = 1) +
+  theme(panel.background = element_blank(),
+        panel.grid = element_blank(), 
+        axis.title = element_blank(),
+        legend.position = c(0.8,0.5),
+        axis.ticks = element_blank(),
+        axis.text = element_blank(),
+        legend.title = element_blank(),
+        legend.text = element_text(size = 6),
+        text = element_text(family = "A")
+        )+
+  ylim(c(-300,13000)) + geom_text(data = final_df %>% dplyr::filter(Local == "浦东新区"), aes(label = Date_rep ),
+                                  nudge_y = 3000,
+                                  size = 2, 
+                                  ) +
+  guides(fill = guide_legend(ncol = 2)) +
+  theme(plot.margin = unit(rep(0.1,4), "pt"))
+```
 

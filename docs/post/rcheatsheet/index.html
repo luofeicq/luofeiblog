@@ -116,8 +116,8 @@ code.has-jax {
   "keywords": [
     "R"
   ],
-  "articleBody": "\r\r1 R基础相关\r1.1 数学公式测试\r行内公式\\(x^2+y^2=z^2\\)\n行间公式:\\[f(x)=ax+b\\]\n\r1.2 逻辑运算符号\rR中基础逻辑运算符号有（=;!=;;;=;），返回的值是true和false，也可分别作为为数字1和0进行数学运算：\nx 3\r# [1] FALSE FALSE FALSE TRUE TRUE TRUE\rsum(x  3)\r# [1] 3\r\r1.3 数学运算\r\r%% 两个向量求余\r\rx \r# [1] 0 1 0\r\r%/% 两个向量相除求商\r\rx \r# [1] 4 2 2\r\r%*% 两个向量的内积，也称为点乘，可用于矩阵\n\r对于向量\r\r\rx \r# [,1]\r# [1,] 32\r\r对于矩阵\r\rm \r# [,1] [,2]\r# [1,] 7 15\r# [2,] 10 22\r\r1.4 向量操作\r增加向量元素的几种操作\n\r直接使用c()\r\rx \r# [1] 1 2 3 4 5 6 7 8 9\r\r在末尾添加\r\rx \r# [1] 1 2 3 99\r\r在指定位置增加append(VEC, newvalues, after = N)：\r\rx \r# [1] 1 2 55 66 77 3\r\r1.5 []和[[]]取值的区别,[[]]等价与$取元素:\rx \r# [1] 1\rx[[1]]\r# [1] 1\rlsx \r# $score\r# [1] 98 80 95\rlsx[[2]][1]\r# [1] 98\rlsx$score[1]\r# [1] 98\r\r1.6 list的一些操作和理解\rlist作为特殊的变量，它可以存储任意类型的数据，包括其他的list，也就是列表列。R中列表的高端操作有些抽象，不太好理解，需要自己动手多操作。\n\r1.7 print()和cat()的区别\r主要是输出内容的形式，直观来说cat()输入的内容更复核自然阅读的习惯,而print()输入的内容更类似程序的语法结构\n1.7.1 这是print()输出的结果\rprint(c(\"hello\", \"world\", \"!\"))\r# [1] \"hello\" \"world\" \"!\"\r\r1.7.2 这是cat()输出的结果\rcat(c(\"hello\", \"world\", \"!\"))\r# hello world !\r\r\r1.8 创建序列的区别\r使用:创建的都是整数序列，使用seq()创建的序列是double。\na \r# [1] FALSE\r\r\r2 统计分析相关\r2.1 概率\r\rR中有关概率分布相关函数（2.1）\r\r\r表2.1:  正态分布相关函数用法\r\r\r\r函数\r功能\r\r\r\rdnorm(x, mean = 0, sd = 1, log = FALSE)\r返回值正态分布概率密度函数值，比如dnorm（z）表示：标准正态分布密度函\\(f(x)\\)在x=z处的函数值。\r\rpnorm(q, mean = 0, sd = 1, lower.tail = TRUE, log.p = FALSE)\r返回值是正态分布的分布函数值，比如pnorm(z)等价于\\(P[X ≤ z]\\)\r\rqnorm(p, mean = 0, sd = 1, lower.tail = TRUE, log.p = FALSE)\r返回值是给定概率p后的下分位点.\r\rrnorm(n, mean = 0, sd = 1)\r返回值是n个正态分布随机数构成的向量。\r\r\r\r\r其他概率分布（2.2），其命令用法与正态分布函数类似。\r\r\r表2.2:  R中其他概率分布相关函数\r\r\r\r概率分布\rR 命令名\r参数\r\r\r\rBeta\rbeta\rshape1; shape2\r\rCauchy\rcauchy\rlocation; scale\r\rChi-squared (Chisquare)\rchisq\rdf = degrees of freedom\r\rExponential\rexp\rrate\r\rF\rf\rdf1 and df2 = degrees of freedom\r\rGamma\rgamma\rrate; either rate or scale\r\rLog-normal (Lognormal)\rlnorm\rmeanlog = mean on logarithmic scale; sdlog = standard deviation on logarithmic scale\r\rLogistic\rlogis\rlocation; scale\r\rNormal\rnorm\rmean; sd = standard deviation\r\rStudent’s\rt\r(TDist) t df = degrees of freedom\r\rUniform\runif\rmin = lower limit; max = upper limit\r\rWeibull\rweibull\rshape; scale\r\rWilcoxon\rwilcox\rm = number of observations in first sample; n = number of observations in second sample\r\r\r\r\r2.2 基础统计\r\rsd()和var()分别计算标准差和方差\r\rx \r# [1] 0.294\rvar(x)\r# [1] 0.0865\r\rcor()和cov()函数可以分别计算两个向量之间的相关性和协方差：\r\rcor(x, y)\r# [1] 1\rcov(x, y)\r# [1] 0.173\r\r2.3 线性回归\r\r线性回归语法lm()\r\r2.3.1 一简单线性模型\rlm(y ~ x1 + x2, date = sim)\r\r对应建模公式为：\\[y=\\alpha+\\beta_1x_1+\\beta_2x_2+\\varepsilon\\]\n\r2.3.2 交互变量性模型\rlm(y ~ x1 * x2, date = sim)\r\r对应建模公式为：\\[y=\\alpha+\\beta_1x_1+\\beta_2x_2++\\beta_3x_1x_2+\\varepsilon\\]\n\r2.3.3 虚拟变量\rlm(y ~ x1 + x1:x2, date = sim)\r\r对应建模公式为：\\[y=\\alpha+\\beta_1x_1+\\beta_2x_1x_2+\\varepsilon\\]\n\r\r\r3 rmarkdown相关\r3.1 表格\r\rkable()\r\rknitr::kable(head(mtcars))\r\r\r\rmpg\rcyl\rdisp\rhp\rdrat\rwt\rqsec\rvs\ram\rgear\rcarb\r\r\r\rMazda RX4\r21.0\r6\r160\r110\r3.90\r2.62\r16.5\r0\r1\r4\r4\r\rMazda RX4 Wag\r21.0\r6\r160\r110\r3.90\r2.88\r17.0\r0\r1\r4\r4\r\rDatsun 710\r22.8\r4\r108\r93\r3.85\r2.32\r18.6\r1\r1\r4\r1\r\rHornet 4 Drive\r21.4\r6\r258\r110\r3.08\r3.21\r19.4\r1\r0\r3\r1\r\rHornet Sportabout\r18.7\r8\r360\r175\r3.15\r3.44\r17.0\r0\r0\r3\r2\r\rValiant\r18.1\r6\r225\r105\r2.76\r3.46\r20.2\r1\r0\r3\r1\r\r\r\r\r除了kable()命令生成表格外,其他的表格生成如果要使其能被交叉引用,需要添加标签label,如:Table:(\\#tab:yourlabel)Caption,然后使用\\@ref(tab:label) 。例如：\r\r样本身高体重见表3.1\nTable:(\\#tab:table001)A simple table\rleft | center | right\r:-----|:------:|------:\rA | 180 | 60\rB | 160 | 50\rc | 170 | 30 \r\r表3.1: A simple table\r\rleft\rcenter\rright\r\r\r\rA\r180\r60\r\rB\r160\r50\r\rc\r170\r30\r\r\r\r\r3.2 图片\r微信截图的图片不能被knit正确读取，会提示找不到文件，需要更改文件类型或者名字？\n\r\r",
-  "wordCount" : "651",
+  "articleBody": "\r加载常用的包\nlibrary(tidyverse)\rlibrary(readxl)\rlibrary(openxlsx)\rlibrary(lubridate)\r1 R基础相关\r1.1 基础命令\r1.1.1 set_names命令\rset_names()命令可以很方便的创建带名称的向量，set_names(x, nm = x, ...)其中x表示需要赋名的变量，nm表示向量的名称，示例：\nset_names(1:4, letters[1:4])\r# a b c d # 1 2 3 4\r\r1.1.2 交集并集\rinteresect()求交集，union()并集,setdiff()补，结果如图1.1：\n\r图1.1: R集合运算命令\r\r\r\r1.2 数学公式测试\r行内公式\\(x^2+y^2=z^2\\)\n行间公式:\\[f(x)=ax+b\\]\n\r1.3 逻辑运算符号\rR中基础逻辑运算符号有（=;!=;;;=;），返回的值是true和false，也可分别作为为数字1和0进行数学运算：\nx 3\r# [1] FALSE FALSE FALSE TRUE TRUE TRUE\rsum(x  3)\r# [1] 3\r\r1.4 数学运算\r\r%% 两个向量求余\r\rx \r# [1] 0 1 0\r\r%/% 两个向量相除求商\r\rx \r# [1] 4 2 2\r\r%*% 两个向量的内积，也称为点乘，可用于矩阵\n\r对于向量\r\r\rx \r# [,1]\r# [1,] 32\r\r对于矩阵\r\rm \r# [,1] [,2]\r# [1,] 7 15\r# [2,] 10 22\r\r1.5 向量操作\r增加向量元素的几种操作\n\r直接使用c()\r\rx \r# [1] 1 2 3 4 5 6 7 8 9\r\r在末尾添加\r\rx \r# [1] 1 2 3 99\r\r在指定位置增加append(VEC, newvalues, after = N)：\r\rx \r# [1] 1 2 55 66 77 3\r\r1.6 []和[[]]取值的区别,[[]]等价与$取元素:\rx \r# [1] 1\rx[[1]]\r# [1] 1\rlsx \r# $score\r# [1] 98 80 95\rlsx[[2]][1]\r# [1] 98\rlsx$score[1]\r# [1] 98\r\r1.7 list的一些操作和理解\rlist作为特殊的变量，它可以存储任意类型的数据，包括其他的list，也就是列表列。R中列表的高端操作有些抽象，不太好理解，需要自己动手多操作。\n\r1.8 print()和cat()的区别\r主要是输出内容的形式，直观来说cat()输入的内容更复核自然阅读的习惯,而print()输入的内容更类似程序的语法结构\n1.8.1 这是print()输出的结果\rprint(c(\"hello\", \"world\", \"!\"))\r# [1] \"hello\" \"world\" \"!\"\r\r1.8.2 这是cat()输出的结果\rcat(c(\"hello\", \"world\", \"!\"))\r# hello world !\r\r\r1.9 创建序列的区别\r使用:创建的都是整数序列，使用seq()创建的序列是double。\na \r# [1] FALSE\r\r\r2 统计分析相关\r2.1 概率\r\rR中有关概率分布相关函数（2.1）\r\r\r表2.1:  正态分布相关函数用法\r\r\r\r函数\r功能\r\r\r\rdnorm(x, mean = 0, sd = 1, log = FALSE)\r返回值正态分布概率密度函数值，比如dnorm（z）表示：标准正态分布密度函\\(f(x)\\)在x=z处的函数值。\r\rpnorm(q, mean = 0, sd = 1, lower.tail = TRUE, log.p = FALSE)\r返回值是正态分布的分布函数值，比如pnorm(z)等价于\\(P[X ≤ z]\\)\r\rqnorm(p, mean = 0, sd = 1, lower.tail = TRUE, log.p = FALSE)\r返回值是给定概率p后的下分位点.\r\rrnorm(n, mean = 0, sd = 1)\r返回值是n个正态分布随机数构成的向量。\r\r\r\r\r其他概率分布（2.2），其命令用法与正态分布函数类似。\r\r\r表2.2:  R中其他概率分布相关函数\r\r\r\r概率分布\rR 命令名\r参数\r\r\r\rBeta\rbeta\rshape1; shape2\r\rCauchy\rcauchy\rlocation; scale\r\rChi-squared (Chisquare)\rchisq\rdf = degrees of freedom\r\rExponential\rexp\rrate\r\rF\rf\rdf1 and df2 = degrees of freedom\r\rGamma\rgamma\rrate; either rate or scale\r\rLog-normal (Lognormal)\rlnorm\rmeanlog = mean on logarithmic scale; sdlog = standard deviation on logarithmic scale\r\rLogistic\rlogis\rlocation; scale\r\rNormal\rnorm\rmean; sd = standard deviation\r\rStudent’s\rt\r(TDist) t df = degrees of freedom\r\rUniform\runif\rmin = lower limit; max = upper limit\r\rWeibull\rweibull\rshape; scale\r\rWilcoxon\rwilcox\rm = number of observations in first sample; n = number of observations in second sample\r\r\r\r\r2.2 基础统计\r\rsd()和var()分别计算标准差和方差\r\rx \r# [1] 0.332\rvar(x)\r# [1] 0.11\r\rcor()和cov()函数可以分别计算两个向量之间的相关性和协方差：\r\rcor(x, y)\r# [1] 1\rcov(x, y)\r# [1] 0.22\r\r2.3 线性回归\r\r线性回归语法lm()\r\r2.3.1 一简单线性模型\rlm(y ~ x1 + x2, date = sim)\r\r对应建模公式为：\\[y=\\alpha+\\beta_1x_1+\\beta_2x_2+\\varepsilon\\]\n\r2.3.2 交互变量性模型\rlm(y ~ x1 * x2, date = sim)\r\r对应建模公式为：\\[y=\\alpha+\\beta_1x_1+\\beta_2x_2++\\beta_3x_1x_2+\\varepsilon\\]\n\r2.3.3 虚拟变量\rlm(y ~ x1 + x1:x2, date = sim)\r\r对应建模公式为：\\[y=\\alpha+\\beta_1x_1+\\beta_2x_1x_2+\\varepsilon\\]\n\r\r\r3 rmarkdown相关\r3.1 表格\r\rkable()\r\rknitr::kable(head(mtcars))\r\r\r\rmpg\rcyl\rdisp\rhp\rdrat\rwt\rqsec\rvs\ram\rgear\rcarb\r\r\r\rMazda RX4\r21.0\r6\r160\r110\r3.90\r2.62\r16.5\r0\r1\r4\r4\r\rMazda RX4 Wag\r21.0\r6\r160\r110\r3.90\r2.88\r17.0\r0\r1\r4\r4\r\rDatsun 710\r22.8\r4\r108\r93\r3.85\r2.32\r18.6\r1\r1\r4\r1\r\rHornet 4 Drive\r21.4\r6\r258\r110\r3.08\r3.21\r19.4\r1\r0\r3\r1\r\rHornet Sportabout\r18.7\r8\r360\r175\r3.15\r3.44\r17.0\r0\r0\r3\r2\r\rValiant\r18.1\r6\r225\r105\r2.76\r3.46\r20.2\r1\r0\r3\r1\r\r\r\r\r除了kable()命令生成表格外,其他的表格生成如果要使其能被交叉引用,需要添加标签label,如:Table:(\\#tab:yourlabel)Caption,然后使用\\@ref(tab:label) 。例如：\r\r样本身高体重见表3.1\nTable:(\\#tab:table001)A simple table\rleft | center | right\r:-----|:------:|------:\rA | 180 | 60\rB | 160 | 50\rc | 170 | 30 \r\r表3.1: A simple table\r\rleft\rcenter\rright\r\r\r\rA\r180\r60\r\rB\r160\r50\r\rc\r170\r30\r\r\r\r\r3.2 图片\r微信截图的图片不能被knit正确读取，会提示找不到文件，需要更改文件类型或者名字？\n\r\r4 R对Excel的操作\rExcel是平实工作中用得最多的存储数据文件，有时候会牵涉合并、汇总等等操作。使用R的一些包能非常方便的批量操作Excel文件。\r## 读取Excel\n推荐使用opnexlsx、readxl包,常用的有以下操作\n\rexcel_sheets()可以获取工作簿的名称\rlist.dirs(), 获取文件夹名，fullname = T获取带完整路径的名称\rlist.files(),获取文件目录中所有文件名称，同样有fullname参数。\rread_excel读取不同版本Excel文件。read.xlsx其中detectDates参数在读取含有日期变量的文件时非常有用。\r\rtest \r# name birthdata age group Time\r# 1 aa 37157 20 A 44361\r# 2 bb 38960 15 A 44575\r# 3 cc 37887 18 B 44379\r# 4 dd 38367 17 A 44480\r# 5 ee 40254 12 B 44416\r# 6 ff 43741 2 C 44568\r# 7 gg 39348 14 B 44513\r# 8 hh 39847 13 C 44316\r# 9 ii 39223 15 C 44438\rtest %%\rmutate(Time2 = as.Date(Time, origin = \"1899-12-30 00:00:00\"))\r# name birthdata age group Time Time2\r# 1 aa 2001-09-23 20 A 44361 2021-06-13\r# 2 bb 2006-08-31 15 A 44575 2022-01-13\r# 3 cc 2003-09-23 18 B 44379 2021-07-01\r# 4 dd 2005-01-15 17 A 44480 2021-10-11\r# 5 ee 2010-03-17 12 B 44416 2021-08-07\r# 6 ff 2019-10-03 2 C 44568 2022-01-06\r# 7 gg 2007-09-23 14 B 44513 2021-11-12\r# 8 hh 2009-02-03 13 C 44316 2021-04-29\r# 9 ii 2007-05-21 15 C 44438 2021-08-29\r\r5 shinyapp相关\r\r",
+  "wordCount" : "864",
   "inLanguage": "en",
   "datePublished": "2022-01-12T00:00:00Z",
   "dateModified": "2022-01-12T00:00:00Z",
@@ -231,27 +231,35 @@ code.has-jax {
                     <a href="#" aria-label="1 R基础相关"><span class="header-section-number">1</span> R基础相关</a><ul>
                         
                 <li>
-                    <a href="#" aria-label="1.1 数学公式测试"><span class="header-section-number">1.1</span> 数学公式测试</a></li>
-                <li>
-                    <a href="#" aria-label="1.2 逻辑运算符号"><span class="header-section-number">1.2</span> 逻辑运算符号</a></li>
-                <li>
-                    <a href="#" aria-label="1.3 数学运算"><span class="header-section-number">1.3</span> 数学运算</a></li>
-                <li>
-                    <a href="#" aria-label="1.4 向量操作"><span class="header-section-number">1.4</span> 向量操作</a></li>
-                <li>
-                    <a href="#" aria-label="1.5 []和[[]]取值的区别,[[]]等价与$取元素:"><span class="header-section-number">1.5</span> <code>[]</code>和<code>[[]]</code>取值的区别,<code>[[]]</code>等价与<code>$</code>取元素:</a></li>
-                <li>
-                    <a href="#" aria-label="1.6 list的一些操作和理解"><span class="header-section-number">1.6</span> <code>list</code>的一些操作和理解</a></li>
-                <li>
-                    <a href="#" aria-label="1.7 print()和cat()的区别"><span class="header-section-number">1.7</span> <code>print()</code>和<code>cat()</code>的区别</a><ul>
+                    <a href="#" aria-label="1.1 基础命令"><span class="header-section-number">1.1</span> 基础命令</a><ul>
                         
                 <li>
-                    <a href="#" aria-label="1.7.1 这是print()输出的结果"><span class="header-section-number">1.7.1</span> 这是<code>print()</code>输出的结果</a></li>
+                    <a href="#" aria-label="1.1.1 set_names命令"><span class="header-section-number">1.1.1</span> set_names命令</a></li>
                 <li>
-                    <a href="#" aria-label="1.7.2 这是cat()输出的结果"><span class="header-section-number">1.7.2</span> 这是<code>cat()</code>输出的结果</a></li></ul>
+                    <a href="#" aria-label="1.1.2 交集并集"><span class="header-section-number">1.1.2</span> 交集并集</a></li></ul>
                 </li>
                 <li>
-                    <a href="#" aria-label="1.8 创建序列的区别"><span class="header-section-number">1.8</span> 创建序列的区别</a></li></ul>
+                    <a href="#" aria-label="1.2 数学公式测试"><span class="header-section-number">1.2</span> 数学公式测试</a></li>
+                <li>
+                    <a href="#" aria-label="1.3 逻辑运算符号"><span class="header-section-number">1.3</span> 逻辑运算符号</a></li>
+                <li>
+                    <a href="#" aria-label="1.4 数学运算"><span class="header-section-number">1.4</span> 数学运算</a></li>
+                <li>
+                    <a href="#" aria-label="1.5 向量操作"><span class="header-section-number">1.5</span> 向量操作</a></li>
+                <li>
+                    <a href="#" aria-label="1.6 []和[[]]取值的区别,[[]]等价与$取元素:"><span class="header-section-number">1.6</span> <code>[]</code>和<code>[[]]</code>取值的区别,<code>[[]]</code>等价与<code>$</code>取元素:</a></li>
+                <li>
+                    <a href="#" aria-label="1.7 list的一些操作和理解"><span class="header-section-number">1.7</span> <code>list</code>的一些操作和理解</a></li>
+                <li>
+                    <a href="#" aria-label="1.8 print()和cat()的区别"><span class="header-section-number">1.8</span> <code>print()</code>和<code>cat()</code>的区别</a><ul>
+                        
+                <li>
+                    <a href="#" aria-label="1.8.1 这是print()输出的结果"><span class="header-section-number">1.8.1</span> 这是<code>print()</code>输出的结果</a></li>
+                <li>
+                    <a href="#" aria-label="1.8.2 这是cat()输出的结果"><span class="header-section-number">1.8.2</span> 这是<code>cat()</code>输出的结果</a></li></ul>
+                </li>
+                <li>
+                    <a href="#" aria-label="1.9 创建序列的区别"><span class="header-section-number">1.9</span> 创建序列的区别</a></li></ul>
                 </li>
                 <li>
                     <a href="#" aria-label="2 统计分析相关"><span class="header-section-number">2</span> 统计分析相关</a><ul>
@@ -277,28 +285,55 @@ code.has-jax {
                 <li>
                     <a href="#" aria-label="3.1 表格"><span class="header-section-number">3.1</span> 表格</a></li>
                 <li>
-                    <a href="#" aria-label="3.2 图片"><span class="header-section-number">3.2</span> 图片</a>
+                    <a href="#" aria-label="3.2 图片"><span class="header-section-number">3.2</span> 图片</a></li></ul>
                 </li>
-            </ul>
-            </li>
+                <li>
+                    <a href="#" aria-label="4 R对Excel的操作"><span class="header-section-number">4</span> R对Excel的操作</a></li>
+                <li>
+                    <a href="#" aria-label="5 shinyapp相关"><span class="header-section-number">5</span> shinyapp相关</a>
+                </li>
             </ul>
         </div>
     </details>
 </div>
 
   <div class="post-content">
-<script src="../../post/rcheatsheet/index_files/header-attrs/header-attrs.js"></script>
 
 
+<p>加载常用的包</p>
+<pre class="r"><code>library(tidyverse)
+library(readxl)
+library(openxlsx)
+library(lubridate)</code></pre>
 <div id="r基础相关" class="section level1" number="1">
 <h1><span class="header-section-number">1</span> R基础相关</h1>
-<div id="数学公式测试" class="section level2" number="1.1">
-<h2><span class="header-section-number">1.1</span> 数学公式测试</h2>
+<div id="基础命令" class="section level2" number="1.1">
+<h2><span class="header-section-number">1.1</span> 基础命令</h2>
+<div id="set_names命令" class="section level3" number="1.1.1">
+<h3><span class="header-section-number">1.1.1</span> set_names命令</h3>
+<p><code>set_names()</code>命令可以很方便的创建带名称的向量，<code>set_names(x, nm = x, ...)</code>其中<code>x</code>表示需要赋名的变量，<code>nm</code>表示向量的名称，示例：</p>
+<pre class="r"><code>set_names(1:4, letters[1:4])</code></pre>
+<pre><code># a b c d 
+# 1 2 3 4</code></pre>
+</div>
+<div id="交集并集" class="section level3" number="1.1.2">
+<h3><span class="header-section-number">1.1.2</span> 交集并集</h3>
+<p><code>interesect()</code>求交集，<code>union()</code>并集,<code>setdiff()</code>补，结果如图<a href="#fig:jihe">1.1</a>：</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:jihe"></span>
+<img src="fig/jihe.png" alt="R集合运算命令" width="222" />
+<p class="caption">
+图1.1: R集合运算命令
+</p>
+</div>
+</div>
+</div>
+<div id="数学公式测试" class="section level2" number="1.2">
+<h2><span class="header-section-number">1.2</span> 数学公式测试</h2>
 <p>行内公式<span class="math inline">\(x^2+y^2=z^2\)</span></p>
 <p>行间公式:<span class="math display">\[f(x)=ax+b\]</span></p>
 </div>
-<div id="逻辑运算符号" class="section level2" number="1.2">
-<h2><span class="header-section-number">1.2</span> 逻辑运算符号</h2>
+<div id="逻辑运算符号" class="section level2" number="1.3">
+<h2><span class="header-section-number">1.3</span> 逻辑运算符号</h2>
 <p>R中基础逻辑运算符号有（<code>=</code>;<code>!=</code>;<code>&gt;</code>;<code>&lt;</code>;<code>&gt;=</code>;<code>&lt;=</code>），返回的值是<code>true</code>和<code>false</code>，也可分别作为为数字<code>1</code>和<code>0</code>进行数学运算：</p>
 <pre class="r"><code>x &lt;- c(1, 2, 3, 4, 5, 6)
 x &gt; 3</code></pre>
@@ -306,8 +341,8 @@ x &gt; 3</code></pre>
 <pre class="r"><code>sum(x &gt; 3)</code></pre>
 <pre><code># [1] 3</code></pre>
 </div>
-<div id="数学运算" class="section level2" number="1.3">
-<h2><span class="header-section-number">1.3</span> 数学运算</h2>
+<div id="数学运算" class="section level2" number="1.4">
+<h2><span class="header-section-number">1.4</span> 数学运算</h2>
 <ul>
 <li>%% 两个向量求余</li>
 </ul>
@@ -342,8 +377,8 @@ m %*% m</code></pre>
 # [1,]    7   15
 # [2,]   10   22</code></pre>
 </div>
-<div id="向量操作" class="section level2" number="1.4">
-<h2><span class="header-section-number">1.4</span> 向量操作</h2>
+<div id="向量操作" class="section level2" number="1.5">
+<h2><span class="header-section-number">1.5</span> 向量操作</h2>
 <p>增加向量元素的几种操作</p>
 <ul>
 <li>直接使用<code>c()</code></li>
@@ -367,8 +402,8 @@ newvalues &lt;- c(55, 66, 77)
 append(x, newvalues, 2)</code></pre>
 <pre><code># [1]  1  2 55 66 77  3</code></pre>
 </div>
-<div id="和取值的区别等价与取元素" class="section level2" number="1.5">
-<h2><span class="header-section-number">1.5</span> <code>[]</code>和<code>[[]]</code>取值的区别,<code>[[]]</code>等价与<code>$</code>取元素:</h2>
+<div id="和取值的区别等价与取元素" class="section level2" number="1.6">
+<h2><span class="header-section-number">1.6</span> <code>[]</code>和<code>[[]]</code>取值的区别,<code>[[]]</code>等价与<code>$</code>取元素:</h2>
 <pre class="r"><code>x &lt;- c(1, 2, 3)
 x[1]</code></pre>
 <pre><code># [1] 1</code></pre>
@@ -383,26 +418,26 @@ lsx[2][1]</code></pre>
 <pre class="r"><code>lsx$score[1]</code></pre>
 <pre><code># [1] 98</code></pre>
 </div>
-<div id="list的一些操作和理解" class="section level2" number="1.6">
-<h2><span class="header-section-number">1.6</span> <code>list</code>的一些操作和理解</h2>
+<div id="list的一些操作和理解" class="section level2" number="1.7">
+<h2><span class="header-section-number">1.7</span> <code>list</code>的一些操作和理解</h2>
 <p><code>list</code>作为特殊的变量，它可以存储任意类型的数据，包括其他的<code>list</code>，也就是列表列。R中列表的高端操作有些抽象，不太好理解，需要自己动手多操作。</p>
 </div>
-<div id="print和cat的区别" class="section level2" number="1.7">
-<h2><span class="header-section-number">1.7</span> <code>print()</code>和<code>cat()</code>的区别</h2>
+<div id="print和cat的区别" class="section level2" number="1.8">
+<h2><span class="header-section-number">1.8</span> <code>print()</code>和<code>cat()</code>的区别</h2>
 <p>主要是输出内容的形式，直观来说<code>cat()</code>输入的内容更复核自然阅读的习惯,而<code>print()</code>输入的内容更类似程序的语法结构</p>
-<div id="这是print输出的结果" class="section level3" number="1.7.1">
-<h3><span class="header-section-number">1.7.1</span> 这是<code>print()</code>输出的结果</h3>
+<div id="这是print输出的结果" class="section level3" number="1.8.1">
+<h3><span class="header-section-number">1.8.1</span> 这是<code>print()</code>输出的结果</h3>
 <pre class="r"><code>print(c(&quot;hello&quot;, &quot;world&quot;, &quot;!&quot;))</code></pre>
 <pre><code># [1] &quot;hello&quot; &quot;world&quot; &quot;!&quot;</code></pre>
 </div>
-<div id="这是cat输出的结果" class="section level3" number="1.7.2">
-<h3><span class="header-section-number">1.7.2</span> 这是<code>cat()</code>输出的结果</h3>
+<div id="这是cat输出的结果" class="section level3" number="1.8.2">
+<h3><span class="header-section-number">1.8.2</span> 这是<code>cat()</code>输出的结果</h3>
 <pre class="r"><code>cat(c(&quot;hello&quot;, &quot;world&quot;, &quot;!&quot;))</code></pre>
 <pre><code># hello world !</code></pre>
 </div>
 </div>
-<div id="创建序列的区别" class="section level2" number="1.8">
-<h2><span class="header-section-number">1.8</span> 创建序列的区别</h2>
+<div id="创建序列的区别" class="section level2" number="1.9">
+<h2><span class="header-section-number">1.9</span> 创建序列的区别</h2>
 <p>使用<code>:</code>创建的都是整数序列，使用<code>seq()</code>创建的序列是<code>double</code>。</p>
 <pre class="r"><code>a &lt;- 1:10
 b &lt;- seq(from = 1, to = 10, by = 1)
@@ -542,16 +577,16 @@ identical(a, b)</code></pre>
 <pre class="r"><code>x &lt;- runif(20)
 y &lt;- 2 * (x + 1)
 sd(x)</code></pre>
-<pre><code># [1] 0.294</code></pre>
+<pre><code># [1] 0.332</code></pre>
 <pre class="r"><code>var(x)</code></pre>
-<pre><code># [1] 0.0865</code></pre>
+<pre><code># [1] 0.11</code></pre>
 <ul>
 <li><code>cor()</code>和<code>cov()</code>函数可以分别计算两个向量之间的相关性和协方差：</li>
 </ul>
 <pre class="r"><code>cor(x, y)</code></pre>
 <pre><code># [1] 1</code></pre>
 <pre class="r"><code>cov(x, y)</code></pre>
-<pre><code># [1] 0.173</code></pre>
+<pre><code># [1] 0.22</code></pre>
 </div>
 <div id="线性回归" class="section level2" number="2.3">
 <h2><span class="header-section-number">2.3</span> 线性回归</h2>
@@ -734,6 +769,45 @@ c     |   170  | 30
 <h2><span class="header-section-number">3.2</span> 图片</h2>
 <p>微信截图的图片不能被<code>knit</code>正确读取，会提示找不到文件，需要更改文件类型或者名字？</p>
 </div>
+</div>
+<div id="r对excel的操作" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> R对Excel的操作</h1>
+<p>Excel是平实工作中用得最多的存储数据文件，有时候会牵涉合并、汇总等等操作。使用R的一些包能非常方便的批量操作Excel文件。
+## 读取Excel</p>
+<p>推荐使用<code>opnexlsx</code>、<code>readxl</code>包,常用的有以下操作</p>
+<ul>
+<li><code>excel_sheets()</code>可以获取工作簿的名称</li>
+<li><code>list.dirs()</code>, 获取文件夹名，<code>fullname = T</code>获取带完整路径的名称</li>
+<li><code>list.files()</code>,获取文件目录中所有文件名称，同样有<code>fullname</code>参数。</li>
+<li><code>read_excel</code>读取不同版本Excel文件。<code>read.xlsx</code>其中<code>detectDates</code>参数在读取含有日期变量的文件时非常有用。</li>
+</ul>
+<pre class="r"><code>test &lt;- read.xlsx(&quot;data/testdata.xlsx&quot;, detectDates = T)
+read.xlsx(&quot;data/testdata.xlsx&quot;, detectDates = F)</code></pre>
+<pre><code>#   name birthdata age group  Time
+# 1   aa     37157  20     A 44361
+# 2   bb     38960  15     A 44575
+# 3   cc     37887  18     B 44379
+# 4   dd     38367  17     A 44480
+# 5   ee     40254  12     B 44416
+# 6   ff     43741   2     C 44568
+# 7   gg     39348  14     B 44513
+# 8   hh     39847  13     C 44316
+# 9   ii     39223  15     C 44438</code></pre>
+<pre class="r"><code>test %&gt;%
+    mutate(Time2 = as.Date(Time, origin = &quot;1899-12-30 00:00:00&quot;))</code></pre>
+<pre><code>#   name  birthdata age group  Time      Time2
+# 1   aa 2001-09-23  20     A 44361 2021-06-13
+# 2   bb 2006-08-31  15     A 44575 2022-01-13
+# 3   cc 2003-09-23  18     B 44379 2021-07-01
+# 4   dd 2005-01-15  17     A 44480 2021-10-11
+# 5   ee 2010-03-17  12     B 44416 2021-08-07
+# 6   ff 2019-10-03   2     C 44568 2022-01-06
+# 7   gg 2007-09-23  14     B 44513 2021-11-12
+# 8   hh 2009-02-03  13     C 44316 2021-04-29
+# 9   ii 2007-05-21  15     C 44438 2021-08-29</code></pre>
+</div>
+<div id="shinyapp相关" class="section level1" number="5">
+<h1><span class="header-section-number">5</span> shinyapp相关</h1>
 </div>
 
 

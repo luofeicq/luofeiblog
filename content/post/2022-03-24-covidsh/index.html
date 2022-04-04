@@ -34,7 +34,6 @@ cover:
     hidden: true # only hide on current single page    
 ---
 
-<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
 
 
 <p>今天本地的疫情终于没有增加，抽了点时间关注其他地区的疫情形势。看官方通报的数据，对曾经的模范城市的疫情有兴趣，决定来简单看看。</p>
@@ -49,7 +48,9 @@ cover:
 <p>首先加载需要用到的包，主要使用<code>rvest</code>包获取静态网页信息，谷歌浏览器<code>selectorgadget</code>插件获取需要信息的节点，<code>tidyverse</code>整理数据，绘图，<code>lubridate</code>包处理日期变量。</p>
 <pre class="r"><code>library(rvest)
 library(tidyverse)
-library(lubridate)</code></pre>
+library(lubridate)
+library(readxl)
+library(openxlsx)</code></pre>
 </div>
 <div id="主页信息获取" class="section level2">
 <h2>主页信息获取</h2>
@@ -123,4 +124,163 @@ write.csv(basedata, &quot;data/basedata.csv&quot;)</code></pre>
 <h1>简单总结</h1>
 <p>从上面的简单分析可得知，上海市境外输入感染者数量，从去年2月20日左右开始上升，增加的幅度从平均12例左右，到2月24左右达到85例左右。确实存在一个数量快速增加的阶段，之后过了大概一周的时间上海本地感染者开始快速上升，我们不得不猜测这二者之间可能存在某种联系。最后一张图添加了平滑曲线，做一个大致的预测。从图可见上海这一次疫情新增病人数量仍未到达所谓的“拐点”<del>没爬错数据</del>。随着检测人数的增加，防控措施的进一步加码和落实，相信这一波疫情会逐渐得到控制。</p>
 <p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="重点关注3月数据" class="section level1">
+<h1>重点关注3月数据</h1>
+<p>重新爬了一下按地区分布的，画了个玫瑰图看看。</p>
+<p>数据爬出来如下（前20行）：</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Date_rep</th>
+<th align="left">Local</th>
+<th align="right">case_conf</th>
+<th align="right">case_none</th>
+<th align="right">case_sum</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">2022-04-03</td>
+<td align="left">浦东新区</td>
+<td align="right">140</td>
+<td align="right">3514</td>
+<td align="right">3654</td>
+</tr>
+<tr class="even">
+<td align="left">2022-04-03</td>
+<td align="left">黄浦区</td>
+<td align="right">14</td>
+<td align="right">810</td>
+<td align="right">824</td>
+</tr>
+<tr class="odd">
+<td align="left">2022-04-03</td>
+<td align="left">静安区</td>
+<td align="right">29</td>
+<td align="right">309</td>
+<td align="right">338</td>
+</tr>
+<tr class="even">
+<td align="left">2022-04-03</td>
+<td align="left">徐汇区</td>
+<td align="right">34</td>
+<td align="right">465</td>
+<td align="right">499</td>
+</tr>
+<tr class="odd">
+<td align="left">2022-04-03</td>
+<td align="left">长宁区</td>
+<td align="right">14</td>
+<td align="right">90</td>
+<td align="right">104</td>
+</tr>
+<tr class="even">
+<td align="left">2022-04-03</td>
+<td align="left">普陀区</td>
+<td align="right">21</td>
+<td align="right">300</td>
+<td align="right">321</td>
+</tr>
+<tr class="odd">
+<td align="left">2022-04-03</td>
+<td align="left">虹口区</td>
+<td align="right">11</td>
+<td align="right">177</td>
+<td align="right">188</td>
+</tr>
+<tr class="even">
+<td align="left">2022-04-03</td>
+<td align="left">杨浦区</td>
+<td align="right">30</td>
+<td align="right">344</td>
+<td align="right">374</td>
+</tr>
+<tr class="odd">
+<td align="left">2022-04-03</td>
+<td align="left">宝山区</td>
+<td align="right">32</td>
+<td align="right">435</td>
+<td align="right">467</td>
+</tr>
+<tr class="even">
+<td align="left">2022-04-03</td>
+<td align="left">闵行区</td>
+<td align="right">68</td>
+<td align="right">872</td>
+<td align="right">940</td>
+</tr>
+<tr class="odd">
+<td align="left">2022-04-03</td>
+<td align="left">嘉定区</td>
+<td align="right">14</td>
+<td align="right">401</td>
+<td align="right">415</td>
+</tr>
+<tr class="even">
+<td align="left">2022-04-03</td>
+<td align="left">金山区</td>
+<td align="right">4</td>
+<td align="right">99</td>
+<td align="right">103</td>
+</tr>
+<tr class="odd">
+<td align="left">2022-04-03</td>
+<td align="left">松江区</td>
+<td align="right">6</td>
+<td align="right">257</td>
+<td align="right">263</td>
+</tr>
+<tr class="even">
+<td align="left">2022-04-03</td>
+<td align="left">青浦区</td>
+<td align="right">3</td>
+<td align="right">229</td>
+<td align="right">232</td>
+</tr>
+<tr class="odd">
+<td align="left">2022-04-03</td>
+<td align="left">奉贤区</td>
+<td align="right">4</td>
+<td align="right">115</td>
+<td align="right">119</td>
+</tr>
+<tr class="even">
+<td align="left">2022-04-03</td>
+<td align="left">崇明区</td>
+<td align="right">1</td>
+<td align="right">164</td>
+<td align="right">165</td>
+</tr>
+<tr class="odd">
+<td align="left">2022-04-02</td>
+<td align="left">浦东新区</td>
+<td align="right">108</td>
+<td align="right">1930</td>
+<td align="right">2038</td>
+</tr>
+<tr class="even">
+<td align="left">2022-04-02</td>
+<td align="left">黄浦区</td>
+<td align="right">27</td>
+<td align="right">632</td>
+<td align="right">659</td>
+</tr>
+<tr class="odd">
+<td align="left">2022-04-02</td>
+<td align="left">静安区</td>
+<td align="right">26</td>
+<td align="right">298</td>
+<td align="right">324</td>
+</tr>
+<tr class="even">
+<td align="left">2022-04-02</td>
+<td align="left">徐汇区</td>
+<td align="right">44</td>
+<td align="right">998</td>
+<td align="right">1042</td>
+</tr>
+</tbody>
+</table>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>

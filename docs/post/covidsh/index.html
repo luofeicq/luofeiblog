@@ -116,8 +116,8 @@ code.has-jax {
   "keywords": [
     "Tec", "R"
   ],
-  "articleBody": "\r\r今天本地的疫情终于没有增加，抽了点时间关注其他地区的疫情形势。看官方通报的数据，对曾经的模范城市的疫情有兴趣，决定来简单看看。\n数据获取\r数据来源\r要获取准确的数据，当然是上官方网站。打开上海市卫健委的官网(https://markdown.com.cn/basic-syntax/)，疫情数据公告都在“新闻发布”栏目中，再仔细一看，疫情信息的标题中就包含了所有新增、确诊数据。真是太方便了。新闻页面也是连续的以_[num]为页码的编号，这种页面爬起来不要太省事。\n\rR包\r首先加载需要用到的包，主要使用rvest包获取静态网页信息，谷歌浏览器selectorgadget插件获取需要信息的节点，tidyverse整理数据，绘图，lubridate包处理日期变量。\nlibrary(rvest)\rlibrary(tidyverse)\rlibrary(lubridate)\r\r主页信息获取\r使用selectorgadget在网页上找到需要的变量“时间”和“标题”，对应的node分别是.time和.list-data a，使用rvest抓取后，转为文本存储在列表中。\n## 设置url\rurl %\rhtml_nodes(\".time\") %%\rhtml_text() %%\ras.Date.character()\rtitle %\rhtml_nodes(\".list-date a\") %%\rhtml_text()\rbasedata \r\r爬取所有数据\r上海的疫情变化主要从3月开始，但为了查看之前的变化，是否输入病例压力增大导致本次疫情，因此爬取了2到200页到的数据。使用for循环，rbind组合成基础数据。\n## 使用循环爬取2到200也网页信息\rfor (i in 2:200) {\rurl = paste0(\"https://wsjkw.sh.gov.cn/xwfb/index_\", i, \".html\")\rcontent %\rhtml_nodes(\".time\") %%\rhtml_text() %%\ras.Date.character()\rtitle %\rhtml_nodes(\".list-date a\") %%\rhtml_text()\rbasedata %\rrbind(tibble(reportdate = reportdate, title = title))\r}\r## 写出数据\rwrite.csv(basedata, \"data/basedata.csv\")\r\r数据清洗\r这一步比较麻烦的是对标题中日期字符的整理。使用str_extract_all命令后提取的日期，变成了列表。再合并为向量形势的日期格式数据时出了点麻烦。最后使用了笨办法for循环unlist后再paste0合并。其实直接用标题前的日期-1没什么大的误差，主要是在跟自己较劲搞得这么麻烦。\n\r\r好了，开始分析吧\r先画个简单的图看看大趋势\r以报告感染者类型为颜色看，从20年1月到21年12月期间，上海的感染人数几乎在处于一个长期稳定的状态，从2022年3月开始呈直升飞机式的增长。奇怪的是中间咋有个空白区，没有数据。查看原始网页，发现网站从2021年11月6日-2022年1月1日没有更新数据。这是一个奇怪的现象。不过没关系，这不影响我们后面的分析，这对原因分析有很大关系。\n\r输入感染者的趋势\r对上海这波疫情有个合理的猜测是，1月初上海接纳大量某地的航班的，导致上海市输入疫情压力陡增，再加上Omicron变异株超强传播能力，双重压力下导致这个模范城市失守。好吧，我们来看看是否能验证输入压力陡增这个猜测。从图上看好像跟上图颇像，鉴于确诊和无症状都属与感染这，下一步我们把本地和输入的感染者的合计数的变化可视化看看。\n\r感染者总数\r先用二者做个散点图看看,如图，完全看不出啥关系啊。。。。输入感染者较多的时候，反而本地感染处于低水平。这个图像，线性回归暂时也不考虑。我们还是从感染者数量和时间的关系看看。\n画出来如下，大致能看从1月到3月二者都在上升，但到了3月后，二者分道扬镳了。\r\r2022年1到三月\r我们把时间尺度拉大到2月中旬到3月看看。放大后（下图1）可以看到从2月10日起到2月21日之间，二者几乎是呈线性相关，到2月22日，输入感染人数开始上升，此时上海本地感染数量仍然无幅度的改变，处于平稳状态，此时输入感染者数量是大于本地感染。\n为了更仔细看清楚变化情况，我们将y轴的数量调整至0-100例（下图2），这时候能清楚看到每天的变化。3月6日左右，二者数量出现了反转，本地感染者数量快速上升，并大幅度超过输入感染者。\n\r\r简单总结\r从上面的简单分析可得知，上海市境外输入感染者数量，从去年2月20日左右开始上升，增加的幅度从平均12例左右，到2月24左右达到85例左右。确实存在一个数量快速增加的阶段，之后过了大概一周的时间上海本地感染者开始快速上升，我们不得不猜测这二者之间可能存在某种联系。最后一张图添加了平滑曲线，做一个大致的预测。从图可见上海这一次疫情新增病人数量仍未到达所谓的“拐点”没爬错数据。随着检测人数的增加，防控措施的进一步加码和落实，相信这一波疫情会逐渐得到控制。\n\r",
-  "wordCount" : "111",
+  "articleBody": "\r今天本地的疫情终于没有增加，抽了点时间关注其他地区的疫情形势。看官方通报的数据，对曾经的模范城市的疫情有兴趣，决定来简单看看。\n数据获取\r数据来源\r要获取准确的数据，当然是上官方网站。打开上海市卫健委的官网(https://markdown.com.cn/basic-syntax/)，疫情数据公告都在“新闻发布”栏目中，再仔细一看，疫情信息的标题中就包含了所有新增、确诊数据。真是太方便了。新闻页面也是连续的以_[num]为页码的编号，这种页面爬起来不要太省事。\n\rR包\r首先加载需要用到的包，主要使用rvest包获取静态网页信息，谷歌浏览器selectorgadget插件获取需要信息的节点，tidyverse整理数据，绘图，lubridate包处理日期变量。\nlibrary(rvest)\rlibrary(tidyverse)\rlibrary(lubridate)\rlibrary(readxl)\rlibrary(openxlsx)\r\r主页信息获取\r使用selectorgadget在网页上找到需要的变量“时间”和“标题”，对应的node分别是.time和.list-data a，使用rvest抓取后，转为文本存储在列表中。\n## 设置url\rurl %\rhtml_nodes(\".time\") %%\rhtml_text() %%\ras.Date.character()\rtitle %\rhtml_nodes(\".list-date a\") %%\rhtml_text()\rbasedata \r\r爬取所有数据\r上海的疫情变化主要从3月开始，但为了查看之前的变化，是否输入病例压力增大导致本次疫情，因此爬取了2到200页到的数据。使用for循环，rbind组合成基础数据。\n## 使用循环爬取2到200也网页信息\rfor (i in 2:200) {\rurl = paste0(\"https://wsjkw.sh.gov.cn/xwfb/index_\", i, \".html\")\rcontent %\rhtml_nodes(\".time\") %%\rhtml_text() %%\ras.Date.character()\rtitle %\rhtml_nodes(\".list-date a\") %%\rhtml_text()\rbasedata %\rrbind(tibble(reportdate = reportdate, title = title))\r}\r## 写出数据\rwrite.csv(basedata, \"data/basedata.csv\")\r\r数据清洗\r这一步比较麻烦的是对标题中日期字符的整理。使用str_extract_all命令后提取的日期，变成了列表。再合并为向量形势的日期格式数据时出了点麻烦。最后使用了笨办法for循环unlist后再paste0合并。其实直接用标题前的日期-1没什么大的误差，主要是在跟自己较劲搞得这么麻烦。\n\r\r好了，开始分析吧\r先画个简单的图看看大趋势\r以报告感染者类型为颜色看，从20年1月到21年12月期间，上海的感染人数几乎在处于一个长期稳定的状态，从2022年3月开始呈直升飞机式的增长。奇怪的是中间咋有个空白区，没有数据。查看原始网页，发现网站从2021年11月6日-2022年1月1日没有更新数据。这是一个奇怪的现象。不过没关系，这不影响我们后面的分析，这对原因分析有很大关系。\n\r输入感染者的趋势\r对上海这波疫情有个合理的猜测是，1月初上海接纳大量某地的航班的，导致上海市输入疫情压力陡增，再加上Omicron变异株超强传播能力，双重压力下导致这个模范城市失守。好吧，我们来看看是否能验证输入压力陡增这个猜测。从图上看好像跟上图颇像，鉴于确诊和无症状都属与感染这，下一步我们把本地和输入的感染者的合计数的变化可视化看看。\n\r感染者总数\r先用二者做个散点图看看,如图，完全看不出啥关系啊。。。。输入感染者较多的时候，反而本地感染处于低水平。这个图像，线性回归暂时也不考虑。我们还是从感染者数量和时间的关系看看。\n画出来如下，大致能看从1月到3月二者都在上升，但到了3月后，二者分道扬镳了。\r\r2022年1到三月\r我们把时间尺度拉大到2月中旬到3月看看。放大后（下图1）可以看到从2月10日起到2月21日之间，二者几乎是呈线性相关，到2月22日，输入感染人数开始上升，此时上海本地感染数量仍然无幅度的改变，处于平稳状态，此时输入感染者数量是大于本地感染。\n为了更仔细看清楚变化情况，我们将y轴的数量调整至0-100例（下图2），这时候能清楚看到每天的变化。3月6日左右，二者数量出现了反转，本地感染者数量快速上升，并大幅度超过输入感染者。\n\r\r简单总结\r从上面的简单分析可得知，上海市境外输入感染者数量，从去年2月20日左右开始上升，增加的幅度从平均12例左右，到2月24左右达到85例左右。确实存在一个数量快速增加的阶段，之后过了大概一周的时间上海本地感染者开始快速上升，我们不得不猜测这二者之间可能存在某种联系。最后一张图添加了平滑曲线，做一个大致的预测。从图可见上海这一次疫情新增病人数量仍未到达所谓的“拐点”没爬错数据。随着检测人数的增加，防控措施的进一步加码和落实，相信这一波疫情会逐渐得到控制。\n\r重点关注3月数据\r重新爬了一下按地区分布的，画了个玫瑰图看看。\n数据爬出来如下（前20行）：\n\r\rDate_rep\rLocal\rcase_conf\rcase_none\rcase_sum\r\r\r\r2022-04-03\r浦东新区\r140\r3514\r3654\r\r2022-04-03\r黄浦区\r14\r810\r824\r\r2022-04-03\r静安区\r29\r309\r338\r\r2022-04-03\r徐汇区\r34\r465\r499\r\r2022-04-03\r长宁区\r14\r90\r104\r\r2022-04-03\r普陀区\r21\r300\r321\r\r2022-04-03\r虹口区\r11\r177\r188\r\r2022-04-03\r杨浦区\r30\r344\r374\r\r2022-04-03\r宝山区\r32\r435\r467\r\r2022-04-03\r闵行区\r68\r872\r940\r\r2022-04-03\r嘉定区\r14\r401\r415\r\r2022-04-03\r金山区\r4\r99\r103\r\r2022-04-03\r松江区\r6\r257\r263\r\r2022-04-03\r青浦区\r3\r229\r232\r\r2022-04-03\r奉贤区\r4\r115\r119\r\r2022-04-03\r崇明区\r1\r164\r165\r\r2022-04-02\r浦东新区\r108\r1930\r2038\r\r2022-04-02\r黄浦区\r27\r632\r659\r\r2022-04-02\r静安区\r26\r298\r324\r\r2022-04-02\r徐汇区\r44\r998\r1042\r\r\r\r\r",
+  "wordCount" : "221",
   "inLanguage": "en",
   "datePublished": "2022-03-24T00:00:00Z",
   "dateModified": "2022-03-24T00:00:00Z",
@@ -254,7 +254,9 @@ code.has-jax {
                     <a href="#" aria-label="2022年1到三月">2022年1到三月</a></li></ul>
                 </li>
                 <li>
-                    <a href="#" aria-label="简单总结">简单总结</a>
+                    <a href="#" aria-label="简单总结">简单总结</a></li>
+                <li>
+                    <a href="#" aria-label="重点关注3月数据">重点关注3月数据</a>
                 </li>
             </ul>
         </div>
@@ -262,7 +264,6 @@ code.has-jax {
 </div>
 
   <div class="post-content">
-<script src="../../post/covidsh/index_files/header-attrs/header-attrs.js"></script>
 
 
 <p>今天本地的疫情终于没有增加，抽了点时间关注其他地区的疫情形势。看官方通报的数据，对曾经的模范城市的疫情有兴趣，决定来简单看看。</p>
@@ -277,7 +278,9 @@ code.has-jax {
 <p>首先加载需要用到的包，主要使用<code>rvest</code>包获取静态网页信息，谷歌浏览器<code>selectorgadget</code>插件获取需要信息的节点，<code>tidyverse</code>整理数据，绘图，<code>lubridate</code>包处理日期变量。</p>
 <pre class="r"><code>library(rvest)
 library(tidyverse)
-library(lubridate)</code></pre>
+library(lubridate)
+library(readxl)
+library(openxlsx)</code></pre>
 </div>
 <div id="主页信息获取" class="section level2">
 <h2>主页信息获取</h2>
@@ -351,6 +354,165 @@ write.csv(basedata, &quot;data/basedata.csv&quot;)</code></pre>
 <h1>简单总结</h1>
 <p>从上面的简单分析可得知，上海市境外输入感染者数量，从去年2月20日左右开始上升，增加的幅度从平均12例左右，到2月24左右达到85例左右。确实存在一个数量快速增加的阶段，之后过了大概一周的时间上海本地感染者开始快速上升，我们不得不猜测这二者之间可能存在某种联系。最后一张图添加了平滑曲线，做一个大致的预测。从图可见上海这一次疫情新增病人数量仍未到达所谓的“拐点”<del>没爬错数据</del>。随着检测人数的增加，防控措施的进一步加码和落实，相信这一波疫情会逐渐得到控制。</p>
 <p><img src="../../post/covidsh/index_files/figure-html/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="重点关注3月数据" class="section level1">
+<h1>重点关注3月数据</h1>
+<p>重新爬了一下按地区分布的，画了个玫瑰图看看。</p>
+<p>数据爬出来如下（前20行）：</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Date_rep</th>
+<th align="left">Local</th>
+<th align="right">case_conf</th>
+<th align="right">case_none</th>
+<th align="right">case_sum</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">2022-04-03</td>
+<td align="left">浦东新区</td>
+<td align="right">140</td>
+<td align="right">3514</td>
+<td align="right">3654</td>
+</tr>
+<tr class="even">
+<td align="left">2022-04-03</td>
+<td align="left">黄浦区</td>
+<td align="right">14</td>
+<td align="right">810</td>
+<td align="right">824</td>
+</tr>
+<tr class="odd">
+<td align="left">2022-04-03</td>
+<td align="left">静安区</td>
+<td align="right">29</td>
+<td align="right">309</td>
+<td align="right">338</td>
+</tr>
+<tr class="even">
+<td align="left">2022-04-03</td>
+<td align="left">徐汇区</td>
+<td align="right">34</td>
+<td align="right">465</td>
+<td align="right">499</td>
+</tr>
+<tr class="odd">
+<td align="left">2022-04-03</td>
+<td align="left">长宁区</td>
+<td align="right">14</td>
+<td align="right">90</td>
+<td align="right">104</td>
+</tr>
+<tr class="even">
+<td align="left">2022-04-03</td>
+<td align="left">普陀区</td>
+<td align="right">21</td>
+<td align="right">300</td>
+<td align="right">321</td>
+</tr>
+<tr class="odd">
+<td align="left">2022-04-03</td>
+<td align="left">虹口区</td>
+<td align="right">11</td>
+<td align="right">177</td>
+<td align="right">188</td>
+</tr>
+<tr class="even">
+<td align="left">2022-04-03</td>
+<td align="left">杨浦区</td>
+<td align="right">30</td>
+<td align="right">344</td>
+<td align="right">374</td>
+</tr>
+<tr class="odd">
+<td align="left">2022-04-03</td>
+<td align="left">宝山区</td>
+<td align="right">32</td>
+<td align="right">435</td>
+<td align="right">467</td>
+</tr>
+<tr class="even">
+<td align="left">2022-04-03</td>
+<td align="left">闵行区</td>
+<td align="right">68</td>
+<td align="right">872</td>
+<td align="right">940</td>
+</tr>
+<tr class="odd">
+<td align="left">2022-04-03</td>
+<td align="left">嘉定区</td>
+<td align="right">14</td>
+<td align="right">401</td>
+<td align="right">415</td>
+</tr>
+<tr class="even">
+<td align="left">2022-04-03</td>
+<td align="left">金山区</td>
+<td align="right">4</td>
+<td align="right">99</td>
+<td align="right">103</td>
+</tr>
+<tr class="odd">
+<td align="left">2022-04-03</td>
+<td align="left">松江区</td>
+<td align="right">6</td>
+<td align="right">257</td>
+<td align="right">263</td>
+</tr>
+<tr class="even">
+<td align="left">2022-04-03</td>
+<td align="left">青浦区</td>
+<td align="right">3</td>
+<td align="right">229</td>
+<td align="right">232</td>
+</tr>
+<tr class="odd">
+<td align="left">2022-04-03</td>
+<td align="left">奉贤区</td>
+<td align="right">4</td>
+<td align="right">115</td>
+<td align="right">119</td>
+</tr>
+<tr class="even">
+<td align="left">2022-04-03</td>
+<td align="left">崇明区</td>
+<td align="right">1</td>
+<td align="right">164</td>
+<td align="right">165</td>
+</tr>
+<tr class="odd">
+<td align="left">2022-04-02</td>
+<td align="left">浦东新区</td>
+<td align="right">108</td>
+<td align="right">1930</td>
+<td align="right">2038</td>
+</tr>
+<tr class="even">
+<td align="left">2022-04-02</td>
+<td align="left">黄浦区</td>
+<td align="right">27</td>
+<td align="right">632</td>
+<td align="right">659</td>
+</tr>
+<tr class="odd">
+<td align="left">2022-04-02</td>
+<td align="left">静安区</td>
+<td align="right">26</td>
+<td align="right">298</td>
+<td align="right">324</td>
+</tr>
+<tr class="even">
+<td align="left">2022-04-02</td>
+<td align="left">徐汇区</td>
+<td align="right">44</td>
+<td align="right">998</td>
+<td align="right">1042</td>
+</tr>
+</tbody>
+</table>
+<p><img src="../../post/covidsh/index_files/figure-html/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 
 
