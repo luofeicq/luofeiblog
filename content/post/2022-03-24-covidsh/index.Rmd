@@ -337,14 +337,13 @@ final_df <- final_df %>% mutate(
                     Local == "奉贤无" ~ "奉贤区",
                     TRUE ~ Local)
 )
-write.xlsx(final_df, "data/shcovid.xlsx")
 ```
 
 ```{r, warning=FALSE, include=TRUE, results='asis' }
 final_df <- read_excel("data/shcovid.xlsx")
 ```
 
-数据爬出来如下（前20行）：
+数据爬出来如下表（前20行）：
 
 ```{r, results='asis', results='asis'}
 
