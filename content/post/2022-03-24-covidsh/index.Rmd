@@ -264,7 +264,7 @@ knitr::kable(head(tb_fenlei_final))
 
 ## 时间分布
 
-首先看看随着时间的大体趋势，感染者数量几乎是成指数增加，仿佛仍然没到头
+首先看看随着时间的大体趋势，感染者数量几乎是成指数增加，仿佛仍然没到头。但是从风险人群中检出感染者数量似乎有下降的迹象。
 ```{r}
 tb_fenlei_long <-  tb_fenlei_final %>%
   select(rep_date, case_all_fx, case_all_gk) %>%  
@@ -291,7 +291,20 @@ tb_fenlei_long %>% ggplot(aes(x = rep_date, y = cases)) +
   geom_col(aes(fill = type), position = "fill") +
   scale_x_date(date_breaks = "2 day", date_labels = "%m-%d", expand = c(0.05,0.05))
 ```
+再单独看看风险人群中检出感染者的情况，确实出现了4月3日，4月4日连续两天下降，且看起来几乎是呈直线下降，这似乎是一个好兆头，我们再观察几天看。
 
+```{r}
+tb_fenlei_long %>% filter(type == "case_all_fx") %>% 
+  ggplot(aes(rep_date, cases)) +
+  geom_point() +
+  geom_line() +
+  scale_x_date(date_breaks = "2 day", date_labels = "%m-%d") +
+  scale_y_continuous(breaks = seq(0,1500,200))+
+  theme(panel.grid.minor = element_blank()) +
+  geom_line(data = .%>% filter(rep_date > "2022-04-01"), col =4 , size = 1) +
+  geom_point(data = .%>% filter(rep_date > "2022-04-01"), col = 4, size = 2) +
+  geom_text(data = .%>% filter(rep_date > "2022-04-01"),aes(label = cases), nudge_y = 50, nudge_x = 1 , col = 4)
+```
 
 
 ## 主页信息获取
@@ -500,6 +513,12 @@ covidsh <-  sh_long %>% filter(reportdate > as.Date.character("2022-3-1")) %>%
         panel.grid = element_blank(),
         legend.position = "top")
 covidsh
+```
+
+```{r}
+data("sleep")
+
+sleep %>% t.test(extra ~ group, data = .)
 ```
 
 

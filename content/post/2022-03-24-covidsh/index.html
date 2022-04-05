@@ -668,13 +668,15 @@ write.xlsx(tb_fenlei, &quot;data/case_fenlei.xlsx&quot;)</code></pre>
 </div>
 <div id="时间分布" class="section level2">
 <h2>时间分布</h2>
-<p>首先看看随着时间的大体趋势，感染者数量几乎是成指数增加，仿佛仍然没到头
+<p>首先看看随着时间的大体趋势，感染者数量几乎是成指数增加，仿佛仍然没到头。但是从风险人群中检出感染者数量似乎有下降的迹象。
 <img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="人群分布" class="section level2">
 <h2>人群分布</h2>
 <p>再看看每天感染者发现途径的变化情况，红色代表每天从风险人群中发现感染者，蓝色代表从管控人群。可预见从风险人群中发现感染者的比例大体趋势是减少的。这种情况视乎是一个好的征兆。但是是否存在随着时间变化，防控政策的变化，同时对两类人群的定义是否也随之变化？
-<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" />
+再单独看看风险人群中检出感染者的情况，确实出现了4月3日，4月4日连续两天下降，且看起来几乎是呈直线下降，这似乎是一个好兆头，我们再观察几天看。</p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="主页信息获取" class="section level2">
 <h2>主页信息获取</h2>
@@ -712,29 +714,29 @@ write.csv(basedata,&quot;data/basedata.csv&quot;)</code></pre>
 <div id="先画个简单的图看看大趋势" class="section level2">
 <h2>先画个简单的图看看大趋势</h2>
 <p>以报告感染者类型为颜色看，从20年1月到21年12月期间，上海的感染人数几乎在处于一个长期稳定的状态，从2022年3月开始呈直升飞机式的增长。奇怪的是中间咋有个空白区，没有数据。查看原始网页，发现网站从2021年11月6日-2022年1月1日没有更新数据。这是一个奇怪的现象。不过没关系，这不影响我们后面的分析，<del>这对原因分析有很大关系</del>。</p>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-15-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="输入感染者的趋势" class="section level2">
 <h2>输入感染者的趋势</h2>
 <p>对上海这波疫情有个合理的猜测是，1月初上海接纳大量某地的航班的，导致上海市输入疫情压力陡增，再加上Omicron变异株超强传播能力，双重压力下导致这个模范城市失守。好吧，我们来看看是否能验证输入压力陡增这个猜测。从图上看好像跟上图颇像，鉴于确诊和无症状都属与感染这，下一步我们把本地和输入的感染者的合计数的变化可视化看看。</p>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-15-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-16-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="感染者总数" class="section level2">
 <h2>感染者总数</h2>
 <p>先用二者做个散点图看看,如图，完全看不出啥关系啊。。。。输入感染者较多的时候，反而本地感染处于低水平。这个图像，线性回归暂时也不考虑。我们还是从感染者数量和时间的关系看看。</p>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-16-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-17-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>画出来如下，大致能看从1月到3月二者都在上升，但到了3月后，二者分道扬镳了。
-<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-17-1.png" width="672" style="display: block; margin: auto;" /></p>
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="年1到三月" class="section level2">
 <h2>2022年1到三月</h2>
 <p>我们把时间尺度拉大到2月中旬到3月看看。放大后（下图1）可以看到从2月10日起到2月21日之间，二者几乎是呈线性相关，到2月22日，输入感染人数开始上升，此时上海本地感染数量仍然无幅度的改变，处于平稳状态，此时输入感染者数量是大于本地感染。</p>
 <p>为了更仔细看清楚变化情况，我们将y轴的数量调整至0-100例（下图2），这时候能清楚看到每天的变化。3月6日左右，二者数量出现了反转，本地感染者数量快速上升，并大幅度超过输入感染者。</p>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-1.png" width="672" style="display: block; margin: auto;" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-19-1.png" width="672" style="display: block; margin: auto;" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-19-2.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 </div>
 <div id="简单总结" class="section level1">
 <h1>简单总结</h1>
 <p>从上面的简单分析可得知，上海市境外输入感染者数量，从去年2月20日左右开始上升，增加的幅度从平均12例左右，到2月24左右达到85例左右。确实存在一个数量快速增加的阶段，之后过了大概一周的时间上海本地感染者开始快速上升，我们不得不猜测这二者之间可能存在某种联系。最后一张图添加了平滑曲线，做一个大致的预测。从图可见上海这一次疫情新增病人数量仍未到达所谓的“拐点”<del>没爬错数据</del>。随着检测人数的增加，防控措施的进一步加码和落实，相信这一波疫情会逐渐得到控制。</p>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-19-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-20-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
