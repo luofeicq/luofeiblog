@@ -50,8 +50,7 @@ cover:
 library(tidyverse)
 library(lubridate)
 library(readxl)
-library(openxlsx)
-library(ggThemeAssist)</code></pre>
+library(openxlsx)</code></pre>
 </div>
 </div>
 <div id="重点关注3月数据" class="section level1">
@@ -113,59 +112,370 @@ write.xlsx(final_df, (&quot;data/shcovid.xlsx&quot;)) # 写出到EXCEL文件</co
 </div>
 <div id="地区分布" class="section level2">
 <h2>地区分布</h2>
-<p>地区分布没啥好说了，浦东新区数量最多，数据爬出来如下表（前20行）：</p>
+<p>地区分布没啥好说了，浦东新区数量最多，数据爬出来如下表：</p>
 <table>
+<colgroup>
+<col width="4%" />
+<col width="5%" />
+<col width="5%" />
+<col width="5%" />
+<col width="5%" />
+<col width="5%" />
+<col width="5%" />
+<col width="5%" />
+<col width="5%" />
+<col width="5%" />
+<col width="5%" />
+<col width="5%" />
+<col width="5%" />
+<col width="5%" />
+<col width="5%" />
+<col width="5%" />
+<col width="5%" />
+<col width="5%" />
+</colgroup>
 <thead>
 <tr class="header">
-<th align="left">Date_rep</th>
 <th align="left">Local</th>
-<th align="right">case_conf</th>
-<th align="right">case_none</th>
-<th align="right">case_sum</th>
+<th align="right">2022-04-04</th>
+<th align="right">2022-04-03</th>
+<th align="right">2022-04-01</th>
+<th align="right">2022-03-28</th>
+<th align="right">2022-03-31</th>
+<th align="right">2022-03-30</th>
+<th align="right">2022-03-29</th>
+<th align="right">2022-04-02</th>
+<th align="right">2022-03-25</th>
+<th align="right">2022-03-27</th>
+<th align="right">2022-03-26</th>
+<th align="right">2022-03-24</th>
+<th align="right">2022-03-22</th>
+<th align="right">2022-03-20</th>
+<th align="right">2022-03-23</th>
+<th align="right">2022-03-21</th>
+<th align="right">2022-03-19</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">2022-04-04</td>
 <td align="left">浦东新区</td>
-<td align="right">205</td>
-<td align="right">6866</td>
 <td align="right">7071</td>
+<td align="right">3654</td>
+<td align="right">2584</td>
+<td align="right">2506</td>
+<td align="right">2407</td>
+<td align="right">2207</td>
+<td align="right">2183</td>
+<td align="right">2038</td>
+<td align="right">1914</td>
+<td align="right">1429</td>
+<td align="right">323</td>
+<td align="right">193</td>
+<td align="right">237</td>
+<td align="right">220</td>
+<td align="right">218</td>
+<td align="right">169</td>
+<td align="right">135</td>
 </tr>
 <tr class="even">
-<td align="left">2022-04-04</td>
-<td align="left">黄浦区</td>
-<td align="right">8</td>
-<td align="right">962</td>
-<td align="right">970</td>
+<td align="left">闵行区</td>
+<td align="right">1381</td>
+<td align="right">940</td>
+<td align="right">1043</td>
+<td align="right">370</td>
+<td align="right">392</td>
+<td align="right">780</td>
+<td align="right">987</td>
+<td align="right">829</td>
+<td align="right">206</td>
+<td align="right">619</td>
+<td align="right">972</td>
+<td align="right">490</td>
+<td align="right">305</td>
+<td align="right">265</td>
+<td align="right">256</td>
+<td align="right">122</td>
+<td align="right">53</td>
 </tr>
 <tr class="odd">
-<td align="left">2022-04-04</td>
-<td align="left">静安区</td>
-<td align="right">1</td>
-<td align="right">49</td>
-<td align="right">50</td>
-</tr>
-<tr class="even">
-<td align="left">2022-04-04</td>
 <td align="left">徐汇区</td>
-<td align="right">8</td>
-<td align="right">1221</td>
 <td align="right">1229</td>
-</tr>
-<tr class="odd">
-<td align="left">2022-04-04</td>
-<td align="left">长宁区</td>
-<td align="right">1</td>
-<td align="right">32</td>
-<td align="right">33</td>
+<td align="right">499</td>
+<td align="right">639</td>
+<td align="right">91</td>
+<td align="right">226</td>
+<td align="right">404</td>
+<td align="right">1100</td>
+<td align="right">1042</td>
+<td align="right">3</td>
+<td align="right">277</td>
+<td align="right">331</td>
+<td align="right">167</td>
+<td align="right">87</td>
+<td align="right">46</td>
+<td align="right">106</td>
+<td align="right">130</td>
+<td align="right">61</td>
 </tr>
 <tr class="even">
-<td align="left">2022-04-04</td>
-<td align="left">普陀区</td>
+<td align="left">黄浦区</td>
+<td align="right">970</td>
+<td align="right">824</td>
+<td align="right">260</td>
+<td align="right">283</td>
+<td align="right">121</td>
+<td align="right">361</td>
+<td align="right">110</td>
+<td align="right">659</td>
+<td align="right">23</td>
+<td align="right">56</td>
+<td align="right">160</td>
+<td align="right">102</td>
+<td align="right">59</td>
+<td align="right">42</td>
+<td align="right">20</td>
+<td align="right">49</td>
+<td align="right">36</td>
+</tr>
+<tr class="odd">
+<td align="left">嘉定区</td>
 <td align="right">4</td>
-<td align="right">250</td>
+<td align="right">415</td>
+<td align="right">200</td>
+<td align="right">209</td>
+<td align="right">54</td>
+<td align="right">158</td>
+<td align="right">9</td>
+<td align="right">617</td>
+<td align="right">19</td>
+<td align="right">251</td>
+<td align="right">242</td>
+<td align="right">130</td>
+<td align="right">111</td>
+<td align="right">NA</td>
+<td align="right">69</td>
+<td align="right">NA</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">虹口区</td>
+<td align="right">608</td>
+<td align="right">188</td>
+<td align="right">61</td>
+<td align="right">8</td>
+<td align="right">128</td>
+<td align="right">84</td>
+<td align="right">73</td>
+<td align="right">342</td>
+<td align="right">4</td>
+<td align="right">27</td>
+<td align="right">50</td>
+<td align="right">29</td>
+<td align="right">13</td>
+<td align="right">12</td>
+<td align="right">26</td>
+<td align="right">23</td>
+<td align="right">NA</td>
+</tr>
+<tr class="odd">
+<td align="left">松江区</td>
+<td align="right">559</td>
+<td align="right">263</td>
+<td align="right">493</td>
+<td align="right">94</td>
+<td align="right">184</td>
+<td align="right">246</td>
+<td align="right">228</td>
+<td align="right">567</td>
+<td align="right">15</td>
+<td align="right">190</td>
+<td align="right">79</td>
+<td align="right">92</td>
+<td align="right">31</td>
+<td align="right">9</td>
+<td align="right">34</td>
+<td align="right">39</td>
+<td align="right">16</td>
+</tr>
+<tr class="even">
+<td align="left">宝山区</td>
+<td align="right">265</td>
+<td align="right">467</td>
+<td align="right">45</td>
+<td align="right">311</td>
+<td align="right">17</td>
+<td align="right">504</td>
+<td align="right">363</td>
+<td align="right">485</td>
+<td align="right">4</td>
+<td align="right">94</td>
+<td align="right">153</td>
+<td align="right">87</td>
+<td align="right">16</td>
+<td align="right">13</td>
+<td align="right">69</td>
+<td align="right">67</td>
+<td align="right">17</td>
+</tr>
+<tr class="odd">
+<td align="left">普陀区</td>
 <td align="right">254</td>
+<td align="right">321</td>
+<td align="right">245</td>
+<td align="right">81</td>
+<td align="right">15</td>
+<td align="right">146</td>
+<td align="right">113</td>
+<td align="right">388</td>
+<td align="right">9</td>
+<td align="right">70</td>
+<td align="right">69</td>
+<td align="right">38</td>
+<td align="right">21</td>
+<td align="right">18</td>
+<td align="right">34</td>
+<td align="right">31</td>
+<td align="right">25</td>
+</tr>
+<tr class="even">
+<td align="left">杨浦区</td>
+<td align="right">220</td>
+<td align="right">374</td>
+<td align="right">134</td>
+<td align="right">47</td>
+<td align="right">174</td>
+<td align="right">100</td>
+<td align="right">99</td>
+<td align="right">274</td>
+<td align="right">11</td>
+<td align="right">35</td>
+<td align="right">23</td>
+<td align="right">21</td>
+<td align="right">3</td>
+<td align="right">8</td>
+<td align="right">11</td>
+<td align="right">10</td>
+<td align="right">14</td>
+</tr>
+<tr class="odd">
+<td align="left">静安区</td>
+<td align="right">50</td>
+<td align="right">338</td>
+<td align="right">189</td>
+<td align="right">104</td>
+<td align="right">164</td>
+<td align="right">102</td>
+<td align="right">175</td>
+<td align="right">324</td>
+<td align="right">2</td>
+<td align="right">70</td>
+<td align="right">108</td>
+<td align="right">70</td>
+<td align="right">28</td>
+<td align="right">32</td>
+<td align="right">48</td>
+<td align="right">44</td>
+<td align="right">15</td>
+</tr>
+<tr class="even">
+<td align="left">青浦区</td>
+<td align="right">314</td>
+<td align="right">232</td>
+<td align="right">87</td>
+<td align="right">57</td>
+<td align="right">95</td>
+<td align="right">77</td>
+<td align="right">87</td>
+<td align="right">231</td>
+<td align="right">13</td>
+<td align="right">43</td>
+<td align="right">22</td>
+<td align="right">13</td>
+<td align="right">20</td>
+<td align="right">4</td>
+<td align="right">10</td>
+<td align="right">5</td>
+<td align="right">5</td>
+</tr>
+<tr class="odd">
+<td align="left">长宁区</td>
+<td align="right">33</td>
+<td align="right">104</td>
+<td align="right">37</td>
+<td align="right">115</td>
+<td align="right">256</td>
+<td align="right">128</td>
+<td align="right">30</td>
+<td align="right">100</td>
+<td align="right">4</td>
+<td align="right">45</td>
+<td align="right">29</td>
+<td align="right">59</td>
+<td align="right">19</td>
+<td align="right">1</td>
+<td align="right">11</td>
+<td align="right">26</td>
+<td align="right">12</td>
+</tr>
+<tr class="even">
+<td align="left">崇明区</td>
+<td align="right">47</td>
+<td align="right">165</td>
+<td align="right">84</td>
+<td align="right">67</td>
+<td align="right">44</td>
+<td align="right">193</td>
+<td align="right">55</td>
+<td align="right">113</td>
+<td align="right">41</td>
+<td align="right">236</td>
+<td align="right">27</td>
+<td align="right">82</td>
+<td align="right">19</td>
+<td align="right">NA</td>
+<td align="right">54</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+</tr>
+<tr class="odd">
+<td align="left">奉贤区</td>
+<td align="right">64</td>
+<td align="right">119</td>
+<td align="right">161</td>
+<td align="right">115</td>
+<td align="right">183</td>
+<td align="right">130</td>
+<td align="right">96</td>
+<td align="right">157</td>
+<td align="right">NA</td>
+<td align="right">45</td>
+<td align="right">84</td>
+<td align="right">24</td>
+<td align="right">8</td>
+<td align="right">13</td>
+<td align="right">12</td>
+<td align="right">22</td>
+<td align="right">6</td>
+</tr>
+<tr class="even">
+<td align="left">金山区</td>
+<td align="right">52</td>
+<td align="right">103</td>
+<td align="right">49</td>
+<td align="right">19</td>
+<td align="right">42</td>
+<td align="right">33</td>
+<td align="right">26</td>
+<td align="right">60</td>
+<td align="right">NA</td>
+<td align="right">13</td>
+<td align="right">4</td>
+<td align="right">12</td>
+<td align="right">4</td>
+<td align="right">11</td>
+<td align="right">5</td>
+<td align="right">NA</td>
+<td align="right">3</td>
 </tr>
 </tbody>
 </table>

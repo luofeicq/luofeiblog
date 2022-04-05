@@ -72,7 +72,7 @@ library(tidyverse)
 library(lubridate)
 library(readxl)
 library(openxlsx)
-library(ggThemeAssist)
+
 ```
 # 重点关注3月数据
 
@@ -140,11 +140,15 @@ final_df <- read.xlsx("data/shcovid.xlsx", detectDates = T  )
 
 ## 地区分布
 
-地区分布没啥好说了，浦东新区数量最多，数据爬出来如下表（前20行）：
+地区分布没啥好说了，浦东新区数量最多，数据爬出来如下表：
 
 ```{r, results='asis', results='asis'}
 
-knitr::kable(head(final_df))
+final_df_wider <-  final_df %>% group_by(Date_rep, Local) %>% 
+  summarise(case = sum(case_sum)) %>% arrange(-case) 
+final_df_wider %>% pivot_wider(
+  Local, names_from = Date_rep, values_from = case
+) %>% knitr::kable()
 ```
 
 画个玫瑰图看看，其实这个图并并能很好反应数据特征。
