@@ -274,7 +274,7 @@ tb_fenlei_long <-  tb_fenlei_final %>%
 
 
 tb_fenlei_long %>% ggplot(aes(x = rep_date, y = cases)) +
-  geom_col(aes(fill = type), alpha = 0.7) +
+  geom_col(aes(fill = type), position = "dodge" ,alpha = 0.7) +
   scale_x_date(date_breaks = "2 day", date_labels = "%m-%d", expand = c(0.05,0.05)) +
   geom_line(aes(col = type)) +
   geom_point(aes(col = type))
