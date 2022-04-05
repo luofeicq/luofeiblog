@@ -46,7 +46,7 @@ knitr::opts_chunk$set(
   message = FALSE,
   fig.align = "center",
   collapse = FALSE,
-  tidy = TRUE,
+  tidy = F,
   echo = F,
   message = F,
   results = "hide",
@@ -170,7 +170,7 @@ final_df %>% ggplot(aes(x = factor(Date_rep), y = case_sum)) +
   theme(plot.margin = unit(rep(0.5,4), "mm"),
         legend.key.size = unit(3,"mm"),
         aspect.ratio = 1) +
-  scale_y_continuous(expand = c(0,0), limits = c(-200,15000)) 
+  scale_y_continuous(expand = c(0,0), limits = c(-500,15000)) 
 
 ```
 

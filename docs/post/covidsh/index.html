@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="index, follow">
-<title>R爬上海疫情数据简单可视化分析 | Home</title>
+<title>R爬上海疫情数据简单可视化分析(4月5日更新) | Home</title>
 <meta name="keywords" content="Tec, R" />
 <meta name="description" content="无责任猜测。">
 <meta name="author" content="Luo Fei">
@@ -74,7 +74,7 @@ code.has-jax {
 }
 </style>
 
-<meta property="og:title" content="R爬上海疫情数据简单可视化分析" />
+<meta property="og:title" content="R爬上海疫情数据简单可视化分析(4月5日更新)" />
 <meta property="og:description" content="无责任猜测。" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="/post/covidsh/" /><meta property="article:section" content="post" />
@@ -82,7 +82,7 @@ code.has-jax {
 <meta property="article:modified_time" content="2022-03-24T00:00:00&#43;00:00" />
 
 <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="R爬上海疫情数据简单可视化分析"/>
+<meta name="twitter:title" content="R爬上海疫情数据简单可视化分析(4月5日更新)"/>
 <meta name="twitter:description" content="无责任猜测。"/>
 
 
@@ -100,7 +100,7 @@ code.has-jax {
     {
       "@type": "ListItem",
       "position":  1 ,
-      "name": "R爬上海疫情数据简单可视化分析",
+      "name": "R爬上海疫情数据简单可视化分析(4月5日更新)",
       "item": "/post/covidsh/"
     }
   ]
@@ -110,14 +110,14 @@ code.has-jax {
 {
   "@context": "https://schema.org",
   "@type": "BlogPosting",
-  "headline": "R爬上海疫情数据简单可视化分析",
-  "name": "R爬上海疫情数据简单可视化分析",
+  "headline": "R爬上海疫情数据简单可视化分析(4月5日更新)",
+  "name": "R爬上海疫情数据简单可视化分析(4月5日更新)",
   "description": "无责任猜测。",
   "keywords": [
     "Tec", "R"
   ],
-  "articleBody": "\r今天本地的疫情终于没有增加，抽了点时间关注其他地区的疫情形势。看官方通报的数据，对曾经的模范城市的疫情有兴趣，决定来简单看看。\n数据获取\r数据来源\r要获取准确的数据，当然是上官方网站。打开上海市卫健委的官网(https://markdown.com.cn/basic-syntax/)，疫情数据公告都在“新闻发布”栏目中，再仔细一看，疫情信息的标题中就包含了所有新增、确诊数据。真是太方便了。新闻页面也是连续的以_[num]为页码的编号，这种页面爬起来不要太省事。\n\rR包\r首先加载需要用到的包，主要使用rvest包获取静态网页信息，谷歌浏览器selectorgadget插件获取需要信息的节点，tidyverse整理数据，绘图，lubridate包处理日期变量。\nlibrary(rvest)\rlibrary(tidyverse)\rlibrary(lubridate)\rlibrary(readxl)\rlibrary(openxlsx)\r\r主页信息获取\r使用selectorgadget在网页上找到需要的变量“时间”和“标题”，对应的node分别是.time和.list-data a，使用rvest抓取后，转为文本存储在列表中。\n## 设置url\rurl %\rhtml_nodes(\".time\") %%\rhtml_text() %%\ras.Date.character()\rtitle %\rhtml_nodes(\".list-date a\") %%\rhtml_text()\rbasedata \r\r爬取所有数据\r上海的疫情变化主要从3月开始，但为了查看之前的变化，是否输入病例压力增大导致本次疫情，因此爬取了2到200页到的数据。使用for循环，rbind组合成基础数据。\n## 使用循环爬取2到200也网页信息\rfor (i in 2:200) {\rurl = paste0(\"https://wsjkw.sh.gov.cn/xwfb/index_\", i, \".html\")\rcontent %\rhtml_nodes(\".time\") %%\rhtml_text() %%\ras.Date.character()\rtitle %\rhtml_nodes(\".list-date a\") %%\rhtml_text()\rbasedata %\rrbind(tibble(reportdate = reportdate, title = title))\r}\r## 写出数据\rwrite.csv(basedata, \"data/basedata.csv\")\r\r数据清洗\r这一步比较麻烦的是对标题中日期字符的整理。使用str_extract_all命令后提取的日期，变成了列表。再合并为向量形势的日期格式数据时出了点麻烦。最后使用了笨办法for循环unlist后再paste0合并。其实直接用标题前的日期-1没什么大的误差，主要是在跟自己较劲搞得这么麻烦。\n\r\r好了，开始分析吧\r先画个简单的图看看大趋势\r以报告感染者类型为颜色看，从20年1月到21年12月期间，上海的感染人数几乎在处于一个长期稳定的状态，从2022年3月开始呈直升飞机式的增长。奇怪的是中间咋有个空白区，没有数据。查看原始网页，发现网站从2021年11月6日-2022年1月1日没有更新数据。这是一个奇怪的现象。不过没关系，这不影响我们后面的分析，这对原因分析有很大关系。\n\r输入感染者的趋势\r对上海这波疫情有个合理的猜测是，1月初上海接纳大量某地的航班的，导致上海市输入疫情压力陡增，再加上Omicron变异株超强传播能力，双重压力下导致这个模范城市失守。好吧，我们来看看是否能验证输入压力陡增这个猜测。从图上看好像跟上图颇像，鉴于确诊和无症状都属与感染这，下一步我们把本地和输入的感染者的合计数的变化可视化看看。\n\r感染者总数\r先用二者做个散点图看看,如图，完全看不出啥关系啊。。。。输入感染者较多的时候，反而本地感染处于低水平。这个图像，线性回归暂时也不考虑。我们还是从感染者数量和时间的关系看看。\n画出来如下，大致能看从1月到3月二者都在上升，但到了3月后，二者分道扬镳了。\r\r2022年1到三月\r我们把时间尺度拉大到2月中旬到3月看看。放大后（下图1）可以看到从2月10日起到2月21日之间，二者几乎是呈线性相关，到2月22日，输入感染人数开始上升，此时上海本地感染数量仍然无幅度的改变，处于平稳状态，此时输入感染者数量是大于本地感染。\n为了更仔细看清楚变化情况，我们将y轴的数量调整至0-100例（下图2），这时候能清楚看到每天的变化。3月6日左右，二者数量出现了反转，本地感染者数量快速上升，并大幅度超过输入感染者。\n\r\r简单总结\r从上面的简单分析可得知，上海市境外输入感染者数量，从去年2月20日左右开始上升，增加的幅度从平均12例左右，到2月24左右达到85例左右。确实存在一个数量快速增加的阶段，之后过了大概一周的时间上海本地感染者开始快速上升，我们不得不猜测这二者之间可能存在某种联系。最后一张图添加了平滑曲线，做一个大致的预测。从图可见上海这一次疫情新增病人数量仍未到达所谓的“拐点”没爬错数据。随着检测人数的增加，防控措施的进一步加码和落实，相信这一波疫情会逐渐得到控制。\n\r重点关注3月数据\r重新爬了一下按地区分布的，画了个玫瑰图看看。\n数据爬出来如下（前20行）：\n\r\rDate_rep\rLocal\rcase_conf\rcase_none\rcase_sum\r\r\r\r2022-04-03\r浦东新区\r140\r3514\r3654\r\r2022-04-03\r黄浦区\r14\r810\r824\r\r2022-04-03\r静安区\r29\r309\r338\r\r2022-04-03\r徐汇区\r34\r465\r499\r\r2022-04-03\r长宁区\r14\r90\r104\r\r2022-04-03\r普陀区\r21\r300\r321\r\r2022-04-03\r虹口区\r11\r177\r188\r\r2022-04-03\r杨浦区\r30\r344\r374\r\r2022-04-03\r宝山区\r32\r435\r467\r\r2022-04-03\r闵行区\r68\r872\r940\r\r2022-04-03\r嘉定区\r14\r401\r415\r\r2022-04-03\r金山区\r4\r99\r103\r\r2022-04-03\r松江区\r6\r257\r263\r\r2022-04-03\r青浦区\r3\r229\r232\r\r2022-04-03\r奉贤区\r4\r115\r119\r\r2022-04-03\r崇明区\r1\r164\r165\r\r2022-04-02\r浦东新区\r108\r1930\r2038\r\r2022-04-02\r黄浦区\r27\r632\r659\r\r2022-04-02\r静安区\r26\r298\r324\r\r2022-04-02\r徐汇区\r44\r998\r1042\r\r\r\r\r",
-  "wordCount" : "221",
+  "articleBody": "\r今天本地的疫情终于没有增加，抽了点时间关注其他地区的疫情形势。看官方通报的数据，对曾经的模范城市的疫情有兴趣，决定来简单看看。\n数据获取\r数据来源\r要获取准确的数据，当然是上官方网站。打开上海市卫健委的官网(https://wsjkw.sh.gov.cn/xwfb/index.html)，疫情数据公告都在“新闻发布”栏目中，再仔细一看，疫情信息的标题中就包含了所有新增、确诊数据。真是太方便了。新闻页面也是连续的以_[num]为页码的编号，这种页面爬起来不要太省事。\n\rR包\r首先加载需要用到的包，主要使用rvest包获取静态网页信息，谷歌浏览器selectorgadget插件获取需要信息的节点，tidyverse整理数据，绘图，lubridate包处理日期变量。\nlibrary(rvest)\rlibrary(tidyverse)\rlibrary(lubridate)\rlibrary(readxl)\rlibrary(openxlsx)\rlibrary(ggThemeAssist)\r\r\r重点关注3月数据\r重新爬了一下按地区分布的,代码如下：\n##设置网址\rurl_all % html_nodes(\".list-date a\") %% html_attr(\"href\") # 次级链接地址\rtitle_sh % html_nodes(\".list-date a\") %% html_attr(\"title\") # 标题\rdate_sh % html_node(\".time\") %% html_text() # 日期\rdata.frame( Date = date_sh, Title = title_sh, Url = url2_sh) # 组合数据框\r}\r## 爬取1-20页内容\rpages_1 % dplyr::filter(str_detect(Title, \"居住地信息\")) %% mutate(\rurl_2 = paste0(\"https://wsjkw.sh.gov.cn/\", Url) ) %% select(url_2) %% unlist()#组合成所需的所有次级链接地址\r# 设置爬取次级网页关键内容的函数\rwebfun2 % html_nodes(\"p\") %% html_text() %% tibble()#获取次级网页所有文本信息\rcolnames(test) % dplyr::filter(str_detect(Text, \"分别居住\")) %% # 筛选出含有大区病例信息的段落\rseparate(Text, c(\"Date\", \"col1\", \"col2\"), sep = \"，|、\") %% # 根据逗号和分号拆分列\rmutate(\rDate_rep = as.Date.character(Date, \"%Y年%m月%d日\"),# 转换日期类型\rLocal = str_extract(col1, \"...\"), # 提取3字符的地区名\rcase_conf = str_extract(col1, \"[0-9]+\") %% as.numeric(), #提取确诊病例数\rcase_none = str_extract(col2, \"[0-9]+\") %% as.numeric() # 提取无症状数\r) %% select(Date_rep, Local, case_conf, case_none) # 列重新排序\r}\rfinal_df % dplyr::filter(!is.na(Date_rep)) # 筛选出需要的行\rfinal_df[is.na(final_df)] % mutate(\rcase_sum = case_conf + case_none,\rLocal = case_when(Local == \"浦东新\" ~ \"浦东新区\",\rLocal == \"青浦新\" ~ \"青浦区\",\rLocal == \"奉贤无\" ~ \"奉贤区\",\rTRUE ~ Local)\r)\rfinal_df % distinct() # 剔重\rwrite.xlsx(final_df, (\"data/shcovid.xlsx\")) # 写出到EXCEL文件\r数据爬出来如下表（前20行）：\n\r\rDate_rep\rLocal\rcase_conf\rcase_none\rcase_sum\r\r\r\r2022-04-04\r浦东新区\r205\r6866\r7071\r\r2022-04-04\r黄浦区\r8\r962\r970\r\r2022-04-04\r静安区\r1\r49\r50\r\r2022-04-04\r徐汇区\r8\r1221\r1229\r\r2022-04-04\r长宁区\r1\r32\r33\r\r2022-04-04\r普陀区\r4\r250\r254\r\r\r\r画个玫瑰图看看，其实这个图并并能很好反应数据特征。\nwindowsFonts(A = windowsFont(\"微软雅黑\")) # 设置字体\rfinal_df %% ggplot(aes(x = factor(Date_rep), y = case_sum)) +\rgeom_col(aes(fill = Local), width = 1.03) +\rcoord_polar(theta = \"x\", start = 0, direction = 1) +\rtheme(panel.background = element_blank(),\rpanel.grid = element_blank(), axis.title = element_blank(),\rlegend.position = c(0.9,0.5),\raxis.ticks = element_blank(),\raxis.text = element_blank(),\rlegend.title = element_blank(),\rlegend.text = element_text(size = 5),\rtext = element_text(family = \"A\")\r)+ geom_text(data = final_df %% dplyr::filter(Local == \"浦东新区\"), aes(label = Date_rep ),\rnudge_y = 3000,\rsize = 2, ) +\rguides(fill = guide_legend(ncol = 2) ) +\rtheme(plot.margin = unit(rep(0.5,4), \"mm\"),\rlegend.key.size = unit(3,\"mm\"),\raspect.ratio = 1) +\rscale_y_continuous(expand = c(0,0)) \r主页信息获取\r使用selectorgadget在网页上找到需要的变量“时间”和“标题”，对应的node分别是.time和.list-data a，使用rvest抓取后，转为文本存储在列表中。\n## 设置url\rurl % html_nodes(\".time\") %% html_text() %% as.Date.character()\rtitle % html_nodes(\".list-date a\") %% html_text() basedata \r\r爬取所有数据\r上海的疫情变化主要从3月开始，但为了查看之前的变化，是否输入病例压力增大导致本次疫情，因此爬取了2到200页到的数据。使用for循环，rbind组合成基础数据。\n##使用循环爬取2到200也网页信息\rfor (i in 2:200) { url = paste0(\"https://wsjkw.sh.gov.cn/xwfb/index_\", i, \".html\")\rcontent % html_nodes(\".time\") %% html_text() %% as.Date.character()\rtitle % html_nodes(\".list-date a\") %% html_text() basedata % rbind( tibble(reportdate = reportdate, title = title))\r}\r## 写出数据\rwrite.csv(basedata,\"data/basedata.csv\")\r\r数据清洗\r这一步比较麻烦的是对标题中日期字符的整理。使用str_extract_all命令后提取的日期，变成了列表。再合并为向量形势的日期格式数据时出了点麻烦。最后使用了笨办法for循环unlist后再paste0合并。其实直接用标题前的日期-1没什么大的误差，主要是在跟自己较劲搞得这么麻烦。\n\r\r好了，开始分析吧\r先画个简单的图看看大趋势\r以报告感染者类型为颜色看，从20年1月到21年12月期间，上海的感染人数几乎在处于一个长期稳定的状态，从2022年3月开始呈直升飞机式的增长。奇怪的是中间咋有个空白区，没有数据。查看原始网页，发现网站从2021年11月6日-2022年1月1日没有更新数据。这是一个奇怪的现象。不过没关系，这不影响我们后面的分析，这对原因分析有很大关系。\n\r输入感染者的趋势\r对上海这波疫情有个合理的猜测是，1月初上海接纳大量某地的航班的，导致上海市输入疫情压力陡增，再加上Omicron变异株超强传播能力，双重压力下导致这个模范城市失守。好吧，我们来看看是否能验证输入压力陡增这个猜测。从图上看好像跟上图颇像，鉴于确诊和无症状都属与感染这，下一步我们把本地和输入的感染者的合计数的变化可视化看看。\n\r感染者总数\r先用二者做个散点图看看,如图，完全看不出啥关系啊。。。。输入感染者较多的时候，反而本地感染处于低水平。这个图像，线性回归暂时也不考虑。我们还是从感染者数量和时间的关系看看。\n画出来如下，大致能看从1月到3月二者都在上升，但到了3月后，二者分道扬镳了。\r\r2022年1到三月\r我们把时间尺度拉大到2月中旬到3月看看。放大后（下图1）可以看到从2月10日起到2月21日之间，二者几乎是呈线性相关，到2月22日，输入感染人数开始上升，此时上海本地感染数量仍然无幅度的改变，处于平稳状态，此时输入感染者数量是大于本地感染。\n为了更仔细看清楚变化情况，我们将y轴的数量调整至0-100例（下图2），这时候能清楚看到每天的变化。3月6日左右，二者数量出现了反转，本地感染者数量快速上升，并大幅度超过输入感染者。\n\r\r简单总结\r从上面的简单分析可得知，上海市境外输入感染者数量，从去年2月20日左右开始上升，增加的幅度从平均12例左右，到2月24左右达到85例左右。确实存在一个数量快速增加的阶段，之后过了大概一周的时间上海本地感染者开始快速上升，我们不得不猜测这二者之间可能存在某种联系。最后一张图添加了平滑曲线，做一个大致的预测。从图可见上海这一次疫情新增病人数量仍未到达所谓的“拐点”没爬错数据。随着检测人数的增加，防控措施的进一步加码和落实，相信这一波疫情会逐渐得到控制。\n\r",
+  "wordCount" : "471",
   "inLanguage": "en",
   "datePublished": "2022-03-24T00:00:00Z",
   "dateModified": "2022-03-24T00:00:00Z",
@@ -212,7 +212,7 @@ code.has-jax {
   <header class="post-header">
     <div class="breadcrumbs"><a href="../../">Home</a>&nbsp;»&nbsp;<a href="../../post/">Posts</a></div>
     <h1 class="post-title">
-      R爬上海疫情数据简单可视化分析
+      R爬上海疫情数据简单可视化分析(4月5日更新)
     </h1>
     <div class="post-description">
       无责任猜测。
@@ -233,7 +233,11 @@ code.has-jax {
                 <li>
                     <a href="#" aria-label="数据来源">数据来源</a></li>
                 <li>
-                    <a href="#" aria-label="R包">R包</a></li>
+                    <a href="#" aria-label="R包">R包</a></li></ul>
+                </li>
+                <li>
+                    <a href="#" aria-label="重点关注3月数据">重点关注3月数据</a><ul>
+                        
                 <li>
                     <a href="#" aria-label="主页信息获取">主页信息获取</a></li>
                 <li>
@@ -254,9 +258,7 @@ code.has-jax {
                     <a href="#" aria-label="2022年1到三月">2022年1到三月</a></li></ul>
                 </li>
                 <li>
-                    <a href="#" aria-label="简单总结">简单总结</a></li>
-                <li>
-                    <a href="#" aria-label="重点关注3月数据">重点关注3月数据</a>
+                    <a href="#" aria-label="简单总结">简单总结</a>
                 </li>
             </ul>
         </div>
@@ -271,7 +273,7 @@ code.has-jax {
 <h1>数据获取</h1>
 <div id="数据来源" class="section level2">
 <h2>数据来源</h2>
-<p>要获取准确的数据，当然是上官方网站。打开上海市卫健委的官网(<a href="https://markdown.com.cn/basic-syntax/" class="uri">https://markdown.com.cn/basic-syntax/</a>)，疫情数据公告都在“新闻发布”栏目中，再仔细一看，疫情信息的标题中就包含了所有新增、确诊数据。真是太方便了。新闻页面也是连续的以<code>_[num]</code>为页码的编号，这种页面爬起来不要太省事。</p>
+<p>要获取准确的数据，当然是上官方网站。打开上海市卫健委的官网(<a href="https://wsjkw.sh.gov.cn/xwfb/index.html" class="uri">https://wsjkw.sh.gov.cn/xwfb/index.html</a>)，疫情数据公告都在“新闻发布”栏目中，再仔细一看，疫情信息的标题中就包含了所有新增、确诊数据。真是太方便了。新闻页面也是连续的以<code>_[num]</code>为页码的编号，这种页面爬起来不要太省事。</p>
 </div>
 <div id="r包" class="section level2">
 <h2>R包</h2>
@@ -280,85 +282,65 @@ code.has-jax {
 library(tidyverse)
 library(lubridate)
 library(readxl)
-library(openxlsx)</code></pre>
+library(openxlsx)
+library(ggThemeAssist)</code></pre>
 </div>
-<div id="主页信息获取" class="section level2">
-<h2>主页信息获取</h2>
-<p>使用<code>selectorgadget</code>在网页上找到需要的变量“时间”和“标题”，对应的node分别是<code>.time</code>和<code>.list-data a</code>，使用<code>rvest</code>抓取后，转为文本存储在列表中。</p>
-<pre class="r"><code>## 设置url
-url &lt;- &quot;https://wsjkw.sh.gov.cn/xwfb/index.html&quot;
-## 获取首页信息
-content &lt;- read_html(url)
-reportdate &lt;- content %&gt;%
-    html_nodes(&quot;.time&quot;) %&gt;%
-    html_text() %&gt;%
-    as.Date.character()
-title &lt;- content %&gt;%
-    html_nodes(&quot;.list-date a&quot;) %&gt;%
-    html_text()
-basedata &lt;- tibble(reportdate = reportdate, title = title)</code></pre>
-</div>
-<div id="爬取所有数据" class="section level2">
-<h2>爬取所有数据</h2>
-<p>上海的疫情变化主要从3月开始，但为了查看之前的变化，是否输入病例压力增大导致本次疫情，因此爬取了2到200页到的数据。使用<code>for</code>循环，<code>rbind</code>组合成基础数据。</p>
-<pre class="r"><code>## 使用循环爬取2到200也网页信息
-
-for (i in 2:200) {
-    url = paste0(&quot;https://wsjkw.sh.gov.cn/xwfb/index_&quot;, i, &quot;.html&quot;)
-    content &lt;- read_html(url)
-    reportdate &lt;- content %&gt;%
-        html_nodes(&quot;.time&quot;) %&gt;%
-        html_text() %&gt;%
-        as.Date.character()
-    title &lt;- content %&gt;%
-        html_nodes(&quot;.list-date a&quot;) %&gt;%
-        html_text()
-    basedata &lt;- basedata %&gt;%
-        rbind(tibble(reportdate = reportdate, title = title))
-}
-## 写出数据
-write.csv(basedata, &quot;data/basedata.csv&quot;)</code></pre>
-</div>
-<div id="数据清洗" class="section level2">
-<h2>数据清洗</h2>
-<p>这一步比较麻烦的是对标题中日期字符的整理。使用<code>str_extract_all</code>命令后提取的日期，变成了列表。再合并为向量形势的日期格式数据时出了点麻烦。最后使用了笨办法<code>for</code>循环<code>unlist</code>后再<code>paste0</code>合并。其实直接用标题前的日期-1没什么大的误差，主要是在跟自己较劲搞得这么麻烦。</p>
-</div>
-</div>
-<div id="好了开始分析吧" class="section level1">
-<h1>好了，开始分析吧</h1>
-<div id="先画个简单的图看看大趋势" class="section level2">
-<h2>先画个简单的图看看大趋势</h2>
-<p>以报告感染者类型为颜色看，从20年1月到21年12月期间，上海的感染人数几乎在处于一个长期稳定的状态，从2022年3月开始呈直升飞机式的增长。奇怪的是中间咋有个空白区，没有数据。查看原始网页，发现网站从2021年11月6日-2022年1月1日没有更新数据。这是一个奇怪的现象。不过没关系，这不影响我们后面的分析，<del>这对原因分析有很大关系</del>。</p>
-<p><img src="../../post/covidsh/index_files/figure-html/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
-</div>
-<div id="输入感染者的趋势" class="section level2">
-<h2>输入感染者的趋势</h2>
-<p>对上海这波疫情有个合理的猜测是，1月初上海接纳大量某地的航班的，导致上海市输入疫情压力陡增，再加上Omicron变异株超强传播能力，双重压力下导致这个模范城市失守。好吧，我们来看看是否能验证输入压力陡增这个猜测。从图上看好像跟上图颇像，鉴于确诊和无症状都属与感染这，下一步我们把本地和输入的感染者的合计数的变化可视化看看。</p>
-<p><img src="../../post/covidsh/index_files/figure-html/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
-</div>
-<div id="感染者总数" class="section level2">
-<h2>感染者总数</h2>
-<p>先用二者做个散点图看看,如图，完全看不出啥关系啊。。。。输入感染者较多的时候，反而本地感染处于低水平。这个图像，线性回归暂时也不考虑。我们还是从感染者数量和时间的关系看看。</p>
-<p><img src="../../post/covidsh/index_files/figure-html/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>画出来如下，大致能看从1月到3月二者都在上升，但到了3月后，二者分道扬镳了。
-<img src="../../post/covidsh/index_files/figure-html/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
-</div>
-<div id="年1到三月" class="section level2">
-<h2>2022年1到三月</h2>
-<p>我们把时间尺度拉大到2月中旬到3月看看。放大后（下图1）可以看到从2月10日起到2月21日之间，二者几乎是呈线性相关，到2月22日，输入感染人数开始上升，此时上海本地感染数量仍然无幅度的改变，处于平稳状态，此时输入感染者数量是大于本地感染。</p>
-<p>为了更仔细看清楚变化情况，我们将y轴的数量调整至0-100例（下图2），这时候能清楚看到每天的变化。3月6日左右，二者数量出现了反转，本地感染者数量快速上升，并大幅度超过输入感染者。</p>
-<p><img src="../../post/covidsh/index_files/figure-html/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /><img src="../../post/covidsh/index_files/figure-html/unnamed-chunk-9-2.png" width="672" style="display: block; margin: auto;" /></p>
-</div>
-</div>
-<div id="简单总结" class="section level1">
-<h1>简单总结</h1>
-<p>从上面的简单分析可得知，上海市境外输入感染者数量，从去年2月20日左右开始上升，增加的幅度从平均12例左右，到2月24左右达到85例左右。确实存在一个数量快速增加的阶段，之后过了大概一周的时间上海本地感染者开始快速上升，我们不得不猜测这二者之间可能存在某种联系。最后一张图添加了平滑曲线，做一个大致的预测。从图可见上海这一次疫情新增病人数量仍未到达所谓的“拐点”<del>没爬错数据</del>。随着检测人数的增加，防控措施的进一步加码和落实，相信这一波疫情会逐渐得到控制。</p>
-<p><img src="../../post/covidsh/index_files/figure-html/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="重点关注3月数据" class="section level1">
 <h1>重点关注3月数据</h1>
-<p>重新爬了一下按地区分布的，画了个玫瑰图看看。</p>
-<p>数据爬出来如下（前20行）：</p>
+<p>重新爬了一下按地区分布的,代码如下：</p>
+<pre class="r"><code>##设置网址
+url_all &lt;- paste0(&quot;https://wsjkw.sh.gov.cn/xwfb/index_&quot;,c(2:20),&quot;.html&quot;)
+url_all &lt;- c(&quot;https://wsjkw.sh.gov.cn/xwfb/index.html&quot;, url_all)
+##自定义爬一级网页函数
+webfun &lt;- function(url){
+pages &lt;- read_html(url)
+url2_sh &lt;-  pages  %&gt;%  
+  html_nodes(&quot;.list-date a&quot;) %&gt;% 
+  html_attr(&quot;href&quot;) # 次级链接地址
+title_sh &lt;- pages %&gt;% 
+  html_nodes(&quot;.list-date a&quot;) %&gt;% 
+  html_attr(&quot;title&quot;) # 标题
+date_sh &lt;- pages %&gt;% 
+  html_node(&quot;.time&quot;) %&gt;% 
+  html_text() # 日期
+data.frame( Date = date_sh,  Title = title_sh, Url = url2_sh) # 组合数据框
+}
+## 爬取1-20页内容
+pages_1 &lt;- map_df(url_all, webfun)
+# 根据关键字段“居住信息” 筛选出需要的标题和链接
+url_2 &lt;-  pages_1 %&gt;% dplyr::filter(str_detect(Title, &quot;居住地信息&quot;)) %&gt;% mutate(
+  url_2 = paste0(&quot;https://wsjkw.sh.gov.cn/&quot;, Url) ) %&gt;% select(url_2) %&gt;% unlist()#组合成所需的所有次级链接地址
+
+# 设置爬取次级网页关键内容的函数
+webfun2 &lt;- function(url){
+test &lt;-  read_html(url) %&gt;% html_nodes(&quot;p&quot;) %&gt;% html_text() %&gt;% tibble()#获取次级网页所有文本信息
+colnames(test) &lt;- &quot;Text&quot; # 设置列名
+test %&gt;% 
+  dplyr::filter(str_detect(Text, &quot;分别居住&quot;)) %&gt;% # 筛选出含有大区病例信息的段落
+  separate(Text, c(&quot;Date&quot;, &quot;col1&quot;, &quot;col2&quot;), sep = &quot;，|、&quot;) %&gt;% # 根据逗号和分号拆分列
+  mutate(
+    Date_rep = as.Date.character(Date, &quot;%Y年%m月%d日&quot;),# 转换日期类型
+    Local = str_extract(col1, &quot;...&quot;), # 提取3字符的地区名
+    case_conf = str_extract(col1, &quot;[0-9]+&quot;) %&gt;% as.numeric(), #提取确诊病例数
+    case_none = str_extract(col2, &quot;[0-9]+&quot;) %&gt;% as.numeric() # 提取无症状数
+  ) %&gt;% select(Date_rep, Local, case_conf, case_none) # 列重新排序
+}
+
+final_df &lt;- map_df(url_2, webfun2)# 获取次级链接信息
+final_df &lt;- final_df %&gt;%  dplyr::filter(!is.na(Date_rep))  # 筛选出需要的行
+final_df[is.na(final_df)] &lt;- 0 # 替换缺失值为0
+# 补充完整的区名
+final_df &lt;- final_df %&gt;% mutate(
+  case_sum = case_conf + case_none,
+  Local = case_when(Local == &quot;浦东新&quot; ~ &quot;浦东新区&quot;,
+                    Local == &quot;青浦新&quot; ~ &quot;青浦区&quot;,
+                    Local == &quot;奉贤无&quot; ~ &quot;奉贤区&quot;,
+                    TRUE ~ Local)
+)
+final_df &lt;-  final_df %&gt;% distinct() # 剔重
+write.xlsx(final_df, (&quot;data/shcovid.xlsx&quot;)) # 写出到EXCEL文件</code></pre>
+<p>数据爬出来如下表（前20行）：</p>
 <table>
 <thead>
 <tr class="header">
@@ -371,147 +353,134 @@ write.csv(basedata, &quot;data/basedata.csv&quot;)</code></pre>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">2022-04-03</td>
+<td align="left">2022-04-04</td>
 <td align="left">浦东新区</td>
-<td align="right">140</td>
-<td align="right">3514</td>
-<td align="right">3654</td>
+<td align="right">205</td>
+<td align="right">6866</td>
+<td align="right">7071</td>
 </tr>
 <tr class="even">
-<td align="left">2022-04-03</td>
+<td align="left">2022-04-04</td>
 <td align="left">黄浦区</td>
-<td align="right">14</td>
-<td align="right">810</td>
-<td align="right">824</td>
+<td align="right">8</td>
+<td align="right">962</td>
+<td align="right">970</td>
 </tr>
 <tr class="odd">
-<td align="left">2022-04-03</td>
+<td align="left">2022-04-04</td>
 <td align="left">静安区</td>
-<td align="right">29</td>
-<td align="right">309</td>
-<td align="right">338</td>
-</tr>
-<tr class="even">
-<td align="left">2022-04-03</td>
-<td align="left">徐汇区</td>
-<td align="right">34</td>
-<td align="right">465</td>
-<td align="right">499</td>
-</tr>
-<tr class="odd">
-<td align="left">2022-04-03</td>
-<td align="left">长宁区</td>
-<td align="right">14</td>
-<td align="right">90</td>
-<td align="right">104</td>
-</tr>
-<tr class="even">
-<td align="left">2022-04-03</td>
-<td align="left">普陀区</td>
-<td align="right">21</td>
-<td align="right">300</td>
-<td align="right">321</td>
-</tr>
-<tr class="odd">
-<td align="left">2022-04-03</td>
-<td align="left">虹口区</td>
-<td align="right">11</td>
-<td align="right">177</td>
-<td align="right">188</td>
-</tr>
-<tr class="even">
-<td align="left">2022-04-03</td>
-<td align="left">杨浦区</td>
-<td align="right">30</td>
-<td align="right">344</td>
-<td align="right">374</td>
-</tr>
-<tr class="odd">
-<td align="left">2022-04-03</td>
-<td align="left">宝山区</td>
-<td align="right">32</td>
-<td align="right">435</td>
-<td align="right">467</td>
-</tr>
-<tr class="even">
-<td align="left">2022-04-03</td>
-<td align="left">闵行区</td>
-<td align="right">68</td>
-<td align="right">872</td>
-<td align="right">940</td>
-</tr>
-<tr class="odd">
-<td align="left">2022-04-03</td>
-<td align="left">嘉定区</td>
-<td align="right">14</td>
-<td align="right">401</td>
-<td align="right">415</td>
-</tr>
-<tr class="even">
-<td align="left">2022-04-03</td>
-<td align="left">金山区</td>
-<td align="right">4</td>
-<td align="right">99</td>
-<td align="right">103</td>
-</tr>
-<tr class="odd">
-<td align="left">2022-04-03</td>
-<td align="left">松江区</td>
-<td align="right">6</td>
-<td align="right">257</td>
-<td align="right">263</td>
-</tr>
-<tr class="even">
-<td align="left">2022-04-03</td>
-<td align="left">青浦区</td>
-<td align="right">3</td>
-<td align="right">229</td>
-<td align="right">232</td>
-</tr>
-<tr class="odd">
-<td align="left">2022-04-03</td>
-<td align="left">奉贤区</td>
-<td align="right">4</td>
-<td align="right">115</td>
-<td align="right">119</td>
-</tr>
-<tr class="even">
-<td align="left">2022-04-03</td>
-<td align="left">崇明区</td>
 <td align="right">1</td>
-<td align="right">164</td>
-<td align="right">165</td>
-</tr>
-<tr class="odd">
-<td align="left">2022-04-02</td>
-<td align="left">浦东新区</td>
-<td align="right">108</td>
-<td align="right">1930</td>
-<td align="right">2038</td>
+<td align="right">49</td>
+<td align="right">50</td>
 </tr>
 <tr class="even">
-<td align="left">2022-04-02</td>
-<td align="left">黄浦区</td>
-<td align="right">27</td>
-<td align="right">632</td>
-<td align="right">659</td>
-</tr>
-<tr class="odd">
-<td align="left">2022-04-02</td>
-<td align="left">静安区</td>
-<td align="right">26</td>
-<td align="right">298</td>
-<td align="right">324</td>
-</tr>
-<tr class="even">
-<td align="left">2022-04-02</td>
+<td align="left">2022-04-04</td>
 <td align="left">徐汇区</td>
-<td align="right">44</td>
-<td align="right">998</td>
-<td align="right">1042</td>
+<td align="right">8</td>
+<td align="right">1221</td>
+<td align="right">1229</td>
+</tr>
+<tr class="odd">
+<td align="left">2022-04-04</td>
+<td align="left">长宁区</td>
+<td align="right">1</td>
+<td align="right">32</td>
+<td align="right">33</td>
+</tr>
+<tr class="even">
+<td align="left">2022-04-04</td>
+<td align="left">普陀区</td>
+<td align="right">4</td>
+<td align="right">250</td>
+<td align="right">254</td>
 </tr>
 </tbody>
 </table>
+<p>画个玫瑰图看看，其实这个图并并能很好反应数据特征。</p>
+<pre class="r"><code>windowsFonts(A = windowsFont(&quot;微软雅黑&quot;)) # 设置字体
+
+final_df %&gt;% ggplot(aes(x = factor(Date_rep), y = case_sum)) +
+  geom_col(aes(fill = Local), width = 1.03) +
+  coord_polar(theta = &quot;x&quot;, start = 0, direction = 1) +
+  theme(panel.background = element_blank(),
+        panel.grid = element_blank(), 
+        axis.title = element_blank(),
+        legend.position = c(0.9,0.5),
+        axis.ticks = element_blank(),
+        axis.text = element_blank(),
+        legend.title = element_blank(),
+        legend.text = element_text(size = 5),
+        text = element_text(family = &quot;A&quot;)
+        )+ geom_text(data = final_df %&gt;% dplyr::filter(Local == &quot;浦东新区&quot;), aes(label = Date_rep ),
+                                  nudge_y = 3000,
+                                  size = 2, 
+                                  ) +
+  guides(fill = guide_legend(ncol = 2) ) +
+  theme(plot.margin = unit(rep(0.5,4), &quot;mm&quot;),
+        legend.key.size = unit(3,&quot;mm&quot;),
+        aspect.ratio = 1) +
+  scale_y_continuous(expand = c(0,0)) </code></pre>
+<p><img src="../../post/covidsh/index_files/figure-html/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
+<div id="主页信息获取" class="section level2">
+<h2>主页信息获取</h2>
+<p>使用<code>selectorgadget</code>在网页上找到需要的变量“时间”和“标题”，对应的node分别是<code>.time</code>和<code>.list-data a</code>，使用<code>rvest</code>抓取后，转为文本存储在列表中。</p>
+<pre class="r"><code>## 设置url
+url &lt;- &quot;https://wsjkw.sh.gov.cn/xwfb/index.html&quot;
+## 获取首页信息
+content &lt;- read_html(url)
+reportdate &lt;- content %&gt;%  html_nodes(&quot;.time&quot;) %&gt;% html_text() %&gt;% as.Date.character()
+title &lt;-  content %&gt;% html_nodes(&quot;.list-date a&quot;) %&gt;% html_text() 
+basedata &lt;- tibble(reportdate = reportdate, title = title)</code></pre>
+</div>
+<div id="爬取所有数据" class="section level2">
+<h2>爬取所有数据</h2>
+<p>上海的疫情变化主要从3月开始，但为了查看之前的变化，是否输入病例压力增大导致本次疫情，因此爬取了2到200页到的数据。使用<code>for</code>循环，<code>rbind</code>组合成基础数据。</p>
+<pre class="r"><code>##使用循环爬取2到200也网页信息
+
+for (i in 2:200) {  
+  url = paste0(&quot;https://wsjkw.sh.gov.cn/xwfb/index_&quot;, i, &quot;.html&quot;)
+  content &lt;- read_html(url)
+  reportdate &lt;- content %&gt;%  html_nodes(&quot;.time&quot;) %&gt;% html_text() %&gt;% as.Date.character()
+  title &lt;-  content %&gt;% html_nodes(&quot;.list-date a&quot;) %&gt;% html_text() 
+  basedata &lt;- basedata %&gt;% rbind(  tibble(reportdate = reportdate, title = title))
+}
+## 写出数据
+write.csv(basedata,&quot;data/basedata.csv&quot;)</code></pre>
+</div>
+<div id="数据清洗" class="section level2">
+<h2>数据清洗</h2>
+<p>这一步比较麻烦的是对标题中日期字符的整理。使用<code>str_extract_all</code>命令后提取的日期，变成了列表。再合并为向量形势的日期格式数据时出了点麻烦。最后使用了笨办法<code>for</code>循环<code>unlist</code>后再<code>paste0</code>合并。其实直接用标题前的日期-1没什么大的误差，主要是在跟自己较劲搞得这么麻烦。</p>
+</div>
+</div>
+<div id="好了开始分析吧" class="section level1">
+<h1>好了，开始分析吧</h1>
+<div id="先画个简单的图看看大趋势" class="section level2">
+<h2>先画个简单的图看看大趋势</h2>
+<p>以报告感染者类型为颜色看，从20年1月到21年12月期间，上海的感染人数几乎在处于一个长期稳定的状态，从2022年3月开始呈直升飞机式的增长。奇怪的是中间咋有个空白区，没有数据。查看原始网页，发现网站从2021年11月6日-2022年1月1日没有更新数据。这是一个奇怪的现象。不过没关系，这不影响我们后面的分析，<del>这对原因分析有很大关系</del>。</p>
+<p><img src="../../post/covidsh/index_files/figure-html/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="输入感染者的趋势" class="section level2">
+<h2>输入感染者的趋势</h2>
+<p>对上海这波疫情有个合理的猜测是，1月初上海接纳大量某地的航班的，导致上海市输入疫情压力陡增，再加上Omicron变异株超强传播能力，双重压力下导致这个模范城市失守。好吧，我们来看看是否能验证输入压力陡增这个猜测。从图上看好像跟上图颇像，鉴于确诊和无症状都属与感染这，下一步我们把本地和输入的感染者的合计数的变化可视化看看。</p>
+<p><img src="../../post/covidsh/index_files/figure-html/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="感染者总数" class="section level2">
+<h2>感染者总数</h2>
+<p>先用二者做个散点图看看,如图，完全看不出啥关系啊。。。。输入感染者较多的时候，反而本地感染处于低水平。这个图像，线性回归暂时也不考虑。我们还是从感染者数量和时间的关系看看。</p>
+<p><img src="../../post/covidsh/index_files/figure-html/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>画出来如下，大致能看从1月到3月二者都在上升，但到了3月后，二者分道扬镳了。
+<img src="../../post/covidsh/index_files/figure-html/unnamed-chunk-12-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="年1到三月" class="section level2">
+<h2>2022年1到三月</h2>
+<p>我们把时间尺度拉大到2月中旬到3月看看。放大后（下图1）可以看到从2月10日起到2月21日之间，二者几乎是呈线性相关，到2月22日，输入感染人数开始上升，此时上海本地感染数量仍然无幅度的改变，处于平稳状态，此时输入感染者数量是大于本地感染。</p>
+<p>为了更仔细看清楚变化情况，我们将y轴的数量调整至0-100例（下图2），这时候能清楚看到每天的变化。3月6日左右，二者数量出现了反转，本地感染者数量快速上升，并大幅度超过输入感染者。</p>
+<p><img src="../../post/covidsh/index_files/figure-html/unnamed-chunk-13-1.png" width="672" style="display: block; margin: auto;" /><img src="../../post/covidsh/index_files/figure-html/unnamed-chunk-13-2.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="简单总结" class="section level1">
+<h1>简单总结</h1>
+<p>从上面的简单分析可得知，上海市境外输入感染者数量，从去年2月20日左右开始上升，增加的幅度从平均12例左右，到2月24左右达到85例左右。确实存在一个数量快速增加的阶段，之后过了大概一周的时间上海本地感染者开始快速上升，我们不得不猜测这二者之间可能存在某种联系。最后一张图添加了平滑曲线，做一个大致的预测。从图可见上海这一次疫情新增病人数量仍未到达所谓的“拐点”<del>没爬错数据</del>。随着检测人数的增加，防控措施的进一步加码和落实，相信这一波疫情会逐渐得到控制。</p>
 <p><img src="../../post/covidsh/index_files/figure-html/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 
@@ -549,43 +518,43 @@ write.csv(basedata, &quot;data/basedata.csv&quot;)</code></pre>
 
 
 <div class="share-buttons">
-    <a target="_blank" rel="noopener noreferrer" aria-label="share R爬上海疫情数据简单可视化分析 on twitter"
-        href="https://twitter.com/intent/tweet/?text=R%e7%88%ac%e4%b8%8a%e6%b5%b7%e7%96%ab%e6%83%85%e6%95%b0%e6%8d%ae%e7%ae%80%e5%8d%95%e5%8f%af%e8%a7%86%e5%8c%96%e5%88%86%e6%9e%90&amp;url=%2fpost%2fcovidsh%2f&amp;hashtags=Tec%2cR">
+    <a target="_blank" rel="noopener noreferrer" aria-label="share R爬上海疫情数据简单可视化分析(4月5日更新) on twitter"
+        href="https://twitter.com/intent/tweet/?text=R%e7%88%ac%e4%b8%8a%e6%b5%b7%e7%96%ab%e6%83%85%e6%95%b0%e6%8d%ae%e7%ae%80%e5%8d%95%e5%8f%af%e8%a7%86%e5%8c%96%e5%88%86%e6%9e%90%284%e6%9c%885%e6%97%a5%e6%9b%b4%e6%96%b0%29&amp;url=%2fpost%2fcovidsh%2f&amp;hashtags=Tec%2cR">
         <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve">
             <path
                 d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-253.927,424.544c135.939,0 210.268,-112.643 210.268,-210.268c0,-3.218 0,-6.437 -0.153,-9.502c14.406,-10.421 26.973,-23.448 36.935,-38.314c-13.18,5.824 -27.433,9.809 -42.452,11.648c15.326,-9.196 26.973,-23.602 32.49,-40.92c-14.252,8.429 -30.038,14.56 -46.896,17.931c-13.487,-14.406 -32.644,-23.295 -53.946,-23.295c-40.767,0 -73.87,33.104 -73.87,73.87c0,5.824 0.613,11.494 1.992,16.858c-61.456,-3.065 -115.862,-32.49 -152.337,-77.241c-6.284,10.881 -9.962,23.601 -9.962,37.088c0,25.594 13.027,48.276 32.95,61.456c-12.107,-0.307 -23.448,-3.678 -33.41,-9.196l0,0.92c0,35.862 25.441,65.594 59.311,72.49c-6.13,1.686 -12.72,2.606 -19.464,2.606c-4.751,0 -9.348,-0.46 -13.946,-1.38c9.349,29.426 36.628,50.728 68.965,51.341c-25.287,19.771 -57.164,31.571 -91.8,31.571c-5.977,0 -11.801,-0.306 -17.625,-1.073c32.337,21.15 71.264,33.41 112.95,33.41Z" />
         </svg>
     </a>
-    <a target="_blank" rel="noopener noreferrer" aria-label="share R爬上海疫情数据简单可视化分析 on linkedin"
-        href="https://www.linkedin.com/shareArticle?mini=true&amp;url=%2fpost%2fcovidsh%2f&amp;title=R%e7%88%ac%e4%b8%8a%e6%b5%b7%e7%96%ab%e6%83%85%e6%95%b0%e6%8d%ae%e7%ae%80%e5%8d%95%e5%8f%af%e8%a7%86%e5%8c%96%e5%88%86%e6%9e%90&amp;summary=R%e7%88%ac%e4%b8%8a%e6%b5%b7%e7%96%ab%e6%83%85%e6%95%b0%e6%8d%ae%e7%ae%80%e5%8d%95%e5%8f%af%e8%a7%86%e5%8c%96%e5%88%86%e6%9e%90&amp;source=%2fpost%2fcovidsh%2f">
+    <a target="_blank" rel="noopener noreferrer" aria-label="share R爬上海疫情数据简单可视化分析(4月5日更新) on linkedin"
+        href="https://www.linkedin.com/shareArticle?mini=true&amp;url=%2fpost%2fcovidsh%2f&amp;title=R%e7%88%ac%e4%b8%8a%e6%b5%b7%e7%96%ab%e6%83%85%e6%95%b0%e6%8d%ae%e7%ae%80%e5%8d%95%e5%8f%af%e8%a7%86%e5%8c%96%e5%88%86%e6%9e%90%284%e6%9c%885%e6%97%a5%e6%9b%b4%e6%96%b0%29&amp;summary=R%e7%88%ac%e4%b8%8a%e6%b5%b7%e7%96%ab%e6%83%85%e6%95%b0%e6%8d%ae%e7%ae%80%e5%8d%95%e5%8f%af%e8%a7%86%e5%8c%96%e5%88%86%e6%9e%90%284%e6%9c%885%e6%97%a5%e6%9b%b4%e6%96%b0%29&amp;source=%2fpost%2fcovidsh%2f">
         <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve">
             <path
                 d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
         </svg>
     </a>
-    <a target="_blank" rel="noopener noreferrer" aria-label="share R爬上海疫情数据简单可视化分析 on reddit"
-        href="https://reddit.com/submit?url=%2fpost%2fcovidsh%2f&title=R%e7%88%ac%e4%b8%8a%e6%b5%b7%e7%96%ab%e6%83%85%e6%95%b0%e6%8d%ae%e7%ae%80%e5%8d%95%e5%8f%af%e8%a7%86%e5%8c%96%e5%88%86%e6%9e%90">
+    <a target="_blank" rel="noopener noreferrer" aria-label="share R爬上海疫情数据简单可视化分析(4月5日更新) on reddit"
+        href="https://reddit.com/submit?url=%2fpost%2fcovidsh%2f&title=R%e7%88%ac%e4%b8%8a%e6%b5%b7%e7%96%ab%e6%83%85%e6%95%b0%e6%8d%ae%e7%ae%80%e5%8d%95%e5%8f%af%e8%a7%86%e5%8c%96%e5%88%86%e6%9e%90%284%e6%9c%885%e6%97%a5%e6%9b%b4%e6%96%b0%29">
         <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve">
             <path
                 d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
         </svg>
     </a>
-    <a target="_blank" rel="noopener noreferrer" aria-label="share R爬上海疫情数据简单可视化分析 on facebook"
+    <a target="_blank" rel="noopener noreferrer" aria-label="share R爬上海疫情数据简单可视化分析(4月5日更新) on facebook"
         href="https://facebook.com/sharer/sharer.php?u=%2fpost%2fcovidsh%2f">
         <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve">
             <path
                 d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
         </svg>
     </a>
-    <a target="_blank" rel="noopener noreferrer" aria-label="share R爬上海疫情数据简单可视化分析 on whatsapp"
-        href="https://api.whatsapp.com/send?text=R%e7%88%ac%e4%b8%8a%e6%b5%b7%e7%96%ab%e6%83%85%e6%95%b0%e6%8d%ae%e7%ae%80%e5%8d%95%e5%8f%af%e8%a7%86%e5%8c%96%e5%88%86%e6%9e%90%20-%20%2fpost%2fcovidsh%2f">
+    <a target="_blank" rel="noopener noreferrer" aria-label="share R爬上海疫情数据简单可视化分析(4月5日更新) on whatsapp"
+        href="https://api.whatsapp.com/send?text=R%e7%88%ac%e4%b8%8a%e6%b5%b7%e7%96%ab%e6%83%85%e6%95%b0%e6%8d%ae%e7%ae%80%e5%8d%95%e5%8f%af%e8%a7%86%e5%8c%96%e5%88%86%e6%9e%90%284%e6%9c%885%e6%97%a5%e6%9b%b4%e6%96%b0%29%20-%20%2fpost%2fcovidsh%2f">
         <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve">
             <path
                 d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
         </svg>
     </a>
-    <a target="_blank" rel="noopener noreferrer" aria-label="share R爬上海疫情数据简单可视化分析 on telegram"
-        href="https://telegram.me/share/url?text=R%e7%88%ac%e4%b8%8a%e6%b5%b7%e7%96%ab%e6%83%85%e6%95%b0%e6%8d%ae%e7%ae%80%e5%8d%95%e5%8f%af%e8%a7%86%e5%8c%96%e5%88%86%e6%9e%90&amp;url=%2fpost%2fcovidsh%2f">
+    <a target="_blank" rel="noopener noreferrer" aria-label="share R爬上海疫情数据简单可视化分析(4月5日更新) on telegram"
+        href="https://telegram.me/share/url?text=R%e7%88%ac%e4%b8%8a%e6%b5%b7%e7%96%ab%e6%83%85%e6%95%b0%e6%8d%ae%e7%ae%80%e5%8d%95%e5%8f%af%e8%a7%86%e5%8c%96%e5%88%86%e6%9e%90%284%e6%9c%885%e6%97%a5%e6%9b%b4%e6%96%b0%29&amp;url=%2fpost%2fcovidsh%2f">
         <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28">
             <path
                 d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />

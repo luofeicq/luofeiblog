@@ -207,19 +207,18 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2>R爬上海疫情数据简单可视化分析
+    <h2>R爬上海疫情数据简单可视化分析(4月5日更新)
     </h2>
   </header>
   <section class="entry-content">
     <p>今天本地的疫情终于没有增加，抽了点时间关注其他地区的疫情形势。看官方通报的数据，对曾经的模范城市的疫情有兴趣，决定来简单看看。
-数据获取数据来源要获取准确的数据，当然是上官方网站。打开上海市卫健委的官网(https://markdown.com.cn/basic-syntax/)，疫情数据公告都在“新闻发布”栏目中，再仔细一看，疫情信息的标题中就包含了所有新增、确诊数据。真是太方便了。新闻页面也是连续的以_[num]为页码的编号，这种页面爬起来不要太省事。
+数据获取数据来源要获取准确的数据，当然是上官方网站。打开上海市卫健委的官网(https://wsjkw.sh.gov.cn/xwfb/index.html)，疫情数据公告都在“新闻发布”栏目中，再仔细一看，疫情信息的标题中就包含了所有新增、确诊数据。真是太方便了。新闻页面也是连续的以_[num]为页码的编号，这种页面爬起来不要太省事。
 R包首先加载需要用到的包，主要使用rvest包获取静态网页信息，谷歌浏览器selectorgadget插件获取需要信息的节点，tidyverse整理数据，绘图，lubridate包处理日期变量。
-library(rvest)library(tidyverse)library(lubridate)library(readxl)library(openxlsx)主页信息获取使用selectorgadget在网页上找到需要的变量“时间”和“标题”，对应的node分别是.time和.list-data a，使用rvest抓取后，转为文本存储在列表中。
-## 设置urlurl &lt;- &#34;https://wsjkw.sh.gov.cn/xwfb/index.html&#34;## 获取首页信息content &lt;- read_html(url)reportdate &lt;- content %&gt;%html_nodes(&#34;.time&#34;) %&gt;%html_text() %&gt;%as.Date.character()title &lt;- content %&gt;%html_nodes(&#34;.list-date a&#34;) %&gt;%html_text()basedata &lt;- tibble(reportdate = reportdate, title = title)爬取所有数据上海的疫情变化主要从3月开始，但为了查看之前的变化，是否输入病例压力增大导致本次疫情，因此爬取了2到200页到的数据。使用for循环，rbind组合成基础数据。
-## 使用循环爬取2到200也网页信息for (i in 2:200) {url = paste0(&#34;https://wsjkw.sh.gov.cn/xwfb/index_&#34;, i, &#34;.html&#34;)content &lt;- read_html(url)reportdate &lt;- content %&gt;%html_nodes(&#34;....</p>
+library(rvest)library(tidyverse)library(lubridate)library(readxl)library(openxlsx)library(ggThemeAssist)重点关注3月数据重新爬了一下按地区分布的,代码如下：
+##设置网址url_all &lt;- paste0(&#34;https://wsjkw.sh.gov.cn/xwfb/index_&#34;,c(2:20),&#34;.html&#34;)url_all &lt;- c(&#34;https://wsjkw.sh.gov.cn/xwfb/index.html&#34;, url_all)##自定义爬一级网页函数webfun &lt;- function(url){pages &lt;- read_html(url)url2_sh &lt;- pages %&gt;% html_nodes(&#34;.list-date a&#34;) %&gt;% html_attr(&#34;href&#34;) # 次级链接地址title_sh &lt;- pages %&gt;% html_nodes(&#34;.list-date a&#34;) %&gt;% html_attr(&#34;title&#34;) # 标题date_sh &lt;- pages %&gt;% html_node(&#34;.time&#34;) %&gt;% html_text() # 日期data.frame( Date = date_sh, Title = title_sh, Url = url2_sh) # 组合数据框}## 爬取1-20页内容pages_1 &lt;- map_df(url_all, webfun)# 根据关键字段“居住信息” 筛选出需要的标题和链接url_2 &lt;- pages_1 %&gt;% dplyr::filter(str_detect(Title, &#34;居住地信息&#34;)) %&gt;% mutate(url_2 = paste0(&#34;https://wsjkw....</p>
   </section>
   <footer class="entry-footer"><span title='2022-03-24 00:00:00 +0000 UTC'>March 24, 2022</span>&nbsp;·&nbsp;Luo Fei</footer>
-  <a class="entry-link" aria-label="post link to R爬上海疫情数据简单可视化分析" href="./post/covidsh/"></a>
+  <a class="entry-link" aria-label="post link to R爬上海疫情数据简单可视化分析(4月5日更新)" href="./post/covidsh/"></a>
 </article>
 
 <article class="post-entry"> 

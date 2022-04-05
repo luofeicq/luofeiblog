@@ -165,18 +165,29 @@ write.xlsx(final_df, (&quot;data/shcovid.xlsx&quot;)) # 写出到EXCEL文件</co
 </tbody>
 </table>
 <p>画个玫瑰图看看，其实这个图并并能很好反应数据特征。</p>
-<pre class="r"><code>windowsFonts(A = windowsFont(&quot;微软雅黑&quot;))  # 设置字体
+<pre class="r"><code>windowsFonts(A = windowsFont(&quot;微软雅黑&quot;)) # 设置字体
 
-final_df %&gt;%
-    ggplot(aes(x = factor(Date_rep), y = case_sum)) + geom_col(aes(fill = Local),
-    width = 1.03) + coord_polar(theta = &quot;x&quot;, start = 0, direction = 1) + theme(panel.background = element_blank(),
-    panel.grid = element_blank(), axis.title = element_blank(), legend.position = c(0.9,
-        0.5), axis.ticks = element_blank(), axis.text = element_blank(), legend.title = element_blank(),
-    legend.text = element_text(size = 5), text = element_text(family = &quot;A&quot;)) + geom_text(data = final_df %&gt;%
-    dplyr::filter(Local == &quot;浦东新区&quot;), aes(label = Date_rep), nudge_y = 3000, size = 2,
-    ) + guides(fill = guide_legend(ncol = 2)) + theme(plot.margin = unit(rep(0.5,
-    4), &quot;mm&quot;), legend.key.size = unit(3, &quot;mm&quot;), aspect.ratio = 1) + scale_y_continuous(expand = c(0,
-    0), limits = c(-200, 15000))</code></pre>
+final_df %&gt;% ggplot(aes(x = factor(Date_rep), y = case_sum)) +
+  geom_col(aes(fill = Local), width = 1.03) +
+  coord_polar(theta = &quot;x&quot;, start = 0, direction = 1) +
+  theme(panel.background = element_blank(),
+        panel.grid = element_blank(), 
+        axis.title = element_blank(),
+        legend.position = c(0.9,0.5),
+        axis.ticks = element_blank(),
+        axis.text = element_blank(),
+        legend.title = element_blank(),
+        legend.text = element_text(size = 5),
+        text = element_text(family = &quot;A&quot;)
+        )+ geom_text(data = final_df %&gt;% dplyr::filter(Local == &quot;浦东新区&quot;), aes(label = Date_rep ),
+                                  nudge_y = 3000,
+                                  size = 2, 
+                                  ) +
+  guides(fill = guide_legend(ncol = 2) ) +
+  theme(plot.margin = unit(rep(0.5,4), &quot;mm&quot;),
+        legend.key.size = unit(3,&quot;mm&quot;),
+        aspect.ratio = 1) +
+  scale_y_continuous(expand = c(0,0), limits = c(-500,15000)) </code></pre>
 <p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
 <div id="主页信息获取" class="section level2">
 <h2>主页信息获取</h2>
@@ -185,35 +196,24 @@ final_df %&gt;%
 url &lt;- &quot;https://wsjkw.sh.gov.cn/xwfb/index.html&quot;
 ## 获取首页信息
 content &lt;- read_html(url)
-reportdate &lt;- content %&gt;%
-    html_nodes(&quot;.time&quot;) %&gt;%
-    html_text() %&gt;%
-    as.Date.character()
-title &lt;- content %&gt;%
-    html_nodes(&quot;.list-date a&quot;) %&gt;%
-    html_text()
+reportdate &lt;- content %&gt;%  html_nodes(&quot;.time&quot;) %&gt;% html_text() %&gt;% as.Date.character()
+title &lt;-  content %&gt;% html_nodes(&quot;.list-date a&quot;) %&gt;% html_text() 
 basedata &lt;- tibble(reportdate = reportdate, title = title)</code></pre>
 </div>
 <div id="爬取所有数据" class="section level2">
 <h2>爬取所有数据</h2>
 <p>上海的疫情变化主要从3月开始，但为了查看之前的变化，是否输入病例压力增大导致本次疫情，因此爬取了2到200页到的数据。使用<code>for</code>循环，<code>rbind</code>组合成基础数据。</p>
-<pre class="r"><code>## 使用循环爬取2到200也网页信息
+<pre class="r"><code>##使用循环爬取2到200也网页信息
 
-for (i in 2:200) {
-    url = paste0(&quot;https://wsjkw.sh.gov.cn/xwfb/index_&quot;, i, &quot;.html&quot;)
-    content &lt;- read_html(url)
-    reportdate &lt;- content %&gt;%
-        html_nodes(&quot;.time&quot;) %&gt;%
-        html_text() %&gt;%
-        as.Date.character()
-    title &lt;- content %&gt;%
-        html_nodes(&quot;.list-date a&quot;) %&gt;%
-        html_text()
-    basedata &lt;- basedata %&gt;%
-        rbind(tibble(reportdate = reportdate, title = title))
+for (i in 2:200) {  
+  url = paste0(&quot;https://wsjkw.sh.gov.cn/xwfb/index_&quot;, i, &quot;.html&quot;)
+  content &lt;- read_html(url)
+  reportdate &lt;- content %&gt;%  html_nodes(&quot;.time&quot;) %&gt;% html_text() %&gt;% as.Date.character()
+  title &lt;-  content %&gt;% html_nodes(&quot;.list-date a&quot;) %&gt;% html_text() 
+  basedata &lt;- basedata %&gt;% rbind(  tibble(reportdate = reportdate, title = title))
 }
 ## 写出数据
-write.csv(basedata, &quot;data/basedata.csv&quot;)</code></pre>
+write.csv(basedata,&quot;data/basedata.csv&quot;)</code></pre>
 </div>
 <div id="数据清洗" class="section level2">
 <h2>数据清洗</h2>
