@@ -56,6 +56,8 @@ library(ggThemeAssist)</code></pre>
 </div>
 <div id="重点关注3月数据" class="section level1">
 <h1>重点关注3月数据</h1>
+<div id="数据获取-1" class="section level2">
+<h2>数据获取</h2>
 <p>重新爬了一下按地区分布的,代码如下：</p>
 <pre class="r"><code>##设置网址
 url_all &lt;- paste0(&quot;https://wsjkw.sh.gov.cn/xwfb/index_&quot;,c(2:20),&quot;.html&quot;)
@@ -108,7 +110,10 @@ final_df &lt;- final_df %&gt;% mutate(
 )
 final_df &lt;-  final_df %&gt;% distinct() # 剔重
 write.xlsx(final_df, (&quot;data/shcovid.xlsx&quot;)) # 写出到EXCEL文件</code></pre>
-<p>数据爬出来如下表（前20行）：</p>
+</div>
+<div id="地区分布" class="section level2">
+<h2>地区分布</h2>
+<p>地区分布没啥好说了，浦东新区数量最多，数据爬出来如下表（前20行）：</p>
 <table>
 <thead>
 <tr class="header">
@@ -189,6 +194,178 @@ final_df %&gt;% ggplot(aes(x = factor(Date_rep), y = case_sum)) +
         aspect.ratio = 1) +
   scale_y_continuous(expand = c(0,0), limits = c(-500,15000)) </code></pre>
 <p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>感觉还不如单纯的条图清晰</p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="发现途径数据获取" class="section level2">
+<h2>发现途径数据获取</h2>
+<p>获取病例发现人群相关数据</p>
+<pre class="r"><code>url_3 &lt;-  pages_1 %&gt;%
+  dplyr::filter(str_detect(Title, &quot;新增本土新冠肺炎确诊病例&quot;)) %&gt;%
+  mutate(
+  url_3 = paste0(&quot;https://wsjkw.sh.gov.cn/&quot;, Url) ) %&gt;% 
+  select(url_3) %&gt;%
+  unlist()#组合成所需的所有次级链接地址
+##建立函数
+webfun3 &lt;- function(url){
+#pages &lt;- read_html(url) %&gt;% html_nodes(&quot;#ivs_content &gt; p:nth-child(1)&quot;) %&gt;% html_text()
+pages &lt;- read_html(url) %&gt;% html_nodes(&quot;#ivs_content&quot;) %&gt;% html_text()
+tb_2 &lt;- tibble(content = pages)
+tb_2_sep &lt;-  tb_2 %&gt;% mutate(
+  rep_date = str_extract(content, &quot;[0-9]+年[0-9]+月[0-9]+日&quot;),
+  case_c = str_extract(content, &quot;例[0-9]+&quot;) %&gt;% str_extract(&quot;[0-9]+&quot;),
+  case_u = str_extract(content, &quot;者[0-9]+&quot;) %&gt;% str_extract(&quot;[0-9]+&quot;),
+  case_c_zh = str_extract(content, &quot;中[0-9]+例确诊病例为&quot;) %&gt;% str_extract(&quot;[0-9]+&quot;),
+  case_c_gk = str_extract(content, &quot;[0-9]+例确诊病例和&quot;) %&gt;% str_extract(&quot;[0-9]+&quot;),
+  case_u_gk = str_extract(content,&quot;和[0-9]+例无症状感染者在隔离管控中发现&quot; ) %&gt;%  str_extract(&quot;[0-9]+&quot;)) %&gt;%
+  select(rep_date, case_c, case_u, case_c_zh, case_c_gk, case_u_gk
+)
+}
+# 爬取数据
+tb_fenlei &lt;- map_df(url_3, webfun3)
+
+# 剔重
+tb_fenlei &lt;-  tb_fenlei %&gt;% filter(!is.na(case_c)) %&gt;% distinct(case_u, .keep_all = T)
+tb_fenlei &lt;-  tb_fenlei %&gt;% mutate(
+  across(case_c:case_u_gk, as.numeric)
+)
+
+tb_fenlei[is.na(tb_fenlei)] &lt;- 0 #替换缺失值
+# 计算各类型人群
+tb_fenlei &lt;-  tb_fenlei %&gt;% mutate(
+  case_c_fx = case_c - case_c_zh,
+  case_u_fx = case_u - case_u_gk,
+  case_all = case_c + case_u,
+  case_all_gk = case_c_gk + case_u_gk,
+  case_all_fx = case_all - case_all_gk,
+  rep_date = as.Date.character(rep_date, &quot;%Y年%m月%d日&quot;)
+)
+# 写出数据
+write.xlsx(tb_fenlei, &quot;data/case_fenlei.xlsx&quot;)</code></pre>
+</div>
+<div id="获取数据信息如下" class="section level2">
+<h2>获取数据信息如下</h2>
+<table>
+<colgroup>
+<col width="10%" />
+<col width="6%" />
+<col width="6%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="8%" />
+<col width="11%" />
+<col width="11%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">rep_date</th>
+<th align="right">case_c</th>
+<th align="right">case_u</th>
+<th align="right">case_c_zh</th>
+<th align="right">case_c_gk</th>
+<th align="right">case_u_gk</th>
+<th align="right">case_c_fx</th>
+<th align="right">case_u_fx</th>
+<th align="right">case_all</th>
+<th align="right">case_all_gk</th>
+<th align="right">case_all_fx</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">2022-04-04</td>
+<td align="right">268</td>
+<td align="right">13086</td>
+<td align="right">4</td>
+<td align="right">14</td>
+<td align="right">12592</td>
+<td align="right">264</td>
+<td align="right">494</td>
+<td align="right">13354</td>
+<td align="right">12606</td>
+<td align="right">748</td>
+</tr>
+<tr class="even">
+<td align="left">2022-04-03</td>
+<td align="right">425</td>
+<td align="right">8581</td>
+<td align="right">71</td>
+<td align="right">7</td>
+<td align="right">7920</td>
+<td align="right">354</td>
+<td align="right">661</td>
+<td align="right">9006</td>
+<td align="right">7927</td>
+<td align="right">1079</td>
+</tr>
+<tr class="odd">
+<td align="left">2022-04-02</td>
+<td align="right">438</td>
+<td align="right">7788</td>
+<td align="right">73</td>
+<td align="right">16</td>
+<td align="right">6773</td>
+<td align="right">365</td>
+<td align="right">1015</td>
+<td align="right">8226</td>
+<td align="right">6789</td>
+<td align="right">1437</td>
+</tr>
+<tr class="even">
+<td align="left">2022-04-01</td>
+<td align="right">260</td>
+<td align="right">6051</td>
+<td align="right">2</td>
+<td align="right">8</td>
+<td align="right">5402</td>
+<td align="right">258</td>
+<td align="right">649</td>
+<td align="right">6311</td>
+<td align="right">5410</td>
+<td align="right">901</td>
+</tr>
+<tr class="odd">
+<td align="left">2022-03-31</td>
+<td align="right">358</td>
+<td align="right">4144</td>
+<td align="right">20</td>
+<td align="right">8</td>
+<td align="right">3710</td>
+<td align="right">338</td>
+<td align="right">434</td>
+<td align="right">4502</td>
+<td align="right">3718</td>
+<td align="right">784</td>
+</tr>
+<tr class="even">
+<td align="left">2022-03-30</td>
+<td align="right">355</td>
+<td align="right">5298</td>
+<td align="right">16</td>
+<td align="right">10</td>
+<td align="right">4477</td>
+<td align="right">339</td>
+<td align="right">821</td>
+<td align="right">5653</td>
+<td align="right">4487</td>
+<td align="right">1166</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="时间分布" class="section level2">
+<h2>时间分布</h2>
+<p>首先看看随着时间的大体趋势，感染者数量几乎是成指数增加，仿佛仍然没到头
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="人群分布" class="section level2">
+<h2>人群分布</h2>
+<p>再看看每天感染者发现途径的变化情况，红色代表每天从风险人群中发现感染者，蓝色代表从管控人群。可预见从风险人群中发现感染者的比例大体趋势是减少的。这种情况视乎是一个好的征兆。但是是否存在随着时间变化，防控政策的变化，同时对两类人群的定义是否也随之变化？
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
 <div id="主页信息获取" class="section level2">
 <h2>主页信息获取</h2>
 <p>使用<code>selectorgadget</code>在网页上找到需要的变量“时间”和“标题”，对应的node分别是<code>.time</code>和<code>.list-data a</code>，使用<code>rvest</code>抓取后，转为文本存储在列表中。</p>
@@ -225,29 +402,29 @@ write.csv(basedata,&quot;data/basedata.csv&quot;)</code></pre>
 <div id="先画个简单的图看看大趋势" class="section level2">
 <h2>先画个简单的图看看大趋势</h2>
 <p>以报告感染者类型为颜色看，从20年1月到21年12月期间，上海的感染人数几乎在处于一个长期稳定的状态，从2022年3月开始呈直升飞机式的增长。奇怪的是中间咋有个空白区，没有数据。查看原始网页，发现网站从2021年11月6日-2022年1月1日没有更新数据。这是一个奇怪的现象。不过没关系，这不影响我们后面的分析，<del>这对原因分析有很大关系</del>。</p>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="输入感染者的趋势" class="section level2">
 <h2>输入感染者的趋势</h2>
 <p>对上海这波疫情有个合理的猜测是，1月初上海接纳大量某地的航班的，导致上海市输入疫情压力陡增，再加上Omicron变异株超强传播能力，双重压力下导致这个模范城市失守。好吧，我们来看看是否能验证输入压力陡增这个猜测。从图上看好像跟上图颇像，鉴于确诊和无症状都属与感染这，下一步我们把本地和输入的感染者的合计数的变化可视化看看。</p>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-15-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="感染者总数" class="section level2">
 <h2>感染者总数</h2>
 <p>先用二者做个散点图看看,如图，完全看不出啥关系啊。。。。输入感染者较多的时候，反而本地感染处于低水平。这个图像，线性回归暂时也不考虑。我们还是从感染者数量和时间的关系看看。</p>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-16-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>画出来如下，大致能看从1月到3月二者都在上升，但到了3月后，二者分道扬镳了。
-<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-12-1.png" width="672" style="display: block; margin: auto;" /></p>
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-17-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="年1到三月" class="section level2">
 <h2>2022年1到三月</h2>
 <p>我们把时间尺度拉大到2月中旬到3月看看。放大后（下图1）可以看到从2月10日起到2月21日之间，二者几乎是呈线性相关，到2月22日，输入感染人数开始上升，此时上海本地感染数量仍然无幅度的改变，处于平稳状态，此时输入感染者数量是大于本地感染。</p>
 <p>为了更仔细看清楚变化情况，我们将y轴的数量调整至0-100例（下图2），这时候能清楚看到每天的变化。3月6日左右，二者数量出现了反转，本地感染者数量快速上升，并大幅度超过输入感染者。</p>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-13-1.png" width="672" style="display: block; margin: auto;" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-13-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-1.png" width="672" style="display: block; margin: auto;" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-2.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 </div>
 <div id="简单总结" class="section level1">
 <h1>简单总结</h1>
 <p>从上面的简单分析可得知，上海市境外输入感染者数量，从去年2月20日左右开始上升，增加的幅度从平均12例左右，到2月24左右达到85例左右。确实存在一个数量快速增加的阶段，之后过了大概一周的时间上海本地感染者开始快速上升，我们不得不猜测这二者之间可能存在某种联系。最后一张图添加了平滑曲线，做一个大致的预测。从图可见上海这一次疫情新增病人数量仍未到达所谓的“拐点”<del>没爬错数据</del>。随着检测人数的增加，防控措施的进一步加码和落实，相信这一波疫情会逐渐得到控制。</p>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-19-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>

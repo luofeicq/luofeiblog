@@ -76,6 +76,7 @@ library(ggThemeAssist)
 ```
 # 重点关注3月数据
 
+## 数据获取
 
 重新爬了一下按地区分布的,代码如下：
 
@@ -134,15 +135,16 @@ write.xlsx(final_df, ("data/shcovid.xlsx")) # 写出到EXCEL文件
 ```
 
 ```{r, warning=FALSE, include=TRUE, results='asis' }
-final_df <- read_excel("data/shcovid.xlsx")
+final_df <- read.xlsx("data/shcovid.xlsx", detectDates = T  )
 ```
 
-数据爬出来如下表（前20行）：
+## 地区分布
+
+地区分布没啥好说了，浦东新区数量最多，数据爬出来如下表（前20行）：
 
 ```{r, results='asis', results='asis'}
 
 knitr::kable(head(final_df))
-
 ```
 
 画个玫瑰图看看，其实这个图并并能很好反应数据特征。
@@ -173,6 +175,121 @@ final_df %>% ggplot(aes(x = factor(Date_rep), y = case_sum)) +
   scale_y_continuous(expand = c(0,0), limits = c(-500,15000)) 
 
 ```
+
+感觉还不如单纯的条图清晰
+
+```{r}
+final_df %>% ggplot(aes(x = Date_rep, y = case_sum)) +
+  geom_col(aes(fill = Local), col = "grey",width = 1.03) +
+  #coord_polar(theta = "x", start = 0, direction = 1) +
+  theme(panel.grid.minor =  element_blank(), 
+        axis.title = element_blank(),
+        legend.position = "right",
+        legend.title = element_blank(),
+        legend.text = element_text(size = 5),
+        text = element_text(family = "A")
+        ) +
+  guides(fill = guide_legend(ncol = 2) ) +
+  theme(plot.margin = unit(rep(0.5,4), "mm"),
+        legend.key.size = unit(3,"mm"),
+        aspect.ratio = 1) +
+  scale_y_continuous(expand = c(0,0)) +
+  scale_x_date(date_breaks = "2 day", date_labels = "%m-%d")
+```
+
+
+
+## 发现途径数据获取
+
+获取病例发现人群相关数据
+
+```{r, echo=TRUE, eval=FALSE}
+url_3 <-  pages_1 %>%
+  dplyr::filter(str_detect(Title, "新增本土新冠肺炎确诊病例")) %>%
+  mutate(
+  url_3 = paste0("https://wsjkw.sh.gov.cn/", Url) ) %>% 
+  select(url_3) %>%
+  unlist()#组合成所需的所有次级链接地址
+##建立函数
+webfun3 <- function(url){
+#pages <- read_html(url) %>% html_nodes("#ivs_content > p:nth-child(1)") %>% html_text()
+pages <- read_html(url) %>% html_nodes("#ivs_content") %>% html_text()
+tb_2 <- tibble(content = pages)
+tb_2_sep <-  tb_2 %>% mutate(
+  rep_date = str_extract(content, "[0-9]+年[0-9]+月[0-9]+日"),
+  case_c = str_extract(content, "例[0-9]+") %>% str_extract("[0-9]+"),
+  case_u = str_extract(content, "者[0-9]+") %>% str_extract("[0-9]+"),
+  case_c_zh = str_extract(content, "中[0-9]+例确诊病例为") %>% str_extract("[0-9]+"),
+  case_c_gk = str_extract(content, "[0-9]+例确诊病例和") %>% str_extract("[0-9]+"),
+  case_u_gk = str_extract(content,"和[0-9]+例无症状感染者在隔离管控中发现" ) %>%  str_extract("[0-9]+")) %>%
+  select(rep_date, case_c, case_u, case_c_zh, case_c_gk, case_u_gk
+)
+}
+# 爬取数据
+tb_fenlei <- map_df(url_3, webfun3)
+
+# 剔重
+tb_fenlei <-  tb_fenlei %>% filter(!is.na(case_c)) %>% distinct(case_u, .keep_all = T)
+tb_fenlei <-  tb_fenlei %>% mutate(
+  across(case_c:case_u_gk, as.numeric)
+)
+
+tb_fenlei[is.na(tb_fenlei)] <- 0 #替换缺失值
+# 计算各类型人群
+tb_fenlei <-  tb_fenlei %>% mutate(
+  case_c_fx = case_c - case_c_zh,
+  case_u_fx = case_u - case_u_gk,
+  case_all = case_c + case_u,
+  case_all_gk = case_c_gk + case_u_gk,
+  case_all_fx = case_all - case_all_gk,
+  rep_date = as.Date.character(rep_date, "%Y年%m月%d日")
+)
+# 写出数据
+write.xlsx(tb_fenlei, "data/case_fenlei.xlsx")
+
+```
+
+
+## 获取数据信息如下
+
+```{r, results='asis'}
+tb_fenlei_final <- read.xlsx("data/case_fenlei.xlsx", detectDates = T )
+knitr::kable(head(tb_fenlei_final))
+
+
+```
+
+## 时间分布
+
+首先看看随着时间的大体趋势，感染者数量几乎是成指数增加，仿佛仍然没到头
+```{r}
+tb_fenlei_long <-  tb_fenlei_final %>%
+  select(rep_date, case_all_fx, case_all_gk) %>%  
+  pivot_longer(cols = c(case_all_fx, case_all_gk), names_to = "type", values_to = "cases") 
+
+
+
+tb_fenlei_long %>% ggplot(aes(x = rep_date, y = cases)) +
+  geom_col(aes(fill = type), alpha = 0.7) +
+  scale_x_date(date_breaks = "2 day", date_labels = "%m-%d", expand = c(0.05,0.05)) +
+  geom_line(aes(col = type)) +
+  geom_point(aes(col = type))
+  theme(
+    panel.background = element_blank()
+  )
+  
+
+```
+
+## 人群分布
+
+再看看每天感染者发现途径的变化情况，红色代表每天从风险人群中发现感染者，蓝色代表从管控人群。可预见从风险人群中发现感染者的比例大体趋势是减少的。这种情况视乎是一个好的征兆。但是是否存在随着时间变化，防控政策的变化，同时对两类人群的定义是否也随之变化？
+```{r}
+tb_fenlei_long %>% ggplot(aes(x = rep_date, y = cases)) +
+  geom_col(aes(fill = type), position = "fill") +
+  scale_x_date(date_breaks = "2 day", date_labels = "%m-%d", expand = c(0.05,0.05))
+```
+
 
 
 ## 主页信息获取
