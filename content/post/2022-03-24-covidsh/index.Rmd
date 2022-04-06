@@ -476,6 +476,7 @@ covidsh <-  sh_long %>% filter(reportdate > as.Date.character("2022-3-1")) %>%
         legend.position = "top")
 covidsh
 ```
+
 ## 预测
 
 建立线性回归模型, 4月7日，预测16912
@@ -491,7 +492,7 @@ newdata <- newdata %>% mutate(
 )
 
 mod_data %>% ggplot() +
-  geom_line(aes(days, case_all))+
+  geom_line(aes(days, case_all), col = 2)+
   geom_line(data = newdata, aes(days, pred), col = 3) +
   geom_point(data = newdata, aes(days, pred), col = 3) +
   geom_text(data = newdata %>% filter(days > 22), aes(days, pred, label =  pred)) +
