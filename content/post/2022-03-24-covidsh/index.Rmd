@@ -477,6 +477,7 @@ covidsh <-  sh_long %>% filter(reportdate > as.Date.character("2022-3-1")) %>%
 covidsh
 ```
 ## 预测
+
 建立线性回归模型, 4月7日，预测16912
 ```{r}
 mod_data <-  tb_fenlei_final %>% select(case_all) %>% arrange(case_all) %>% 
@@ -486,12 +487,15 @@ summary(mod1)
 newdata <- data.frame(days = 1:30)
 predict(mod1)
 newdata <- newdata %>% mutate(
-  pred = predict(mod1, newdata)
+  pred = predict(mod1, newdata) %>% round(0)
 )
 
 mod_data %>% ggplot() +
   geom_line(aes(days, case_all))+
-  geom_line(data = newdata, aes(days, pred), col = 3)
+  geom_line(data = newdata, aes(days, pred), col = 3) +
+  geom_point(data = newdata, aes(days, pred), col = 3) +
+  geom_text(data = newdata %>% filter(days > 22), aes(days, pred, label =  pred)) +
+  theme_bw()
 
 ```
 
