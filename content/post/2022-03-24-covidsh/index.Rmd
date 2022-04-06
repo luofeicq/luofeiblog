@@ -10,7 +10,7 @@ tags:
   - R
 output:
     blogdown::html_page:
-        number_sections: false 
+        number_sections: true
 math: true
 showToc: true
 TocOpen: false
@@ -72,15 +72,166 @@ library(tidyverse)
 library(lubridate)
 library(readxl)
 library(openxlsx)
+library(ggforce)
 
 ```
-# 重点关注3月数据
 
-## 数据获取
 
-重新爬了一下按地区分布的,代码如下：
 
-```{r, echo=TRUE, eval=FALSE, include=TRUE}
+## 主页信息获取
+
+使用`selectorgadget`在网页上找到需要的变量“时间”和“标题”，对应的node分别是`.time`和`.list-data a`，使用`rvest`抓取后，转为文本存储在列表中。
+
+
+```{r, eval=FALSE, echo=TRUE}
+## 设置url
+url <- "https://wsjkw.sh.gov.cn/xwfb/index.html"
+## 获取首页信息
+content <- read_html(url)
+reportdate <- content %>%  html_nodes(".time") %>% html_text() %>% as.Date.character()
+title <-  content %>% html_nodes(".list-date a") %>% html_text() 
+basedata <- tibble(reportdate = reportdate, title = title)
+
+```
+
+## 爬取所有数据
+
+上海的疫情变化主要从3月开始，但为了查看之前的变化，是否输入病例压力增大导致本次疫情，因此爬取了2到200页到的数据。改用`purrr`包的`map_df`函数爬取。
+
+```{r, eval=FALSE, echo=TRUE}
+##使用循环爬取2到200也网页信息
+url_1 <- c("https://wsjkw.sh.gov.cn/xwfb/index.html",
+           paste0("https://wsjkw.sh.gov.cn/xwfb/index_", c(2:200), ".html"))
+webfun_0 <- function(url){
+    webpage <- read_html(url) 
+    tibble( "reportdate" = webpage %>% html_nodes(".time") %>% html_text(),
+    "title" = webpage %>% html_nodes(".list-date a") %>% html_attr("title"))
+  }
+basedata <- map_df(url_1, webfun_0) 
+
+
+## 写出数据
+write.csv(basedata,"data/basedata.csv")
+
+```
+
+## 数据清洗
+
+这一步比较麻烦的是对标题中日期字符的整理。使用`str_extract_all`命令后提取的日期，变成了列表。再合并为向量形势的日期格式数据时出了点麻烦。最后使用了笨办法`for`循环`unlist`后再`paste0`合并。其实直接用标题前的日期-1没什么大的误差，主要是在跟自己较劲搞得这么麻烦。
+
+```{r, include=FALSE, message=FALSE}
+basedata <- read.csv("data/basedata.csv")
+## 筛选出包含疫情信息的标题
+sh01 <-  basedata %>% filter(str_detect(title, "新冠肺炎确诊病例"))
+
+sh02 <- sh01 %>% mutate(
+  reportdate = as.Date.character(reportdate, "%Y-%m-%d"),
+  title = if_else(str_detect(title, "本地"), str_replace(title, "本地", "本土"), title),
+  检出阳性日期 = str_extract(title, "[0-9]+年[0-9]+月[0-9]+日") %>% as.Date.character("%Y年%m月%d日"),
+  新增确诊 = str_extract(title, "新增本土新冠肺炎确诊病例[0-9]+") %>% str_extract("[0-9]+") %>% as.numeric(),
+  新增无症状 = str_extract(title, "无症状感染者[0-9]+") %>% str_extract("[0-9]+") %>% as.numeric(),
+  新增境外输入确诊 = str_extract(title, "境外.+[0-9]+") %>% str_extract("[0-9]+") %>% as.numeric(),
+  新增境外无症状输入 = str_extract(title, "境外输入性无症状感染者+[0-9]+") %>% str_extract("[0-9]+") %>% as.numeric(),
+  治愈数 = str_extract(title, "治愈出院[0-9]+") %>% str_extract("[0-9]+") %>% as.numeric(),
+  解除 = str_extract(title, "解除.+") %>% str_extract("[0-9]+") %>% as.numeric())
+
+
+
+sh02 <- sh02 %>% mutate(
+  检出阳性日期 = if_else(is.na(检出阳性日期), reportdate-1, 检出阳性日期)
+)
+sh02[is.na(sh02)] <- 0
+sh02 <- sh02 %>% mutate(
+  新增本地感染 = 新增确诊 + 新增无症状,
+  新增境外输入感染 = 新增境外输入确诊 + 新增境外无症状输入
+ )
+## 转换为长数据
+
+sh_long <-  sh02 %>% pivot_longer(cols =  新增确诊:新增境外输入感染, names_to = "感染者类型", values_to = "病例数" )
+
+
+
+```
+
+# 好了，开始分析吧
+
+## 先画个简单的图看看大趋势
+
+以报告感染者类型为颜色看，从20年1月到21年12月期间，上海的感染人数几乎在处于一个长期稳定的状态，从2022年3月开始呈直升飞机式的增长。奇怪的是中间咋有个空白区，没有数据。查看原始网页，发现网站从2021年11月6日-2022年1月1日没有更新数据。这是一个奇怪的现象。不过没关系，这不影响我们后面的分析，~~这对原因分析有很大关系~~。
+
+```{r, results='asis'}
+
+sh_long %>% ggplot(aes(x = 检出阳性日期, y = 病例数, col = 感染者类型)) +
+  geom_point(alpha = 0.3, position = "jitter") + 
+  scale_x_date(date_breaks = "3 month", date_labels = "%y-%m")
+```
+
+##  输入感染者的趋势
+
+
+对上海这波疫情有个合理的猜测是，1月初上海接纳大量某地的航班的，导致上海市输入疫情压力陡增，再加上Omicron变异株超强传播能力，双重压力下导致这个模范城市失守。好吧，我们来看看是否能验证输入压力陡增这个猜测。从图上看新增输入的感染者数量变化并不大，鉴于确诊和无症状都属与感染这，下一步我们把本地和输入的感染者的合计数的变化可视化看看。
+
+```{r, results='asis'}
+
+sh_long %>% filter( 感染者类型 == "新增境外输入感染"  ) %>% 
+  ggplot(aes(x = 检出阳性日期, y = 病例数, col = 感染者类型)) +
+  geom_point(position = "jitter", alpha = 0.2) + 
+  scale_x_date(date_breaks = "3 month", date_labels = "%y-%m")
+
+```
+
+## 感染者总数
+
+先用二者做个散点图看看,如图，完全看不出啥关系啊。。。。输入感染者较多的时候，反而本地感染处于低水平。这个图像，线性回归暂时也不考虑。我们还是从感染者数量和时间的关系看看。
+
+
+
+```{r, results='asis'}
+sh_long %>% filter(检出阳性日期 > as.Date("2022-2-11")) %>% 
+  filter(感染者类型 == "新增境外输入感染"|感染者类型 == "新增本地感染") %>% 
+  select(检出阳性日期, 感染者类型, 病例数) %>% pivot_wider(names_from = 感染者类型, values_from = 病例数) %>% 
+  ggplot() +
+  geom_point(aes(x = 新增本地感染, y = 新增境外输入感染))
+```
+
+画出来如下，大致能看出在3月14日前，上海几乎没有本土感染病例。
+```{r, results='asis'}
+sh_long %>% filter(感染者类型 == "新增境外输入感染"|感染者类型 == "新增本地感染")  %>% 
+  ggplot(aes(x = 检出阳性日期, y = 病例数, col = 感染者类型)) +
+  geom_point(alpha = 0.5) + 
+  geom_line(alpha = 0.5) +
+  scale_x_date(date_breaks = "3 month", date_labels = "%y-%m") 
+
+```
+
+## 2022年1到三月
+
+
+我们把时间尺度拉大到2月中旬到3月看看。放大后（下图1）到3月14日，输入感染人数开始上升，此时上海本地感染数量仍然无幅度的改变，处于平稳状态，此时输入感染者数量是大于本地感染。
+
+为了更仔细看清楚变化情况，我们将y轴的数量调整至0-100例（下图2），这时候能清楚看到每天的变化。3月6日左右，二者数量出现了反转，本地感染者（蓝色）数量快速上升，并大幅度超过输入感染者。
+
+```{r results='asis'}
+
+fig2 <- sh_long %>% filter(检出阳性日期 > "2022-01-01") %>% filter(感染者类型 == "新增境外输入感染"|感染者类型 == "新增本地感染")  %>% 
+  ggplot(aes(x = 检出阳性日期, y = 病例数, col = 感染者类型)) +
+  geom_point(alpha = 0.5) + 
+  geom_line(alpha = 0.5) +
+  scale_x_date(date_breaks = "1 week", date_labels = "%m-%d") +
+  theme(legend.position = "none") +
+  facet_zoom(ylim = c(0,1000))
+fig2
+
+```
+
+
+
+
+## 重点关注3月的数据
+
+
+
+```{r, eval=FALSE}
 ##设置网址
 url_all <- paste0("https://wsjkw.sh.gov.cn/xwfb/index_",c(2:20),".html")
 url_all <- c("https://wsjkw.sh.gov.cn/xwfb/index.html", url_all)
@@ -140,7 +291,7 @@ final_df <- read.xlsx("data/shcovid.xlsx", detectDates = T  )
 
 ## 地区分布
 
-地区分布没啥好说了，浦东新区数量最多，数据爬出来如下表：
+重新爬了一下按地区分布的，结果很明显，浦东新区感染者数量最多，见下表：
 
 ```{r, results='asis', results='asis'}
 
@@ -153,7 +304,7 @@ final_df_wider %>% pivot_wider(
 
 画个玫瑰图看看，其实这个图并并能很好反应数据特征。
 
-```{r, echo=TRUE}
+```{r}
 windowsFonts(A = windowsFont("微软雅黑")) # 设置字体
 
 final_df %>% ggplot(aes(x = factor(Date_rep), y = case_sum)) +
@@ -204,9 +355,9 @@ final_df %>% ggplot(aes(x = Date_rep, y = case_sum)) +
 
 ## 发现途径数据获取
 
-获取病例发现人群相关数据
 
-```{r, echo=TRUE, eval=FALSE}
+
+```{r, eval=FALSE}
 url_3 <-  pages_1 %>%
   dplyr::filter(str_detect(Title, "新增本土新冠肺炎确诊病例")) %>%
   mutate(
@@ -253,7 +404,7 @@ write.xlsx(tb_fenlei, "data/case_fenlei.xlsx")
 ```
 
 
-## 获取数据信息如下
+获取数据信息如下
 
 ```{r, results='asis'}
 tb_fenlei_final <- read.xlsx("data/case_fenlei.xlsx", detectDates = T )
@@ -264,7 +415,7 @@ knitr::kable(head(tb_fenlei_final))
 
 ## 时间分布
 
-首先看看随着时间的大体趋势，感染者数量几乎是成指数增加，仿佛仍然没到头。但是从风险人群中检出感染者数量似乎有下降的迹象。
+首先看看的大体趋势，从3月13日起，随着时间感染者数量几乎是成指数增加。但是从风险人群（红线）中检出感染者数量似乎有下降的迹象。
 ```{r}
 tb_fenlei_long <-  tb_fenlei_final %>%
   select(rep_date, case_all_fx, case_all_gk) %>%  
@@ -285,13 +436,13 @@ tb_fenlei_long %>% ggplot(aes(x = rep_date, y = cases)) +
 
 ## 人群分布
 
-再看看每天感染者发现途径的变化情况，红色代表每天从风险人群中发现感染者，蓝色代表从管控人群。可预见从风险人群中发现感染者的比例大体趋势是减少的。这种情况视乎是一个好的征兆。但是是否存在随着时间变化，防控政策的变化，同时对两类人群的定义是否也随之变化？
+再看看每天感染者发现途径的变化情况。红色代表每天从风险人群中发现感染者，蓝色代表从管控人群。可见从风险人群中发现感染者的比例大体趋势是逐渐减少的。这种情况视乎是一个好的征兆。但同时需要考虑随着防控政策的变化，对两类人群的定义是否也随之变化？
 ```{r}
 tb_fenlei_long %>% ggplot(aes(x = rep_date, y = cases)) +
   geom_col(aes(fill = type), position = "fill") +
   scale_x_date(date_breaks = "2 day", date_labels = "%m-%d", expand = c(0.05,0.05))
 ```
-再单独看看风险人群中检出感染者的情况，确实出现了4月3日，4月4日连续两天下降，且看起来几乎是呈直线下降，这似乎是一个好兆头，我们再观察几天看。
+再单独看看风险人群中检出感染者的情况，从了4月3日，4月4日连续两天下降，且看起来几乎是呈直线下降，这是一个好兆头。预示着，随着大规模核酸检测工作的全面铺开，从社会面发现感染者数量的增长势头将会慢慢遏制。
 
 ```{r}
 tb_fenlei_long %>% filter(type == "case_all_fx") %>% 
@@ -304,194 +455,6 @@ tb_fenlei_long %>% filter(type == "case_all_fx") %>%
   geom_line(data = .%>% filter(rep_date > "2022-04-01"), col =4 , size = 1) +
   geom_point(data = .%>% filter(rep_date > "2022-04-01"), col = 4, size = 2) +
   geom_text(data = .%>% filter(rep_date > "2022-04-01"),aes(label = cases), nudge_y = 50, nudge_x = 1 , col = 4)
-```
-
-
-## 主页信息获取
-
-使用`selectorgadget`在网页上找到需要的变量“时间”和“标题”，对应的node分别是`.time`和`.list-data a`，使用`rvest`抓取后，转为文本存储在列表中。
-
-
-```{r, eval=FALSE, echo=TRUE}
-## 设置url
-url <- "https://wsjkw.sh.gov.cn/xwfb/index.html"
-## 获取首页信息
-content <- read_html(url)
-reportdate <- content %>%  html_nodes(".time") %>% html_text() %>% as.Date.character()
-title <-  content %>% html_nodes(".list-date a") %>% html_text() 
-basedata <- tibble(reportdate = reportdate, title = title)
-
-```
-
-## 爬取所有数据
-
-上海的疫情变化主要从3月开始，但为了查看之前的变化，是否输入病例压力增大导致本次疫情，因此爬取了2到200页到的数据。使用`for`循环，`rbind`组合成基础数据。
-
-```{r, eval=FALSE, echo=TRUE}
-##使用循环爬取2到200也网页信息
-
-for (i in 2:200) {  
-  url = paste0("https://wsjkw.sh.gov.cn/xwfb/index_", i, ".html")
-  content <- read_html(url)
-  reportdate <- content %>%  html_nodes(".time") %>% html_text() %>% as.Date.character()
-  title <-  content %>% html_nodes(".list-date a") %>% html_text() 
-  basedata <- basedata %>% rbind(  tibble(reportdate = reportdate, title = title))
-}
-## 写出数据
-write.csv(basedata,"data/basedata.csv")
-
-```
-
-## 数据清洗
-
-这一步比较麻烦的是对标题中日期字符的整理。使用`str_extract_all`命令后提取的日期，变成了列表。再合并为向量形势的日期格式数据时出了点麻烦。最后使用了笨办法`for`循环`unlist`后再`paste0`合并。其实直接用标题前的日期-1没什么大的误差，主要是在跟自己较劲搞得这么麻烦。
-
-```{r, include=FALSE, message=FALSE}
-basedata <- read.csv("data/basedata.csv")
-## 筛选出包含疫情信息的标题
-sh01 <-  basedata %>% filter(str_detect(title, "新冠肺炎确诊病例"))
-
-## 统一规范标题中的关键字段
-sh01 <-  sh01 %>% mutate(
-  title = if_else(str_detect(title, "本地"), str_replace(title, "本地", "本土"), title)
-)
-##空格替换为逗号，方便拆分。
-sh01 <-  sh01 %>% mutate(
-  title = str_replace_all(title, " +", "，")
-)
-## 跟excel类似的拆分列
-sh01 <-  sh01 %>% separate(title,
-                  into = c("日期", "新增确诊", "新增无症状", "新增境外确诊输入", "新增境外无症状输入", 
- 
-                                                     "治愈", "解除"), sep = "，")
-## 提取变量中的数字，生成新变量
-sh01 <-  sh01 %>% mutate(
-  across(新增确诊:解除, ~ str_extract(.x, "[0-9]+"), .names = "{.col}_病例数")
-)
-## 麻烦的合并日期
-caselist <- str_extract_all(sh01$日期, "\\d+")
-casedate <- c()
-
-for (i in 1:length(caselist)) {
-  
-  casedate[i] <- caselist[i] %>% unlist() %>% paste0(collapse = "-")
-  
-}
-
-casedate <- as.Date.character(casedate)
-
-sh01 <-  sh01 %>% mutate(
-  caserepdate  = casedate
-)
-
-## 统一更列名
-
-sh02 <-  sh01 %>% select(reportdate, caserepdate, contains("病例数"))
-
-## 计算本地感染者合计
-sh02 <-  sh02 %>% mutate(
-  across(新增确诊_病例数:解除_病例数, as.numeric)
-)
-## 替换缺失值为0
-sh02 <-  sh02 %>% mutate(
-  across(新增确诊_病例数:解除_病例数, ~ replace_na(., 0))
-)
-
-## 计算感染者合计
-sh02 <- sh02 %>% mutate(
-  新增本地感染_病例数 = 新增确诊_病例数 + 新增无症状_病例数,
-  新增境外输入感染_病例数 = 新增境外确诊输入_病例数 + 新增境外无症状输入_病例数,
-  reportdate = as.Date.character(reportdate),
-  检出阳性日期 = reportdate - 1
-)
-
-
-## 转换为长数据
-
-sh_long <-  sh02 %>% pivot_longer(cols =  contains("病例数"), names_to = "感染者类型", values_to = "病例数" )
-
-## 去除列名后缀
-sh_long <-  sh_long %>% mutate(
-  感染者类型 = str_replace(感染者类型, "_病例数", ""),
-  )
-
-
-```
-
-# 好了，开始分析吧
-
-## 先画个简单的图看看大趋势
-
-以报告感染者类型为颜色看，从20年1月到21年12月期间，上海的感染人数几乎在处于一个长期稳定的状态，从2022年3月开始呈直升飞机式的增长。奇怪的是中间咋有个空白区，没有数据。查看原始网页，发现网站从2021年11月6日-2022年1月1日没有更新数据。这是一个奇怪的现象。不过没关系，这不影响我们后面的分析，~~这对原因分析有很大关系~~。
-
-```{r, results='asis'}
-
-sh_long %>% ggplot(aes(x = 检出阳性日期, y = 病例数, col = 感染者类型)) +
-  geom_point(alpha = 0.2) + 
-  scale_x_date(date_breaks = "3 month", date_labels = "%y-%m")
-```
-
-##  输入感染者的趋势
-
-
-对上海这波疫情有个合理的猜测是，1月初上海接纳大量某地的航班的，导致上海市输入疫情压力陡增，再加上Omicron变异株超强传播能力，双重压力下导致这个模范城市失守。好吧，我们来看看是否能验证输入压力陡增这个猜测。从图上看好像跟上图颇像，鉴于确诊和无症状都属与感染这，下一步我们把本地和输入的感染者的合计数的变化可视化看看。
-
-```{r, results='asis'}
-
-sh_long %>% filter( str_detect(感染者类型 , "境外")  ) %>% 
-  ggplot(aes(x = 检出阳性日期, y = 病例数, col = 感染者类型)) +
-  geom_point(alpha = 0.2) + 
-  scale_x_date(date_breaks = "3 month", date_labels = "%y-%m")
-
-```
-
-## 感染者总数
-
-先用二者做个散点图看看,如图，完全看不出啥关系啊。。。。输入感染者较多的时候，反而本地感染处于低水平。这个图像，线性回归暂时也不考虑。我们还是从感染者数量和时间的关系看看。
-
-
-
-```{r, results='asis'}
-sh_long %>% filter(检出阳性日期 > as.Date("2022-2-11")) %>% 
-  filter(感染者类型 == "新增境外输入感染"|感染者类型 == "新增本地感染") %>% 
-  select(检出阳性日期, 感染者类型, 病例数) %>% pivot_wider(names_from = 感染者类型, values_from = 病例数) %>% 
-  ggplot() +
-  geom_point(aes(x = 新增本地感染, y = 新增境外输入感染))
-```
-
-画出来如下，大致能看从1月到3月二者都在上升，但到了3月后，二者分道扬镳了。
-```{r, results='asis'}
-sh_long %>% filter(感染者类型 == "新增境外输入感染"|感染者类型 == "新增本地感染")  %>% 
-  ggplot(aes(x = 检出阳性日期, y = 病例数, col = 感染者类型)) +
-  geom_point(alpha = 0.5) + 
-  geom_line(alpha = 0.5) +
-  scale_x_date(date_breaks = "3 month", date_labels = "%y-%m") 
-
-```
-
-## 2022年1到三月
-
-
-我们把时间尺度拉大到2月中旬到3月看看。放大后（下图1）可以看到从2月10日起到2月21日之间，二者几乎是呈线性相关，到2月22日，输入感染人数开始上升，此时上海本地感染数量仍然无幅度的改变，处于平稳状态，此时输入感染者数量是大于本地感染。
-
-为了更仔细看清楚变化情况，我们将y轴的数量调整至0-100例（下图2），这时候能清楚看到每天的变化。3月6日左右，二者数量出现了反转，本地感染者数量快速上升，并大幅度超过输入感染者。
-
-```{r results='asis'}
-fig1 <- sh_long %>% filter(检出阳性日期 > as.Date("2022-2-11")) %>% filter(感染者类型 == "新增境外输入感染"|感染者类型 == "新增本地感染")  %>% 
-  ggplot(aes(x = 检出阳性日期, y = 病例数, col = 感染者类型)) +
-  geom_point(alpha = 0.5) + 
-  geom_line(alpha = 0.5) +
-  scale_x_date(date_breaks = "1 week", date_labels = "%m-%d") +
-  theme(legend.position = "top")
-fig2 <- sh_long %>% filter(检出阳性日期 > as.Date("2022-2-11")) %>% filter(感染者类型 == "新增境外输入感染"|感染者类型 == "新增本地感染")  %>% 
-  ggplot(aes(x = 检出阳性日期, y = 病例数, col = 感染者类型)) +
-  geom_point(alpha = 0.5) + 
-  geom_line(alpha = 0.5) +
-  scale_x_date(date_breaks = "1 week", date_labels = "%m-%d") +
-  ylim(c(0,100)) + theme(legend.position = "none")
-fig1 
-fig2
-
 ```
 
 # 简单总结
