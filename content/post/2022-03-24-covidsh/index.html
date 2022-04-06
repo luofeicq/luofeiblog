@@ -1,5 +1,5 @@
 ---
-title: R爬上海疫情数据简单可视化分析(4月5日更新)
+title: R爬上海疫情数据简单可视化分析(4月6日更新)
 author: Luo Fei
 date: '2022-03-24'
 slug: covidsh
@@ -107,8 +107,7 @@ write.csv(basedata,&quot;data/basedata.csv&quot;)</code></pre>
 </div>
 <div id="年1到三月" class="section level2" number="2.4">
 <h2><span class="header-section-number">2.4</span> 2022年1到三月</h2>
-<p>我们把时间尺度拉大到2月中旬到3月看看。放大后（下图1）到3月14日，输入感染人数开始上升，此时上海本地感染数量仍然无幅度的改变，处于平稳状态，此时输入感染者数量是大于本地感染。</p>
-<p>为了更仔细看清楚变化情况，我们将y轴的数量调整至0-100例（下图2），这时候能清楚看到每天的变化。3月6日左右，二者数量出现了反转，本地感染者（蓝色）数量快速上升，并大幅度超过输入感染者。</p>
+<p>我们把时间尺度拉大到2月中旬到3月看看。放大后（下图1）到3月14日，输入感染人数开始上升，此时上海本地感染数量仍然无幅度的改变，处于平稳状态。为了更仔细看清楚变化情况，我们将y轴的数量调整至0-1000例，这时候能清楚看到每天的变化，本地感染者（蓝色）数量从3月16日快速上升者。</p>
 <p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="重点关注3月的数据" class="section level2" number="2.5">
@@ -137,10 +136,12 @@ write.csv(basedata,&quot;data/basedata.csv&quot;)</code></pre>
 <col width="5%" />
 <col width="5%" />
 <col width="5%" />
+<col width="5%" />
 </colgroup>
 <thead>
 <tr class="header">
 <th align="left">Local</th>
+<th align="right">2022-04-05</th>
 <th align="right">2022-04-04</th>
 <th align="right">2022-04-03</th>
 <th align="right">2022-04-01</th>
@@ -163,6 +164,7 @@ write.csv(basedata,&quot;data/basedata.csv&quot;)</code></pre>
 <tbody>
 <tr class="odd">
 <td align="left">浦东新区</td>
+<td align="right">8145</td>
 <td align="right">7071</td>
 <td align="right">3654</td>
 <td align="right">2584</td>
@@ -183,6 +185,7 @@ write.csv(basedata,&quot;data/basedata.csv&quot;)</code></pre>
 </tr>
 <tr class="even">
 <td align="left">闵行区</td>
+<td align="right">2937</td>
 <td align="right">1381</td>
 <td align="right">940</td>
 <td align="right">1043</td>
@@ -203,6 +206,7 @@ write.csv(basedata,&quot;data/basedata.csv&quot;)</code></pre>
 </tr>
 <tr class="odd">
 <td align="left">徐汇区</td>
+<td align="right">920</td>
 <td align="right">1229</td>
 <td align="right">499</td>
 <td align="right">639</td>
@@ -223,6 +227,7 @@ write.csv(basedata,&quot;data/basedata.csv&quot;)</code></pre>
 </tr>
 <tr class="even">
 <td align="left">黄浦区</td>
+<td align="right">658</td>
 <td align="right">970</td>
 <td align="right">824</td>
 <td align="right">260</td>
@@ -242,7 +247,50 @@ write.csv(basedata,&quot;data/basedata.csv&quot;)</code></pre>
 <td align="right">36</td>
 </tr>
 <tr class="odd">
+<td align="left">松江区</td>
+<td align="right">796</td>
+<td align="right">559</td>
+<td align="right">263</td>
+<td align="right">493</td>
+<td align="right">94</td>
+<td align="right">184</td>
+<td align="right">246</td>
+<td align="right">228</td>
+<td align="right">567</td>
+<td align="right">15</td>
+<td align="right">190</td>
+<td align="right">79</td>
+<td align="right">92</td>
+<td align="right">31</td>
+<td align="right">9</td>
+<td align="right">34</td>
+<td align="right">39</td>
+<td align="right">16</td>
+</tr>
+<tr class="even">
+<td align="left">杨浦区</td>
+<td align="right">623</td>
+<td align="right">220</td>
+<td align="right">374</td>
+<td align="right">134</td>
+<td align="right">47</td>
+<td align="right">174</td>
+<td align="right">100</td>
+<td align="right">99</td>
+<td align="right">274</td>
+<td align="right">11</td>
+<td align="right">35</td>
+<td align="right">23</td>
+<td align="right">21</td>
+<td align="right">3</td>
+<td align="right">8</td>
+<td align="right">11</td>
+<td align="right">10</td>
+<td align="right">14</td>
+</tr>
+<tr class="odd">
 <td align="left">嘉定区</td>
+<td align="right">481</td>
 <td align="right">4</td>
 <td align="right">415</td>
 <td align="right">200</td>
@@ -263,6 +311,7 @@ write.csv(basedata,&quot;data/basedata.csv&quot;)</code></pre>
 </tr>
 <tr class="even">
 <td align="left">虹口区</td>
+<td align="right">410</td>
 <td align="right">608</td>
 <td align="right">188</td>
 <td align="right">61</td>
@@ -282,27 +331,8 @@ write.csv(basedata,&quot;data/basedata.csv&quot;)</code></pre>
 <td align="right">NA</td>
 </tr>
 <tr class="odd">
-<td align="left">松江区</td>
-<td align="right">559</td>
-<td align="right">263</td>
-<td align="right">493</td>
-<td align="right">94</td>
-<td align="right">184</td>
-<td align="right">246</td>
-<td align="right">228</td>
-<td align="right">567</td>
-<td align="right">15</td>
-<td align="right">190</td>
-<td align="right">79</td>
-<td align="right">92</td>
-<td align="right">31</td>
-<td align="right">9</td>
-<td align="right">34</td>
-<td align="right">39</td>
-<td align="right">16</td>
-</tr>
-<tr class="even">
 <td align="left">宝山区</td>
+<td align="right">554</td>
 <td align="right">265</td>
 <td align="right">467</td>
 <td align="right">45</td>
@@ -321,8 +351,9 @@ write.csv(basedata,&quot;data/basedata.csv&quot;)</code></pre>
 <td align="right">67</td>
 <td align="right">17</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">普陀区</td>
+<td align="right">483</td>
 <td align="right">254</td>
 <td align="right">321</td>
 <td align="right">245</td>
@@ -341,48 +372,9 @@ write.csv(basedata,&quot;data/basedata.csv&quot;)</code></pre>
 <td align="right">31</td>
 <td align="right">25</td>
 </tr>
-<tr class="even">
-<td align="left">杨浦区</td>
-<td align="right">220</td>
-<td align="right">374</td>
-<td align="right">134</td>
-<td align="right">47</td>
-<td align="right">174</td>
-<td align="right">100</td>
-<td align="right">99</td>
-<td align="right">274</td>
-<td align="right">11</td>
-<td align="right">35</td>
-<td align="right">23</td>
-<td align="right">21</td>
-<td align="right">3</td>
-<td align="right">8</td>
-<td align="right">11</td>
-<td align="right">10</td>
-<td align="right">14</td>
-</tr>
 <tr class="odd">
-<td align="left">静安区</td>
-<td align="right">50</td>
-<td align="right">338</td>
-<td align="right">189</td>
-<td align="right">104</td>
-<td align="right">164</td>
-<td align="right">102</td>
-<td align="right">175</td>
-<td align="right">324</td>
-<td align="right">2</td>
-<td align="right">70</td>
-<td align="right">108</td>
-<td align="right">70</td>
-<td align="right">28</td>
-<td align="right">32</td>
-<td align="right">48</td>
-<td align="right">44</td>
-<td align="right">15</td>
-</tr>
-<tr class="even">
 <td align="left">青浦区</td>
+<td align="right">384</td>
 <td align="right">314</td>
 <td align="right">232</td>
 <td align="right">87</td>
@@ -401,8 +393,30 @@ write.csv(basedata,&quot;data/basedata.csv&quot;)</code></pre>
 <td align="right">5</td>
 <td align="right">5</td>
 </tr>
+<tr class="even">
+<td align="left">静安区</td>
+<td align="right">302</td>
+<td align="right">50</td>
+<td align="right">338</td>
+<td align="right">189</td>
+<td align="right">104</td>
+<td align="right">164</td>
+<td align="right">102</td>
+<td align="right">175</td>
+<td align="right">324</td>
+<td align="right">2</td>
+<td align="right">70</td>
+<td align="right">108</td>
+<td align="right">70</td>
+<td align="right">28</td>
+<td align="right">32</td>
+<td align="right">48</td>
+<td align="right">44</td>
+<td align="right">15</td>
+</tr>
 <tr class="odd">
 <td align="left">长宁区</td>
+<td align="right">84</td>
 <td align="right">33</td>
 <td align="right">104</td>
 <td align="right">37</td>
@@ -423,6 +437,7 @@ write.csv(basedata,&quot;data/basedata.csv&quot;)</code></pre>
 </tr>
 <tr class="even">
 <td align="left">崇明区</td>
+<td align="right">79</td>
 <td align="right">47</td>
 <td align="right">165</td>
 <td align="right">84</td>
@@ -443,6 +458,7 @@ write.csv(basedata,&quot;data/basedata.csv&quot;)</code></pre>
 </tr>
 <tr class="odd">
 <td align="left">奉贤区</td>
+<td align="right">144</td>
 <td align="right">64</td>
 <td align="right">119</td>
 <td align="right">161</td>
@@ -463,6 +479,7 @@ write.csv(basedata,&quot;data/basedata.csv&quot;)</code></pre>
 </tr>
 <tr class="even">
 <td align="left">金山区</td>
+<td align="right">77</td>
 <td align="right">52</td>
 <td align="right">103</td>
 <td align="right">49</td>
@@ -522,6 +539,19 @@ write.csv(basedata,&quot;data/basedata.csv&quot;)</code></pre>
 </thead>
 <tbody>
 <tr class="odd">
+<td align="left">2022-04-05</td>
+<td align="right">311</td>
+<td align="right">16766</td>
+<td align="right">40</td>
+<td align="right">4</td>
+<td align="right">16256</td>
+<td align="right">271</td>
+<td align="right">510</td>
+<td align="right">17077</td>
+<td align="right">16260</td>
+<td align="right">817</td>
+</tr>
+<tr class="even">
 <td align="left">2022-04-04</td>
 <td align="right">268</td>
 <td align="right">13086</td>
@@ -534,7 +564,7 @@ write.csv(basedata,&quot;data/basedata.csv&quot;)</code></pre>
 <td align="right">12606</td>
 <td align="right">748</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">2022-04-03</td>
 <td align="right">425</td>
 <td align="right">8581</td>
@@ -547,7 +577,7 @@ write.csv(basedata,&quot;data/basedata.csv&quot;)</code></pre>
 <td align="right">7927</td>
 <td align="right">1079</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">2022-04-02</td>
 <td align="right">438</td>
 <td align="right">7788</td>
@@ -560,7 +590,7 @@ write.csv(basedata,&quot;data/basedata.csv&quot;)</code></pre>
 <td align="right">6789</td>
 <td align="right">1437</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">2022-04-01</td>
 <td align="right">260</td>
 <td align="right">6051</td>
@@ -573,7 +603,7 @@ write.csv(basedata,&quot;data/basedata.csv&quot;)</code></pre>
 <td align="right">5410</td>
 <td align="right">901</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">2022-03-31</td>
 <td align="right">358</td>
 <td align="right">4144</td>
@@ -585,19 +615,6 @@ write.csv(basedata,&quot;data/basedata.csv&quot;)</code></pre>
 <td align="right">4502</td>
 <td align="right">3718</td>
 <td align="right">784</td>
-</tr>
-<tr class="even">
-<td align="left">2022-03-30</td>
-<td align="right">355</td>
-<td align="right">5298</td>
-<td align="right">16</td>
-<td align="right">10</td>
-<td align="right">4477</td>
-<td align="right">339</td>
-<td align="right">821</td>
-<td align="right">5653</td>
-<td align="right">4487</td>
-<td align="right">1166</td>
 </tr>
 </tbody>
 </table>

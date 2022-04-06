@@ -469,17 +469,15 @@ covidsh <-  sh_long %>% filter(reportdate > as.Date.character("2022-3-1")) %>%
   scale_x_date(date_breaks = "2 day", date_labels = "%m/%d") +
   theme_bw() +
   theme(
-        axis.text = element_text(size = 12),
+        axis.text = element_text(size = 9),
         legend.title = element_blank(),
-        legend.text = element_text(size = 12),
+        legend.text = element_text(size = 9),
         panel.grid = element_blank(),
         legend.position = "top")
 covidsh
 ```
 
-```{r}
-pages_1
-```
+
 
 
 
