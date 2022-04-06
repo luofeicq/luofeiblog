@@ -1,5 +1,5 @@
 ---
-title: R爬上海疫情数据简单可视化分析(4月5日更新)
+title: R爬上海疫情数据简单可视化分析(4月6日更新)
 author: Luo Fei
 date: '2022-03-24'
 slug: covidsh
@@ -253,7 +253,7 @@ pages_1 <- map_df(url_all, webfun)
 # 根据关键字段“居住信息” 筛选出需要的标题和链接
 url_2 <-  pages_1 %>% dplyr::filter(str_detect(Title, "居住地信息")) %>% mutate(
   url_2 = paste0("https://wsjkw.sh.gov.cn/", Url) ) %>% select(url_2) %>% unlist()#组合成所需的所有次级链接地址
-
+url_2[1] <- "https://mp.weixin.qq.com/s/djwW3S9FUYBE2L5Hj94a3A"
 # 设置爬取次级网页关键内容的函数
 webfun2 <- function(url){
 test <-  read_html(url) %>% html_nodes("p") %>% html_text() %>% tibble()#获取次级网页所有文本信息
@@ -453,7 +453,7 @@ tb_fenlei_long %>% filter(type == "case_all_fx") %>%
   theme(panel.grid.minor = element_blank()) +
   geom_line(data = .%>% filter(rep_date > "2022-04-01"), col =4 , size = 1) +
   geom_point(data = .%>% filter(rep_date > "2022-04-01"), col = 4, size = 2) +
-  geom_text(data = .%>% filter(rep_date > "2022-04-01"),aes(label = cases), nudge_y = 50, nudge_x = 1 , col = 4)
+  geom_text(data = .%>% filter(rep_date > "2022-04-01"),aes(label = cases), nudge_y = 50 , col = 4)
 ```
 
 # 简单总结
@@ -478,9 +478,7 @@ covidsh
 ```
 
 ```{r}
-data("sleep")
-
-sleep %>% t.test(extra ~ group, data = .)
+pages_1
 ```
 
 
