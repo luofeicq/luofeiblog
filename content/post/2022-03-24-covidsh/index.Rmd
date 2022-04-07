@@ -1,5 +1,5 @@
 ---
-title: R爬上海疫情数据简单可视化分析(4月6日更新)
+title: R爬上海疫情数据简单可视化分析(4月7日更新)
 author: Luo Fei
 date: '2022-03-24'
 slug: covidsh
@@ -211,7 +211,7 @@ sh_long %>% filter(感染者类型 == "新增境外输入感染"|感染者类型
 
 ```{r results='asis'}
 
-sh_long %>% filter(检出阳性日期 > "2022-01-01") %>% filter(感染者类型 == "新增境外输入感染"|感染者类型 == "新增本地感染")  %>% 
+sh_long %>% filter(检出阳性日期 > "2022-03-01") %>% filter(感染者类型 == "新增境外输入感染"|感染者类型 == "新增本地感染")  %>% 
   ggplot(aes(x = 检出阳性日期, y = 病例数, col = 感染者类型)) +
   geom_point(alpha = 0.5) + 
   geom_line(alpha = 0.5) +
@@ -253,8 +253,8 @@ pages_1 <- map_df(url_all, webfun)
 # 根据关键字段“居住信息” 筛选出需要的标题和链接
 url_2 <-  pages_1 %>% dplyr::filter(str_detect(Title, "居住地信息")) %>% mutate(
   url_2 = paste0("https://wsjkw.sh.gov.cn/", Url) ) %>% select(url_2) %>% unlist()#组合成所需的所有次级链接地址
-url_2[1] <- "https://mp.weixin.qq.com/s/djwW3S9FUYBE2L5Hj94a3A"
 # 设置爬取次级网页关键内容的函数
+
 webfun2 <- function(url){
 test <-  read_html(url) %>% html_nodes("p") %>% html_text() %>% tibble()#获取次级网页所有文本信息
 colnames(test) <- "Text" # 设置列名
@@ -326,7 +326,7 @@ final_df %>% ggplot(aes(x = factor(Date_rep), y = case_sum)) +
   theme(plot.margin = unit(rep(0.5,4), "mm"),
         legend.key.size = unit(3,"mm"),
         aspect.ratio = 1) +
-  scale_y_continuous(expand = c(0,0), limits = c(-500,15000)) 
+  scale_y_continuous(expand = c(0,0), limits = c(-500,25000)) 
 
 ```
 
@@ -479,25 +479,38 @@ covidsh
 
 ## 预测
 
-建立线性回归模型, 4月7日，预测16912
+建立线性回归模型, 预测4月7日检出20959
 ```{r}
-mod_data <-  tb_fenlei_final %>% select(case_all) %>% arrange(case_all) %>% 
-  mutate(days = 1:22)
-mod1 <- lm( case_all ~ days + I(days^2 + I(days^3)),data = mod_data)
-summary(mod1)
-newdata <- data.frame(days = 1:30)
-predict(mod1)
-newdata <- newdata %>% mutate(
-  pred = predict(mod1, newdata) %>% round(0)
+tb_fenlei_final
+
+mod_data <-  tb_fenlei_final %>% select(rep_date, case_all,case_c, case_u) %>% arrange(rep_date) %>% 
+  mutate(days = 1:nrow(tb_fenlei_final))
+mod_all <- lm( case_all ~ days + I(days^2 + I(days^3)),data = mod_data)
+mod_c <- lm( case_c ~ days + I(days^2 + I(days^3)),data = mod_data)
+mod_u <- lm( case_u ~ days + I(days^2 + I(days^3)),data = mod_data)
+newdata <- data.frame(days =  1  : c(nrow(mod_data) + 3), Date = seq( as.Date("2022-3-16"), by = "day", length.ou = 25  )  )
+
+
+pre_data <- newdata %>% mutate(
+  pred_all = predict(mod_all, newdata) %>% round(0),
+  pred_c = predict(mod_c, newdata) %>% round(0),
+  pred_u = predict(mod_u, newdata) %>% round(0)
 )
 
+cols <- c(2,3)
 mod_data %>% ggplot() +
-  geom_line(aes(days, case_all), col = 2)+
-  geom_line(data = newdata, aes(days, pred), col = 3) +
-  geom_point(data = newdata, aes(days, pred), col = 3) +
-  geom_text(data = newdata %>% filter(days > 22), aes(days, pred, label =  pred)) +
-  theme_bw()
-
+  geom_line(aes(rep_date, case_all,  col = "red"), linetype = 1, size = 0.5) +
+  geom_point(aes(rep_date, case_all), col = "red", size = 1.2) +
+  geom_line(data = pre_data, aes(Date, pred_all,col = "green") , linetype = 2) +
+  geom_point(data = pre_data, aes(Date, pred_all), col = "green", size = 1.5, shape = 21) +
+  geom_text(data = pre_data %>% filter(Date >  as.Date("2022-4-6")) , 
+            aes(Date, pred_all, label =  pred_all), nudge_x= 1, nudge_y = -1000, size = 3) +  
+  theme_bw() +
+  scale_color_manual(name = "", values = c("red", "green"), breaks = c("red", "green"), labels = c("实际值", "预测值")) +
+  theme(legend.position = "right") +
+  scale_x_date(date_breaks = "2 day", date_labels = "%m-%d") +
+  xlab("检出日期") + ylab("感染者数") 
+  
 ```
 
 
