@@ -501,7 +501,7 @@ pre_data <- newdata %>% mutate(
 cols <- c(2,3)
 mod_data %>% ggplot() +
   geom_line(aes(rep_date, case_all,  col = "red"), linetype = 1, size = 0.5) +
-  geom_smooth(aes(rep_date, case_all), method = "gam") +
+  #geom_smooth(aes(rep_date, case_all), method = "gam") +
   geom_point(aes(rep_date, case_all), col = "red", size = 1.2) +
   geom_line(data = pre_data, aes(Date, pred_all,col = "green") , linetype = 2) +
   geom_point(data = pre_data, aes(Date, pred_all), col = "green", size = 1.5, shape = 21) +
@@ -515,8 +515,7 @@ mod_data %>% ggplot() +
   scale_y_continuous(breaks = seq(0,30000, 5000)) +
   theme(panel.grid.minor = element_blank())
 
-gam(data = mod_data, case_all ~ days) %>% summary()
- gamSim(1,n=400,dist="normal",scale=2)  
+ 
 ```
 
 
@@ -558,7 +557,7 @@ mydf <- gather(data.frame(out), key = "PopTypes", value = "Cases", S:R)
 fig1 <- ggplot(mydf, aes(x = time, y = Cases)) + geom_line(aes(col = PopTypes), size = 1) +
   geom_text(aes(x = 22, y =0.8, label = paste("Rc =",rc))) + theme_bw() + xlab("Days") + ylab("Predicted Cases") +
   theme(legend.title = element_blank())
-fig1
+fig1 
 ## 数据拟合
 
 
