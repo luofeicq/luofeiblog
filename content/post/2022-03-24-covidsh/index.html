@@ -645,4 +645,51 @@ write.csv(basedata,&quot;data/basedata.csv&quot;)</code></pre>
 </div>
 <div id="动力学微分方程" class="section level1" number="4">
 <h1><span class="header-section-number">4</span> 动力学微分方程</h1>
+<p>由于数字获取不准确，缺失数据太多，无法顺利拟合。</p>
+<pre class="r"><code>library(deSolve)
+library(FME)
+SEIRModel &lt;-  function(Time, InitialStat, Parameter){
+  with(as.list(c(InitialStat, Parameter)),{
+    dS &lt;- -c *  S
+    dI &lt;- c * S  - r * I
+    dR &lt;- r * I
+    return(list(c(dS,  dI, dR)))
+  })
+}
+
+initialstat &lt;- c( S = 100000, #Proportion fo Susceptible population
+                  I = 158, #Infection pop
+                  R = 0 )# recovery pop.
+
+params &lt;- c(c = 0.09, # The rate of the E became I
+            r = 0.03 # The recovery rate of the infection pop.
+            )
+
+times &lt;- c(1:22)
+##Solve the differential equation with &quot;deSolve&quot; package
+
+out &lt;- ode(y = initialstat, times = times, parms = params, func = SEIRModel)
+#Basic plot
+plot(out)
+#Advanced plot
+
+
+## 数据拟合
+fitdata &lt;- read.xlsx(&quot;data/fitdata.xlsx&quot;)
+
+MyCost &lt;- function(Pars){
+  out2 &lt;- ode(y = initialstat, func = SEIRModel, parms = Pars, times = fitdata$time)
+  return(modCost(model = out2, obs = fitdata, x = &quot;time&quot;))
+}
+myfit &lt;-  modFit(f = MyCost, p = params, method = &quot;Marq&quot;, lower = c(0,0), upper = c(1,1))
+ode(y = initialstat, times = 1:25, parms = myfit$par, func = SEIRModel)
+summary(myfit)
+
+rc &lt;- 0.09/0.03
+mydf &lt;- gather(data.frame(out), key = &quot;PopTypes&quot;, value = &quot;Cases&quot;, S:R)
+sirfig &lt;- ggplot(mydf, aes(x = time, y = Cases)) + geom_line(aes(col = PopTypes), size = 1) +
+  geom_text(aes(x = 22, y =0.8, label = paste(&quot;Rc =&quot;,rc))) + theme_bw() + xlab(&quot;Days&quot;) + ylab(&quot;Predicted Cases&quot;) +
+  theme(legend.title = element_blank())
+sirfig</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-22-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
