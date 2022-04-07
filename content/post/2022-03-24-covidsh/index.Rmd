@@ -521,47 +521,54 @@ mod_data %>% ggplot() +
 
 # 动力学微分方程
 
-```{r, eval=FALSE}
+由于数字获取不准确，缺失数据太多，无法顺利拟合。
+
+```{r, echo=TRUE}
 library(deSolve)
 library(FME)
 SEIRModel <-  function(Time, InitialStat, Parameter){
   with(as.list(c(InitialStat, Parameter)),{
-    dS <- -b * S * I
-    dE <- b * S * I - c * E
-    dI <- c * E  - r * I
+    dS <- -c *  S
+    dI <- c * S  - r * I
     dR <- r * I
-    return(list(c(dS, dE, dI, dR)))
+    return(list(c(dS,  dI, dR)))
   })
 }
 
-initialstat <- c(S = 0.999, #Proportion fo Susceptible population
-                 E = 0, # Incubation pop
-                 I = 0.001, #Infection pop
-                 R = 0 )# recovery pop.
+initialstat <- c( S = 100000, #Proportion fo Susceptible population
+                  I = 158, #Infection pop
+                  R = 0 )# recovery pop.
 
-params <- c(b = 0.56, # The possibility of  the susceptible became infected within being  attached  by one infected case.
-            c = 0.23, # The rate of the E became I
-            r = 0.07 # The recovery rate of the infection pop.
+params <- c(c = 0.09, # The rate of the E became I
+            r = 0.03 # The recovery rate of the infection pop.
             )
 
-times <- c(1:22) #The period for the model. 
-
+times <- c(1:22)
 ##Solve the differential equation with "deSolve" package
 
 out <- ode(y = initialstat, times = times, parms = params, func = SEIRModel)
 #Basic plot
 plot(out)
 #Advanced plot
-rc <- round(params[1]/params[3] ,2)
+
+
+## 数据拟合
+fitdata <- read.xlsx("data/fitdata.xlsx")
+
+MyCost <- function(Pars){
+  out2 <- ode(y = initialstat, func = SEIRModel, parms = Pars, times = fitdata$time)
+  return(modCost(model = out2, obs = fitdata, x = "time"))
+}
+myfit <-  modFit(f = MyCost, p = params, method = "Marq", lower = c(0,0), upper = c(1,1))
+ode(y = initialstat, times = 1:25, parms = myfit$par, func = SEIRModel)
+summary(myfit)
+
+rc <- 0.09/0.03
 mydf <- gather(data.frame(out), key = "PopTypes", value = "Cases", S:R)
-fig1 <- ggplot(mydf, aes(x = time, y = Cases)) + geom_line(aes(col = PopTypes), size = 1) +
+sirfig <- ggplot(mydf, aes(x = time, y = Cases)) + geom_line(aes(col = PopTypes), size = 1) +
   geom_text(aes(x = 22, y =0.8, label = paste("Rc =",rc))) + theme_bw() + xlab("Days") + ylab("Predicted Cases") +
   theme(legend.title = element_blank())
-fig1 
-## 数据拟合
-
-
-
+sirfig
 ```
 
 
