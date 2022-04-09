@@ -50,7 +50,10 @@ knitr::opts_chunk$set(
   echo = F,
   message = F,
   results = "hide",
-  warning = F
+  warning = F,
+  cache.path = "_cash",
+  cache = T
+  
   )
 
 ```
@@ -497,22 +500,23 @@ mod_data <-  tb_fenlei_final %>% select(rep_date, case_all,case_c, case_u) %>% a
 
 
 mod_all <- lm( case_all ~ days + I(days^2)+ I(days^3), data = mod_data)
+mod_all2 <- lm(case_all ~ I(days^3), data = mod_data )
 
 newdata <- data.frame(days =  1  : c(nrow(mod_data) + 3), Date = seq( as.Date("2022-3-18"), by = "day", length.out = nrow(mod_data) + 3 )  )
 pre_data <- newdata %>%  mutate(
-  pred_all = predict(object = mod_all, newdata = newdata) %>% round(0)
+  pred_all = predict(object = mod_all2, newdata = newdata) %>% round(0)
 ) 
 
-Rsq <- expression(R^2 == format(summary(mod_all)$r.square, digits = 2) )
+Rsq <- expression(R^2 == format(summary(mod_all2)$r.square, digits = 2) )
 mod_data %>% ggplot() +
   geom_line(aes(rep_date, case_all,  col = "red"), linetype = 1, size = 0.5) +
   #geom_smooth(aes(rep_date, case_all), method = "gam") +
   geom_point(aes(rep_date, case_all), col = "red", size = 1.2) +
-  geom_text(data = mod_data %>% filter(rep_date > as.Date("2022-4-7")), aes(rep_date, case_all, label = case_all), col = "red4", nudge_x = - 1, size =3) +
+  geom_text(data = mod_data %>% filter(rep_date > as.Date("2022-4-7")), aes(rep_date, case_all, label = case_all), col = "red4", nudge_x = - 2, size =3) +
   geom_line(data = pre_data, aes(Date, pred_all,col = "green") , linetype = 2) +
   geom_point(data = pre_data, aes(Date, pred_all), col = "green", size = 1.5, shape = 21) +
   geom_text(data = pre_data %>% filter(Date >  as.Date("2022-4-7")) , 
-            aes(Date, pred_all, label =  pred_all),col = "green4", nudge_x= 0, nudge_y = -500, size = 3) +  
+            aes(Date, pred_all, label =  pred_all),col = "green4", nudge_x= 1, nudge_y = -500, size = 3) +  
   theme_bw() +
   scale_color_manual(name = "", values = c("red", "green"), breaks = c("red", "green"), labels = c("实际值", "预测值")) +
   theme(legend.position = "right") +
@@ -578,10 +582,142 @@ sirfig <- ggplot(mydf, aes(x = time, y = Cases)) + geom_line(aes(col = PopTypes)
 sirfig
 ```
 
-```{r}
-page_loca <- read_html("https://mp.weixin.qq.com/s/HTM47mUp0GF-tWXkPeZJlg")
-page_old <- read_html("https://wsjkw.sh.gov.cn//xwfb/20220324/a8643ae53c7644f597cd88b8f2f4d8c4.html")
+# 时间序列模型
 
-page_old %>% html_nodes("p") %>% html_text() %>% .[str_detect(., "居住于")]
+## 加载相应的包
+
+```{r}
+library(tidymodels)
+library(modeltime)
+library(timetk)
+library(forecast)
+
 ```
+
+```{r}
+ts_data <- mod_data %>% select(rep_date, case_all)
+ts_data %>% plot_time_series(rep_date, case_all, .interactive = F)
+data_sp <- ts_data %>% time_series_split(assess = "1 week", cumulative = T)
+data_sp %>% tk_time_series_cv_plan() %>% 
+   plot_time_series_cv_plan (rep_date, case_all, .interactive = F)
+
+model_arima  <-  arima_reg() %>% 
+  set_engine("auto_arima") %>% 
+  fit(case_all ~ rep_date, training(data_sp))
+model_arima
+
+model_prophet = prophet_reg(  ) %>% 
+  set_engine("prophet") %>% 
+  fit(case_all ~ rep_date, training(data_sp))
+
+model_prophet
+
+
+```
+
+机器学习模型
+```{r}
+recipe_spec = recipe(case_all ~ rep_date, training(data_sp)) %>% 
+  step_timeseries_signature(rep_date) %>% 
+  step_rm(contains("am.pm"), contains("hour"), contains("minute"),
+          contains("second"), contains("xts")) %>% 
+  step_fourier(rep_date, period = 90, K =5) %>% 
+  step_dummy(all_nominal())
+
+recipe_spec %>% prep() %>% juice()
+
+model_spec_glmnet <- linear_reg(penalty = 0.01, mixture = 0.5) %>%
+  set_engine("glmnet")
+
+workflow_fit_glmnet <- workflow() %>%
+  add_model(model_spec_glmnet) %>%
+  add_recipe(recipe_spec %>% step_rm(rep_date)) %>%
+  fit(training(data_sp))
+
+
+```
+随机森林模型
+
+```{r}
+model_spec_rf <- rand_forest(trees = 500, min_n = 15) %>%
+  set_engine("randomForest")
+
+workflow_fit_rf <- workflow() %>%
+  add_model(model_spec_rf) %>%
+  add_recipe(recipe_spec %>% step_rm(rep_date)) %>%
+  fit(training(data_sp))
+
+
+```
+propboost
+
+```{r}
+model_spec_prophet_boost <- prophet_boost(seasonality_yearly = TRUE) %>%
+  set_engine("prophet_xgboost") 
+
+workflow_fit_prophet_boost <- workflow() %>%
+  add_model(model_spec_prophet_boost) %>%
+  add_recipe(recipe_spec) %>%
+  fit(training(data_sp))
+
+```
+
+
+校准模型
+```{r}
+model_table <- modeltime_table(
+  model_arima, 
+  model_prophet,
+  workflow_fit_glmnet,
+  workflow_fit_rf,
+  workflow_fit_prophet_boost
+) 
+
+model_table
+
+```
+校准
+```{r}
+calibration_table = model_table %>% 
+  modeltime_calibrate(testing(data_sp))
+
+calibration_table
+```
+
+预测
+
+```{r}
+
+calibration_table %>%
+  modeltime_forecast(actual_data = ts_data) %>%
+  plot_modeltime_forecast(.interactive = FALSE)
+
+```
+
+准确率
+
+```{r}
+calibration_table %>%
+  modeltime_accuracy() %>%
+  table_modeltime_accuracy(.interactive = FALSE)
+```
+
+
+
+重新拟后，感觉最好的机器学习的Glmnet模型，预测明天数字是25930，拭目以待。
+
+```{r}
+
+pre_data_tim <-  calibration_table %>%
+  # Remove ARIMA model with low accuracy
+  filter(.model_id < 4) %>%
+  # Refit and Forecast Forward
+  modeltime_refit(ts_data) %>%
+  modeltime_forecast(h = "2 weeks", actual_data = ts_data) 
+pre_data_tim %>%
+  plot_modeltime_forecast(.interactive = FALSE)
+ 
+```
+
+
 
