@@ -1,5 +1,5 @@
 ---
-title: R爬上海疫情数据简单可视化分析(4月7日更新)
+title: R爬上海疫情数据简单可视化分析(4月8日更新)
 author: Luo Fei
 date: '2022-03-24'
 slug: covidsh
@@ -74,7 +74,8 @@ library(readxl)
 library(openxlsx)
 library(ggforce)
 library(mgcv)
-
+library(deSolve)
+library(FME)
 ```
 
 
@@ -253,36 +254,43 @@ data.frame( Date = date_sh,  Title = title_sh, Url = url2_sh) # 组合数据框
 pages_1 <- map_df(url_all, webfun)
 # 根据关键字段“居住信息” 筛选出需要的标题和链接
 url_2 <-  pages_1 %>% dplyr::filter(str_detect(Title, "居住地信息")) %>% mutate(
-  url_2 = paste0("https://wsjkw.sh.gov.cn/", Url) ) %>% select(url_2) %>% unlist()#组合成所需的所有次级链接地址
-# 设置爬取次级网页关键内容的函数
+  url_2 = paste0("https://wsjkw.sh.gov.cn", Url) ) %>% mutate(
+    url_2 = if_else(str_detect(url_2, "weixin"), Url, url_2)
+  ) %>% select(url_2) %>% unlist()
 
 webfun2 <- function(url){
-test <-  read_html(url) %>% html_nodes("p") %>% html_text() %>% tibble()#获取次级网页所有文本信息
-colnames(test) <- "Text" # 设置列名
-test %>% 
-  dplyr::filter(str_detect(Text, "分别居住")) %>% # 筛选出含有大区病例信息的段落
-  separate(Text, c("Date", "col1", "col2"), sep = "，|、") %>% # 根据逗号和分号拆分列
-  mutate(
-    Date_rep = as.Date.character(Date, "%Y年%m月%d日"),# 转换日期类型
-    Local = str_extract(col1, "..."), # 提取3字符的地区名
-    case_conf = str_extract(col1, "[0-9]+") %>% as.numeric(), #提取确诊病例数
-    case_none = str_extract(col2, "[0-9]+") %>% as.numeric() # 提取无症状数
-  ) %>% select(Date_rep, Local, case_conf, case_none) # 列重新排序
+
+read_html(url) %>%
+  html_nodes("span") %>% 
+  html_text() %>% 
+  .[str_detect(., "居住于")] %>%
+  tibble(var_loca = .) %>% mutate(
+    Date_rep = str_extract(var_loca, "[0-9]+月[0-9]+日") %>% paste0("2022年", .) %>% ymd() ,
+    Local = str_extract(var_loca, "[\u4E00-\u9FA5]+区"),
+    case_conf = str_extract(var_loca, "[0-9]+例本土") %>% str_extract(., "[0-9]+") %>% as.numeric(),
+    case_none = str_extract(var_loca, "[0-9]+例本土无症状感染者") %>% str_extract(., "[0-9]+") %>% as.numeric(),
+    case_sum = case_conf + case_none
+  )
 }
+url_2 <- url_2[-6]
 
 final_df <- map_df(url_2, webfun2)# 获取次级链接信息
 final_df <- final_df %>%  dplyr::filter(!is.na(Date_rep))  # 筛选出需要的行
-final_df[is.na(final_df)] <- 0 # 替换缺失值为0
+
 # 补充完整的区名
 final_df <- final_df %>% mutate(
   case_sum = case_conf + case_none,
   Local = case_when(Local == "浦东新" ~ "浦东新区",
                     Local == "青浦新" ~ "青浦区",
                     Local == "奉贤无" ~ "奉贤区",
+                    is.na(Local) ~ "奉贤区",
                     TRUE ~ Local)
 )
+final_df[is.na(final_df)] <- 0 # 替换缺失值为0
 final_df <-  final_df %>% distinct() # 剔重
 write.xlsx(final_df, ("data/shcovid.xlsx")) # 写出到EXCEL文件
+
+
 ```
 
 ```{r, warning=FALSE, include=TRUE, results='asis' }
@@ -393,7 +401,7 @@ tb_fenlei[is.na(tb_fenlei)] <- 0 #替换缺失值
 tb_fenlei <-  tb_fenlei %>% mutate(
   case_c_fx = case_c - case_c_zh,
   case_u_fx = case_u - case_u_gk,
-  case_all = case_c + case_u,
+  case_all = case_c + case_u - case_c_zh,
   case_all_gk = case_c_gk + case_u_gk,
   case_all_fx = case_all - case_all_gk,
   rep_date = as.Date.character(rep_date, "%Y年%m月%d日")
@@ -485,28 +493,24 @@ covidsh
 tb_fenlei_final
 
 mod_data <-  tb_fenlei_final %>% select(rep_date, case_all,case_c, case_u) %>% arrange(rep_date) %>% 
-  mutate(days = 1:nrow(tb_fenlei_final))
-mod_all <- lm( case_all ~ days + I(days^2 + I(days^3)),data = mod_data)
-mod_c <- lm( case_c ~ days + I(days^2 + I(days^3)),data = mod_data)
-mod_u <- lm( case_u ~ days + I(days^2 + I(days^3)),data = mod_data)
-newdata <- data.frame(days =  1  : c(nrow(mod_data) + 3), Date = seq( as.Date("2022-3-16"), by = "day", length.ou = 25  )  )
+   filter(rep_date > as.Date("2022-3-1")) %>%  mutate(days = 1 : nrow(.))
 
 
-pre_data <- newdata %>% mutate(
-  pred_all = predict(mod_all, newdata) %>% round(0),
-  pred_c = predict(mod_c, newdata) %>% round(0),
-  pred_u = predict(mod_u, newdata) %>% round(0)
-)
+mod_all <- lm( case_all ~ days + I(days^2) +  I(days^3), data = mod_data)
 
-cols <- c(2,3)
+newdata <- data.frame(days =  1  : c(nrow(mod_data) + 3), Date = seq( as.Date("2022-3-18"), by = "day", length.out = nrow(mod_data) + 3 )  )
+pre_data <- newdata %>%  mutate(
+  pred_all = predict(object = mod_all, newdata = newdata) %>% round(0)
+) 
 mod_data %>% ggplot() +
   geom_line(aes(rep_date, case_all,  col = "red"), linetype = 1, size = 0.5) +
   #geom_smooth(aes(rep_date, case_all), method = "gam") +
   geom_point(aes(rep_date, case_all), col = "red", size = 1.2) +
+  geom_text(data = mod_data %>% filter(rep_date > as.Date("2022-4-7")), aes(rep_date, case_all, label = case_all), col = "red4", nudge_x = 2, size =3) +
   geom_line(data = pre_data, aes(Date, pred_all,col = "green") , linetype = 2) +
   geom_point(data = pre_data, aes(Date, pred_all), col = "green", size = 1.5, shape = 21) +
-  geom_text(data = pre_data %>% filter(Date >  as.Date("2022-4-6")) , 
-            aes(Date, pred_all, label =  pred_all), nudge_x= 1, nudge_y = -1000, size = 3) +  
+  geom_text(data = pre_data %>% filter(Date >  as.Date("2022-4-7")) , 
+            aes(Date, pred_all, label =  pred_all),col = "green4", nudge_x= 0, nudge_y = -500, size = 3) +  
   theme_bw() +
   scale_color_manual(name = "", values = c("red", "green"), breaks = c("red", "green"), labels = c("实际值", "预测值")) +
   theme(legend.position = "right") +
@@ -515,7 +519,7 @@ mod_data %>% ggplot() +
   scale_y_continuous(breaks = seq(0,30000, 5000)) +
   theme(panel.grid.minor = element_blank())
 
- 
+mod_data 
 ```
 
 
@@ -571,4 +575,10 @@ sirfig <- ggplot(mydf, aes(x = time, y = Cases)) + geom_line(aes(col = PopTypes)
 sirfig
 ```
 
+```{r}
+page_loca <- read_html("https://mp.weixin.qq.com/s/HTM47mUp0GF-tWXkPeZJlg")
+page_old <- read_html("https://wsjkw.sh.gov.cn//xwfb/20220324/a8643ae53c7644f597cd88b8f2f4d8c4.html")
+
+page_old %>% html_nodes("p") %>% html_text() %>% .[str_detect(., "居住于")]
+```
 
