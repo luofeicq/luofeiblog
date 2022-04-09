@@ -694,9 +694,9 @@ calibration_table %>%
 
 ```
 
-准确率
+准确率,从下表可见拟合度最高的前面1，2，3，5这4个模型。
 
-```{r}
+```{r, results='asis'}
 calibration_table %>%
   modeltime_accuracy() %>%
   table_modeltime_accuracy(.interactive = FALSE)
@@ -704,13 +704,13 @@ calibration_table %>%
 
 
 
-重新拟后，感觉最好的机器学习的Glmnet模型，预测明天数字是25930，拭目以待。
+重新拟后，感觉最好的机器学习的Glmnet模型，预测明天数字是25930，值得注意的是5号模型居然预测到13日将会是拐点（10日27474），拭目以待。
 
 ```{r}
 
 pre_data_tim <-  calibration_table %>%
   # Remove ARIMA model with low accuracy
-  filter(.model_id < 4) %>%
+  filter(.model_id != 4) %>%
   # Refit and Forecast Forward
   modeltime_refit(ts_data) %>%
   modeltime_forecast(h = "2 weeks", actual_data = ts_data) 
