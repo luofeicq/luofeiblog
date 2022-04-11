@@ -1,5 +1,5 @@
 ---
-title: R爬上海疫情数据简单可视化分析(4月11日更新)
+title: 上海疫情数据简单可视化分析(4月11日更新)
 author: Luo Fei
 date: '2022-03-24'
 slug: covidsh
@@ -41,7 +41,7 @@ cover:
 <h1><span class="header-section-number">1</span> 数据获取</h1>
 <div id="数据来源" class="section level2" number="1.1">
 <h2><span class="header-section-number">1.1</span> 数据来源</h2>
-<p>要获取准确的数据，当然是上官方网站。打开上海市卫健委的官网(<a href="https://wsjkw.sh.gov.cn/xwfb/index.html" class="uri">https://wsjkw.sh.gov.cn/xwfb/index.html</a>)，疫情数据公告都在“新闻发布”栏目中，再仔细一看，疫情信息的标题中就包含了所有新增、确诊数据。真是太方便了。新闻页面也是连续的以<code>_[num]</code>为页码的编号，这种页面爬起来不要太省事。</p>
+<p>要获取准确的数据，当然是上官方网站。打开上海市卫健委的官网(<a href="https://wsjkw.sh.gov.cn/xwfb/index.html" class="uri">https://wsjkw.sh.gov.cn/xwfb/index.html</a>)，疫情数据公告都在“新闻发布”栏目中疫情信息的标题中就包含了所有新增、确诊数据。真是太方便了。</p>
 <pre class="r"><code>library(rvest)
 library(tidyverse)
 library(lubridate)
@@ -90,7 +90,7 @@ library(FME)</code></pre>
 </div>
 <div id="地区分布" class="section level2" number="2.6">
 <h2><span class="header-section-number">2.6</span> 地区分布</h2>
-<p>重新爬了一下按地区分布的，结果很明显，浦东新区感染者数量最多，见下表：</p>
+<p>获取了地区分布的疫情数据，结果很明显，浦东新区感染者数量最多，见下表：</p>
 <table>
 <colgroup>
 <col width="4%" />
@@ -631,7 +631,7 @@ library(FME)</code></pre>
 <p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-20-1.png" width="672" style="display: block; margin: auto;" /></p>
 <div id="预测" class="section level2" number="3.1">
 <h2><span class="header-section-number">3.1</span> 预测</h2>
-<p>建立线性回归模型
+<p>曲线拟合如下
 <img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-21-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 </div>
@@ -649,9 +649,14 @@ library(FME)</code></pre>
 <p>propboost</p>
 <p>校准模型</p>
 <p>校准</p>
-<p>预测</p>
+</div>
+<div id="预测-1" class="section level2" number="5.2">
+<h2><span class="header-section-number">5.2</span> 预测</h2>
 <p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-30-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>准确率,从下表可见拟合度最高的前面1，2，3，5这4个模型。</p>
+</div>
+<div id="准确率" class="section level2" number="5.3">
+<h2><span class="header-section-number">5.3</span> 准确率</h2>
+<p>从下表可见拟合度最高的前面1，2，5这3个模型。</p>
 <div id="frpqcaxiyi" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>html {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
@@ -1126,9 +1131,14 @@ library(FME)</code></pre>
   
 </table>
 </div>
+</div>
+<div id="模型选择" class="section level2" number="5.4">
+<h2><span class="header-section-number">5.4</span> 模型选择</h2>
 <p>重新拟后，感觉最好的机器学习的Glmnet模型</p>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-32-1.png" width="672" style="display: block; margin: auto;" />
-# 无责任预测</p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-32-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="无责任预测" class="section level2" number="5.5">
+<h2><span class="header-section-number">5.5</span> 无责任预测</h2>
 <p>筛选1，2，3号模型的预测值如下:</p>
 <table>
 <thead>
