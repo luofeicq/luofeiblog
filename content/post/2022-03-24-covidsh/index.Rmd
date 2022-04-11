@@ -1,5 +1,5 @@
 ---
-title: R爬上海疫情数据简单可视化分析(4月8日更新)
+title: R爬上海疫情数据简单可视化分析(4月11日更新)
 author: Luo Fei
 date: '2022-03-24'
 slug: covidsh
@@ -51,7 +51,7 @@ knitr::opts_chunk$set(
   message = F,
   results = "hide",
   warning = F,
-  cache.path = "_cash",
+  cache.path = "cash/",
   cache = T
   
   )
@@ -65,9 +65,7 @@ knitr::opts_chunk$set(
 
 要获取准确的数据，当然是上官方网站。打开上海市卫健委的官网(https://wsjkw.sh.gov.cn/xwfb/index.html)，疫情数据公告都在“新闻发布”栏目中，再仔细一看，疫情信息的标题中就包含了所有新增、确诊数据。真是太方便了。新闻页面也是连续的以`_[num]`为页码的编号，这种页面爬起来不要太省事。
 
-## R包
 
-首先加载需要用到的包，主要使用`rvest`包获取静态网页信息，谷歌浏览器`selectorgadget`插件获取需要信息的节点，`tidyverse`整理数据，绘图，`lubridate`包处理日期变量。
 
 ```{r, eval=TRUE, include=TRUE, warning=FALSE, echo=TRUE}
 library(rvest)
@@ -83,12 +81,10 @@ library(FME)
 
 
 
-## 主页信息获取
-
-使用`selectorgadget`在网页上找到需要的变量“时间”和“标题”，对应的node分别是`.time`和`.list-data a`，使用`rvest`抓取后，转为文本存储在列表中。
 
 
-```{r, eval=FALSE, echo=TRUE}
+
+```{r, eval=FALSE, echo=FALSE}
 ## 设置url
 url <- "https://wsjkw.sh.gov.cn/xwfb/index.html"
 ## 获取首页信息
@@ -99,11 +95,11 @@ basedata <- tibble(reportdate = reportdate, title = title)
 
 ```
 
-## 爬取所有数据
+## 数据
 
-上海的疫情变化主要从3月开始，但为了查看之前的变化，是否输入病例压力增大导致本次疫情，因此爬取了2到200页到的数据。改用`purrr`包的`map_df`函数爬取。
+上海的疫情变化主要从3月开始
 
-```{r, eval=FALSE, echo=TRUE}
+```{r, eval=FALSE, echo=FALSE}
 ##使用循环爬取2到200也网页信息
 url_1 <- c("https://wsjkw.sh.gov.cn/xwfb/index.html",
            paste0("https://wsjkw.sh.gov.cn/xwfb/index_", c(2:200), ".html"))
@@ -596,6 +592,7 @@ library(forecast)
 
 ```{r}
 ts_data <- mod_data %>% select(rep_date, case_all)
+ts_data <- ts_data %>% rbind(data.frame(rep_date = ymd("2022-4-9", "2022-4-10"), case_all = c(24752, 26760)))
 ts_data %>% plot_time_series(rep_date, case_all, .interactive = F)
 data_sp <- ts_data %>% time_series_split(assess = "1 week", cumulative = T)
 data_sp %>% tk_time_series_cv_plan() %>% 
@@ -704,7 +701,7 @@ calibration_table %>%
 
 
 
-重新拟后，感觉最好的机器学习的Glmnet模型，预测明天数字是25930，值得注意的是5号模型居然预测到13日将会是拐点（10日27474），拭目以待。
+重新拟后，感觉最好的机器学习的Glmnet模型
 
 ```{r}
 
@@ -717,6 +714,20 @@ pre_data_tim <-  calibration_table %>%
 pre_data_tim %>%
   plot_modeltime_forecast(.interactive = FALSE)
  
+```
+# 无责任预测
+
+筛选1，2，3号模型的预测值如下:
+
+```{r, results='asis'}
+pre_data_tim %>% 
+  filter(str_detect(.model_desc, "ARIMA|PROPHET|XGBOOST ERRORS"), .index < ymd("2022-04-14")) %>% 
+  select(.model_desc, .index, .value) %>% rename(
+    "模型" = ".model_desc",
+    "日期" = ".index",
+    "预测值" = ".value"
+  ) %>% 
+  knitr::kable()
 ```
 
 
