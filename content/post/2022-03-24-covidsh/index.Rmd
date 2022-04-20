@@ -301,7 +301,7 @@ final_df <- read.xlsx("data/shcovid.xlsx", detectDates = T  )
 
 获取了地区分布的疫情数据，结果很明显，浦东新区感染者数量最多，见下表：
 
-```{r, results='asis', results='asis'}
+```{r, results='asis'}
 
 final_df_wider <-  final_df %>% group_by(Date_rep, Local) %>% 
   summarise(case = sum(case_sum)) %>% arrange(-case) 
@@ -589,8 +589,6 @@ library(forecast)
 
 ```{r}
 ts_data <- mod_data %>% select(rep_date, case_all)
-ts_data <- ts_data %>% add_row(rep_date = ymd("2022-4-9", "2022-4-10"), case_all = c(24752, 26760))
-
 ts_data %>% plot_time_series(rep_date, case_all, .interactive = F)
 data_sp <- ts_data %>% time_series_split(assess = "1 week", cumulative = T)
 data_sp %>% tk_time_series_cv_plan() %>% 
@@ -676,7 +674,6 @@ model_table
 calibration_table = model_table %>% 
   modeltime_calibrate(testing(data_sp))
 
-calibration_table
 ```
 
 ## 预测
@@ -709,10 +706,10 @@ calibration_table %>%
 
 pre_data_tim <-  calibration_table %>%
   # Remove ARIMA model with low accuracy
-  filter(.model_id != 2) %>%
+  filter(.model_id != 4) %>%
   # Refit and Forecast Forward
   modeltime_refit(ts_data) %>%
-  modeltime_forecast(h = "1 weeks", actual_data = ts_data) 
+  modeltime_forecast(h = "3 days", actual_data = ts_data) 
 pre_data_tim %>%
   plot_modeltime_forecast(.interactive = FALSE)
  
@@ -720,18 +717,19 @@ pre_data_tim %>%
 
 ## 无责任预测
 
-筛选1，2，3号模型的预测值如下:
+4个模型的预测值如下:
 
-```{r, results='asis'}
-table(pre_data_tim$.model_desc)
-pre_data_tim %>% 
-  filter(.index > ymd("2022-04-19")) %>% 
-  select(.model_desc, .index, .value) %>% rename(
-    "模型" = ".model_desc",
-    "日期" = ".index",
-    "预测值" = ".value"
-  ) %>%   knitr::kable()
+```{r, results= 'asis'}
+ pre_data_tim %>%  select(.model_desc, .index, .value) %>% rename(
+     "模型" = ".model_desc",
+     "日期" = ".index",
+     "预测值" = ".value") %>% filter(模型 != "ACTUAL", 日期 > ymd("2022-4-19")) %>% knitr::kable()
+
+
 ```
+待补充
+
+
 
 
 
