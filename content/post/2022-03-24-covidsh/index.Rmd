@@ -52,7 +52,7 @@ knitr::opts_chunk$set(
   results = "hide",
   warning = F,
   cache.path = "cash/",
-  cache = F
+  cache = T
   
   )
 
