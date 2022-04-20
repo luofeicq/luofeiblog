@@ -1,5 +1,5 @@
 ---
-title: 上海疫情数据简单可视化分析(4月11日更新)
+title: 上海疫情数据简单可视化分析(4月20日更新)
 author: Luo Fei
 date: '2022-03-24'
 slug: covidsh
@@ -52,7 +52,7 @@ knitr::opts_chunk$set(
   results = "hide",
   warning = F,
   cache.path = "cash/",
-  cache = T
+  cache = F
   
   )
 
@@ -141,6 +141,7 @@ sh02 <- sh01 %>% mutate(
 sh02 <- sh02 %>% mutate(
   检出阳性日期 = if_else(is.na(检出阳性日期), reportdate-1, 检出阳性日期)
 )
+sh01
 sh02[is.na(sh02)] <- 0
 sh02 <- sh02 %>% mutate(
   新增本地感染 = 新增确诊 + 新增无症状,
@@ -205,18 +206,18 @@ sh_long %>% filter(感染者类型 == "新增境外输入感染"|感染者类型
 
 ```
 
-## 2022年1到三月
+## 2022年3-4月
 
 
 我们把时间尺度拉大到2月中旬到3月看看。放大后（下图1）到3月14日，输入感染人数开始上升，此时上海本地感染数量仍然无幅度的改变，处于平稳状态。为了更仔细看清楚变化情况，我们将y轴的数量调整至0-1000例，这时候能清楚看到每天的变化，本地感染者（蓝色）数量从3月16日快速上升者。
 
 ```{r results='asis'}
 
-sh_long %>% filter(检出阳性日期 > "2022-03-01") %>% filter(感染者类型 == "新增境外输入感染"|感染者类型 == "新增本地感染")  %>% 
+sh_long %>% filter(检出阳性日期 > "2022-03-10") %>% filter(感染者类型 == "新增境外输入感染"|感染者类型 == "新增本地感染")  %>% 
   ggplot(aes(x = 检出阳性日期, y = 病例数, col = 感染者类型)) +
   geom_point(alpha = 0.5) + 
   geom_line(alpha = 0.5) +
-  scale_x_date(date_breaks = "5 day", date_labels = "%m-%d") +
+  scale_x_date(date_breaks = "7 day", date_labels = "%m/%d") +
   theme(legend.position = "none") +
   facet_zoom(ylim = c(0,1000), zoom.size = 1.5, show.area = T, split = F, shrink = T) +
   theme_bw()
@@ -312,7 +313,6 @@ final_df_wider %>% pivot_wider(
 画个玫瑰图看看，其实这个图并并能很好反应数据特征。
 
 ```{r}
-windowsFonts(A = windowsFont("微软雅黑")) # 设置字体
 
 final_df %>% ggplot(aes(x = factor(Date_rep), y = case_sum)) +
   geom_col(aes(fill = Local), width = 1.03) +
@@ -355,7 +355,7 @@ final_df %>% ggplot(aes(x = Date_rep, y = case_sum)) +
         legend.key.size = unit(3,"mm"),
         aspect.ratio = 1) +
   scale_y_continuous(expand = c(0,0)) +
-  scale_x_date(date_breaks = "2 day", date_labels = "%m-%d")
+  scale_x_date(date_breaks = "3 day", date_labels = "%m-%d")
 ```
 
 
@@ -431,7 +431,7 @@ tb_fenlei_long <-  tb_fenlei_final %>%
 
 
 tb_fenlei_long %>% ggplot(aes(x = rep_date, y = cases)) +
-  scale_x_date(date_breaks = "2 day", date_labels = "%m-%d", expand = c(0.05,0.05)) +
+  scale_x_date(date_breaks = "7 day", date_labels = "%m-%d", expand = c(0.05,0.05)) +
   geom_line(aes(col = type)) +
   geom_point(aes(col = type)) +
   geom_smooth(aes(group = type), col = "grey", linetype = "dashed", alpha = 0.2, se = T) +
@@ -447,7 +447,7 @@ tb_fenlei_long %>% ggplot(aes(x = rep_date, y = cases)) +
 ```{r}
 tb_fenlei_long %>% ggplot(aes(x = rep_date, y = cases)) +
   geom_col(aes(fill = type), position = "fill") +
-  scale_x_date(date_breaks = "2 day", date_labels = "%m-%d", expand = c(0.05,0.05))
+  scale_x_date(date_breaks = "7 day", date_labels = "%m-%d", expand = c(0.05,0.05))
 ```
 再单独看看风险人群中检出感染者的情况，从了4月3日，4月4日连续两天下降，且看起来几乎是呈直线下降，这是一个好兆头。预示着，随着大规模核酸检测工作的全面铺开，从社会面发现感染者数量的增长势头将会慢慢遏制。
 
@@ -456,7 +456,7 @@ tb_fenlei_long %>% filter(type == "case_all_fx") %>%
   ggplot(aes(rep_date, cases)) +
   geom_point() +
   geom_line() +
-  scale_x_date(date_breaks = "2 day", date_labels = "%m-%d") +
+  scale_x_date(date_breaks = "7 day", date_labels = "%m/%d") +
   scale_y_continuous(breaks = seq(0,1500,200))+
   theme(panel.grid.minor = element_blank()) +
   geom_line(data = .%>% filter(rep_date > "2022-04-01"), col =4 , size = 1) +
@@ -474,7 +474,7 @@ covidsh <-  sh_long %>% filter(reportdate > as.Date.character("2022-3-1")) %>%
   geom_line(size = 1) +
    geom_point( size = 0.5)+
   geom_smooth(aes(group = 感染者类型 ) , col = "grey", linetype = "dashed", alpha = 0.2, se = T) +
-  scale_x_date(date_breaks = "2 day", date_labels = "%m/%d") +
+  scale_x_date(date_breaks = "3 day", date_labels = "%m/%d") +
   theme_bw() +
   theme(
         axis.text = element_text(size = 9),
@@ -489,39 +489,36 @@ covidsh
 
 曲线拟合如下
 ```{r}
-tb_fenlei_final
-
-mod_data <-  tb_fenlei_final %>% select(rep_date, case_all,case_c, case_u) %>% arrange(rep_date) %>% 
-   filter(rep_date > as.Date("2022-3-1")) %>%  mutate(days = 1 : nrow(.))
+mod_data <- sh02 %>% select(reportdate, 新增本地感染) %>% rename(case_all = 新增本地感染, rep_date = reportdate) %>% arrange(rep_date
+) %>% filter(rep_date >= ymd("2022-3-1")) 
+mod_data <- mod_data %>% mutate(days = 1:nrow(mod_data))
 
 
 mod_all <- lm( case_all ~ days + I(days^2)+ I(days^3), data = mod_data)
 mod_all2 <- lm(case_all ~ I(days^3), data = mod_data )
 
-newdata <- data.frame(days =  1  : c(nrow(mod_data) + 3), Date = seq( as.Date("2022-3-18"), by = "day", length.out = nrow(mod_data) + 3 )  )
+newdata <- data.frame(days =  1  : c(nrow(mod_data) + 3), Date = seq( as.Date("2022-3-02"), by = "day", length.out = nrow(mod_data) + 3 )  )
 pre_data <- newdata %>%  mutate(
-  pred_all = predict(object = mod_all2, newdata = newdata) %>% round(0)
+  pred_all = predict(object = mod_all, newdata = newdata) %>% round(0)
 ) 
-
-Rsq <- expression(R^2 == format(summary(mod_all2)$r.square, digits = 2) )
+Rsq <- expression(R^2 == format(summary(mod_all)$r.square, digits = 2) )
 mod_data %>% ggplot() +
   geom_line(aes(rep_date, case_all,  col = "red"), linetype = 1, size = 0.5) +
   #geom_smooth(aes(rep_date, case_all), method = "gam") +
   geom_point(aes(rep_date, case_all), col = "red", size = 1.2) +
-  geom_text(data = mod_data %>% filter(rep_date > as.Date("2022-4-7")), aes(rep_date, case_all, label = case_all), col = "red4", nudge_x = - 2, size =3) +
+  geom_text(data = mod_data %>% filter(rep_date > as.Date("2022-4-18")), aes(rep_date, case_all, label = case_all), col = "red4", nudge_x = - 2, size =3) +
   geom_line(data = pre_data, aes(Date, pred_all,col = "green") , linetype = 2) +
   geom_point(data = pre_data, aes(Date, pred_all), col = "green", size = 1.5, shape = 21) +
-  geom_text(data = pre_data %>% filter(Date >  as.Date("2022-4-7")) , 
+  geom_text(data = pre_data %>% filter(Date >  as.Date("2022-4-20")) , 
             aes(Date, pred_all, label =  pred_all),col = "green4", nudge_x= 1, nudge_y = -500, size = 3) +  
   theme_bw() +
   scale_color_manual(name = "", values = c("red", "green"), breaks = c("red", "green"), labels = c("实际值", "预测值")) +
   theme(legend.position = "right") +
-  scale_x_date(date_breaks = "2 day", date_labels = "%m-%d") +
+  scale_x_date(date_breaks = "5 day", date_labels = "%m-%d") +
   xlab("检出日期") + ylab("感染者数") +
   scale_y_continuous(breaks = seq(0,30000, 5000)) +
   theme(panel.grid.minor = element_blank()) +
-  annotate("text", x = as.Date("2022-4-10"), y = 100, parse = T, label = "R^2 == 0.97")
-  
+  annotate("text", x = as.Date("2022-4-10"), y = 100, parse = T, label = paste0("R^2 == ", mod_all %>% broom::glance() %>% .$r.squared %>% format(diga = 2)))
 
 ```
 
@@ -592,7 +589,8 @@ library(forecast)
 
 ```{r}
 ts_data <- mod_data %>% select(rep_date, case_all)
-ts_data <- ts_data %>% rbind(data.frame(rep_date = ymd("2022-4-9", "2022-4-10"), case_all = c(24752, 26760)))
+ts_data <- ts_data %>% add_row(rep_date = ymd("2022-4-9", "2022-4-10"), case_all = c(24752, 26760))
+
 ts_data %>% plot_time_series(rep_date, case_all, .interactive = F)
 data_sp <- ts_data %>% time_series_split(assess = "1 week", cumulative = T)
 data_sp %>% tk_time_series_cv_plan() %>% 
@@ -603,7 +601,7 @@ model_arima  <-  arima_reg() %>%
   fit(case_all ~ rep_date, training(data_sp))
 model_arima
 
-model_prophet = prophet_reg(  ) %>% 
+model_prophet  <-  prophet_reg(  ) %>% 
   set_engine("prophet") %>% 
   fit(case_all ~ rep_date, training(data_sp))
 
@@ -682,7 +680,7 @@ calibration_table
 ```
 
 ## 预测
-
+从最新的数字看几个模型都预测病例数量开始下降了。
 ```{r}
 
 calibration_table %>%
@@ -705,13 +703,13 @@ calibration_table %>%
 
 ## 模型选择
 
-重新拟后，感觉最好的机器学习的Glmnet模型
+选择较好的几个模型预测
 
 ```{r}
 
 pre_data_tim <-  calibration_table %>%
   # Remove ARIMA model with low accuracy
-  filter(.model_id != 4) %>%
+  filter(.model_id != 2) %>%
   # Refit and Forecast Forward
   modeltime_refit(ts_data) %>%
   modeltime_forecast(h = "1 weeks", actual_data = ts_data) 
@@ -725,14 +723,14 @@ pre_data_tim %>%
 筛选1，2，3号模型的预测值如下:
 
 ```{r, results='asis'}
+table(pre_data_tim$.model_desc)
 pre_data_tim %>% 
-  filter(str_detect(.model_desc, "ARIMA|PROPHET|XGBOOST ERRORS"), .index < ymd("2022-04-14")) %>% 
+  filter(.index > ymd("2022-04-19")) %>% 
   select(.model_desc, .index, .value) %>% rename(
     "模型" = ".model_desc",
     "日期" = ".index",
     "预测值" = ".value"
-  ) %>% 
-  knitr::kable()
+  ) %>%   knitr::kable()
 ```
 
 
