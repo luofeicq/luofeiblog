@@ -1,0 +1,277 @@
+---
+title: 全国各省新冠疫情分析
+author: Luo Fei
+date: '2022-08-18'
+slug: []
+categories:
+  - 中文
+tags:
+  - R
+output:
+    blogdown::html_page:
+        number_sections: true
+math: true
+showToc: true
+TocOpen: false
+toc-title: "目录"
+draft: false
+hidemeta: false
+comments: false
+description: "无责任猜测。"
+canonicalURL: ""
+disableShare: false
+hideSummary: false
+searchHidden: false
+ShowReadingTime: false
+ShowBreadCrumbs: true
+ShowPostNavLinks: true
+cover:
+    image: "" # image path/url
+    alt: "<alt text>" # alt text
+    caption: "<text>" # display caption under cover
+    relative: false # when using page bundles set this to true
+    hidden: true # only hide on current single page      
+---
+
+
+
+<div id="新增感染者情况" class="section level2" number="0.1">
+<h2><span class="header-section-number">0.1</span> 新增感染者情况</h2>
+<p>8月17日0-24时，全国（除港澳台外）25个省市报告新增本土感染者3424例（较前日增加504例），新增数排前5位的依次是海南、西藏、新疆、陕西、青海，分别为2018例、889例、233例、65例、60例。详见图<a href="#fig:fig01">1</a>。</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:fig01"></span>
+<img src="{{< blogdown/postref >}}index_files/figure-html/fig01-1.png" alt="全国新冠肺炎新增感染者情况" width="768" />
+<p class="caption">
+Figure 1: 全国新冠肺炎新增感染者情况
+</p>
+</div>
+</div>
+<div id="累计报告感染者情况" class="section level2" number="0.2">
+<h2><span class="header-section-number">0.2</span> 累计报告感染者情况</h2>
+<p>自2022年7月1日起，全国累计报告感染者人数较多的省份（剔出无症状转确诊）为海南13814例，甘肃4516例，广西3739例，西藏3469例，新疆3193例，安徽2326例，河南1096例等省市,见图<a href="#fig:fig02">2</a>。</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:fig02"></span>
+<img src="{{< blogdown/postref >}}index_files/figure-html/fig02-1.png" alt="7月1日至今全国累计报告感染者分布图" width="768" />
+<p class="caption">
+Figure 2: 7月1日至今全国累计报告感染者分布图
+</p>
+</div>
+</div>
+<div id="近10内各省报告感染者数量变化趋势" class="section level2" number="0.3">
+<h2><span class="header-section-number">0.3</span> 近10内各省报告感染者数量变化趋势</h2>
+<p>对近10日内各省报告数据分析显示，感染者数量呈上升趋势的省份（增速）分别为西藏（0）、海南（0）、陕西（0）、云南（0）。 报告数量呈下降趋势的省份（降速）分别为（） ，见图<a href="#fig:fig03">3</a>。</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:fig03"></span>
+<img src="{{< blogdown/postref >}}index_files/figure-html/fig03-1.png" alt="近10日全国各省感染者报告情况" width="768" />
+<p class="caption">
+Figure 3: 近10日全国各省感染者报告情况
+</p>
+</div>
+<table>
+<caption><span id="tab:table02">Table 1: </span>近10日各省报告感染者数线性回归分析结果</caption>
+<thead>
+<tr class="header">
+<th align="center">省份</th>
+<th align="center">变化趋势</th>
+<th align="center">标准误</th>
+<th align="center">p值</th>
+<th align="center">显著性</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">西藏</td>
+<td align="center">0.001</td>
+<td align="center">0</td>
+<td align="center">0.000</td>
+<td align="center">&lt;0.05</td>
+</tr>
+<tr class="even">
+<td align="center">海南</td>
+<td align="center">0.001</td>
+<td align="center">0</td>
+<td align="center">0.020</td>
+<td align="center">&lt;0.05</td>
+</tr>
+<tr class="odd">
+<td align="center">青海</td>
+<td align="center">0.000</td>
+<td align="center">0</td>
+<td align="center">0.070</td>
+<td align="center">/</td>
+</tr>
+<tr class="even">
+<td align="center">陕西</td>
+<td align="center">0.000</td>
+<td align="center">0</td>
+<td align="center">0.046</td>
+<td align="center">&lt;0.05</td>
+</tr>
+<tr class="odd">
+<td align="center">兵团</td>
+<td align="center">0.000</td>
+<td align="center">0</td>
+<td align="center">0.084</td>
+<td align="center">/</td>
+</tr>
+<tr class="even">
+<td align="center">江西</td>
+<td align="center">0.000</td>
+<td align="center">0</td>
+<td align="center">0.554</td>
+<td align="center">/</td>
+</tr>
+<tr class="odd">
+<td align="center">四川</td>
+<td align="center">0.000</td>
+<td align="center">0</td>
+<td align="center">0.092</td>
+<td align="center">/</td>
+</tr>
+<tr class="even">
+<td align="center">江苏</td>
+<td align="center">0.000</td>
+<td align="center">0</td>
+<td align="center">0.531</td>
+<td align="center">/</td>
+</tr>
+<tr class="odd">
+<td align="center">福建</td>
+<td align="center">0.000</td>
+<td align="center">0</td>
+<td align="center">0.261</td>
+<td align="center">/</td>
+</tr>
+<tr class="even">
+<td align="center">云南</td>
+<td align="center">0.000</td>
+<td align="center">0</td>
+<td align="center">0.050</td>
+<td align="center">&lt;0.05</td>
+</tr>
+<tr class="odd">
+<td align="center">北京</td>
+<td align="center">0.000</td>
+<td align="center">0</td>
+<td align="center">0.170</td>
+<td align="center">/</td>
+</tr>
+<tr class="even">
+<td align="center">河北</td>
+<td align="center">0.000</td>
+<td align="center">0</td>
+<td align="center">0.359</td>
+<td align="center">/</td>
+</tr>
+<tr class="odd">
+<td align="center">河南</td>
+<td align="center">0.000</td>
+<td align="center">0</td>
+<td align="center">0.859</td>
+<td align="center">/</td>
+</tr>
+<tr class="even">
+<td align="center">贵州</td>
+<td align="center">0.000</td>
+<td align="center">0</td>
+<td align="center">0.683</td>
+<td align="center">/</td>
+</tr>
+<tr class="odd">
+<td align="center">重庆</td>
+<td align="center">0.000</td>
+<td align="center">0</td>
+<td align="center">0.615</td>
+<td align="center">/</td>
+</tr>
+<tr class="even">
+<td align="center">安徽</td>
+<td align="center">0.000</td>
+<td align="center">0</td>
+<td align="center">0.333</td>
+<td align="center">/</td>
+</tr>
+<tr class="odd">
+<td align="center">湖南</td>
+<td align="center">0.000</td>
+<td align="center">0</td>
+<td align="center">0.521</td>
+<td align="center">/</td>
+</tr>
+<tr class="even">
+<td align="center">甘肃</td>
+<td align="center">0.000</td>
+<td align="center">0</td>
+<td align="center">0.527</td>
+<td align="center">/</td>
+</tr>
+<tr class="odd">
+<td align="center">上海</td>
+<td align="center">0.000</td>
+<td align="center">0</td>
+<td align="center">0.142</td>
+<td align="center">/</td>
+</tr>
+<tr class="even">
+<td align="center">广西</td>
+<td align="center">0.000</td>
+<td align="center">0</td>
+<td align="center">0.036</td>
+<td align="center">&lt;0.05</td>
+</tr>
+<tr class="odd">
+<td align="center">新疆</td>
+<td align="center">0.000</td>
+<td align="center">0</td>
+<td align="center">0.948</td>
+<td align="center">/</td>
+</tr>
+<tr class="even">
+<td align="center">山东</td>
+<td align="center">0.000</td>
+<td align="center">0</td>
+<td align="center">0.000</td>
+<td align="center">&lt;0.05</td>
+</tr>
+<tr class="odd">
+<td align="center">湖北</td>
+<td align="center">0.000</td>
+<td align="center">0</td>
+<td align="center">0.212</td>
+<td align="center">/</td>
+</tr>
+<tr class="even">
+<td align="center">浙江</td>
+<td align="center">0.000</td>
+<td align="center">0</td>
+<td align="center">0.219</td>
+<td align="center">/</td>
+</tr>
+<tr class="odd">
+<td align="center">内蒙古</td>
+<td align="center">0.000</td>
+<td align="center">0</td>
+<td align="center">0.019</td>
+<td align="center">&lt;0.05</td>
+</tr>
+<tr class="even">
+<td align="center">广东</td>
+<td align="center">0.000</td>
+<td align="center">0</td>
+<td align="center">0.000</td>
+<td align="center">&lt;0.05</td>
+</tr>
+<tr class="odd">
+<td align="center">吉林</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+</tr>
+<tr class="even">
+<td align="center">宁夏</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+</tr>
+</tbody>
+</table>
+</div>

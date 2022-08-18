@@ -1,0 +1,461 @@
+---
+title: 全国各省新冠疫情分析
+author: Luo Fei
+date: '2022-08-18'
+slug: []
+categories:
+  - 中文
+tags:
+  - R
+output:
+    blogdown::html_page:
+        number_sections: true
+math: true
+showToc: true
+TocOpen: false
+toc-title: "目录"
+draft: false
+hidemeta: false
+comments: false
+description: "无责任猜测。"
+canonicalURL: ""
+disableShare: false
+hideSummary: false
+searchHidden: false
+ShowReadingTime: false
+ShowBreadCrumbs: true
+ShowPostNavLinks: true
+cover:
+    image: "" # image path/url
+    alt: "<alt text>" # alt text
+    caption: "<text>" # display caption under cover
+    relative: false # when using page bundles set this to true
+    hidden: true # only hide on current single page      
+---
+
+
+```{r,setup,include=FALSE}
+options(digits = 3)
+
+##knitr设置
+knitr::opts_chunk$set(
+  prompt = FALSE,
+  comment = "#",
+  results = "markup",
+  error = FALSE,
+  message = FALSE,
+  fig.align = "center",
+  collapse = FALSE,
+  tidy = F,
+  echo = F,
+  message = F,
+  results = "hide",
+  warning = F,
+  cache.path = "cash/",
+  cache = F,
+  fig.height = 6,
+  fig.width = 8
+  
+  )
+
+```
+
+
+```{r}
+library(tidyverse)
+library(rvest)
+library(openxlsx)
+library(tcltk)
+library(ggforce)
+library(gghighlight)
+library(sf)
+library(RColorBrewer)
+library(cowplot)
+library(httr)
+```
+
+
+```{r}
+df <- readxl::read_xlsx("./case_all.xlsx") 
+df <- df %>% distinct(case, type,  provience, Date, .keep_all = T) %>% filter(case != "" & !str_detect(provience, "在"))
+# 存储原始数据
+
+
+## 筛选7月日后的数据
+df_filter <- df %>% filter(provience != "", Date >= as.Date.character("2022-7-1")) 
+web_date <- as.Date.POSIXct(df$Date[1]) + 1
+# 设置时间节点变量
+Today <- web_date -1
+Yesterday <- web_date -2
+# 原始数据转换为按日期的宽数据
+df_filter <-  df_filter %>% group_by(provience, Date) %>% summarise(
+  case_all = sum(case)
+)
+# 提出无症状转确诊后数据
+df_filter2 <- df %>%  
+  select(provience, type, Date, case) %>% 
+  filter(Date >= as.Date.character("2022-07-01")) %>% 
+  pivot_wider(
+    names_from = type,
+    values_from = case,
+    values_fill = 0
+  ) %>% mutate(
+  case_all = c + u - t) %>% 
+  filter(Date >= as.Date.character("2022-7-1")) %>% 
+  arrange(desc(Date), -case_all)
+df  
+
+## 提取文章需要的变量
+
+df_today <- df_filter %>% filter(Date == Today )
+df_yesterday <- df_filter %>% filter(Date == Yesterday)
+
+n_provience <- df_today %>% .$provience %>% unique() %>% length()
+case_all_toady <- sum(df_today$case_all)
+case_all_yesterday <- sum(df_yesterday$case_all)
+# 与昨日数据比较结果赋值在case_all_compare                          
+if (case_all_toady - case_all_yesterday > 0) {
+  case_all_compare <- paste0("增加",as.character(case_all_toady - case_all_yesterday))
+ } else if (case_all_toady - case_all_yesterday == 0){
+    case_all_compare <- "无变化"
+  }  else {
+    case_all_compare <-  paste0("减少", as.character(abs(case_all_toady - case_all_yesterday)))
+  }
+# 各省新增
+
+raise_provience <- df_today %>% distinct(provience,.keep_all = T) %>% arrange(-case_all) %>% head(5) %>% .$provience %>% paste0(., collapse = "、")
+  
+  
+raise_cases <- df_today %>% distinct(provience,.keep_all = T) %>% arrange(-case_all) %>% head(5) %>% .$case_all %>% paste0(., collapse = "例、")
+# 去除无症状转确诊病例数后
+
+
+# 累计报告病例
+
+
+df_cusum <- df_filter2 %>% group_by(provience) %>% summarise(
+  case_all = sum(case_all) 
+) %>% arrange(-case_all)
+
+df_cusum_arragen <- df_cusum %>% 
+  head(7)
+
+case_cums_all <- paste0(df_cusum_arragen$provience,  df_cusum_arragen$case_all,"例",collapse = "，")
+
+
+```
+
+## 新增感染者情况
+
+`r format(web_date - 1,"%b%d日")`0-24时，全国（除港澳台外）`r n_provience`个省市报告新增本土感染者`r case_all_toady`例（较前日`r case_all_compare`例），新增数排前5位的依次是`r raise_provience`，分别为`r raise_cases`例。详见图\@ref(fig:fig01)。
+
+
+```{r fig01, results= 'asis', fig.cap="全国新冠肺炎新增感染者情况"}
+compaer_2day <- df_filter %>% 
+  filter(Date >= Yesterday) %>% 
+  group_by(provience) %>% 
+  mutate(
+    case_sum = sum(case_all)
+  )
+
+fig1_main <- compaer_2day %>%
+  ggplot(aes(x = reorder(provience, -case_sum), y = case_all)) +
+  geom_col(aes(fill = as.factor(Date)), position = "dodge", width = 0.8) +
+  theme_bw() +
+  xlab("省份") +
+  ylab("感染者数") +
+  theme(legend.title = element_blank(),
+        legend.text = element_text(size = 25),
+        axis.text = element_text(size = 20),
+        axis.text.x =  element_text(angle = -45),
+        axis.title = element_text(size =  30),
+        legend.position = c(0.5, 0.95), 
+        panel.grid.major = element_blank(),
+        legend.direction = "horizontal",
+        panel.grid = element_blank())+
+  scale_y_continuous(n.breaks = 10) +
+  geom_rect(data = NULL, aes(xmin = 7.5, xmax = 25.5, ymin =-50, ymax = 75),
+            fill = "grey95", col = "grey30", alpha = 0.01, linetype = "dashed")+
+  geom_segment(aes(x = 17, xend = 17, y = 70, yend = 700), linetype = "dashed", col = "grey30")
+
+fig1_zoom <-  compaer_2day  %>%
+  group_by(provience) %>% 
+  #mutate(max_case = max(case_all)) %>% 
+  filter(max(case_all) < 50) %>% ungroup() %>% 
+  ggplot(aes(x = reorder(provience, -case_sum), y = case_all)) +
+  geom_col(aes(fill = as.factor(Date)), position = "dodge", show.legend = F, width = 0.8) +
+  theme_bw() +
+  theme(legend.title = element_blank(),
+        legend.text = element_text(size = 25),
+        axis.text = element_text(size = 15),
+        axis.text.x =  element_text(angle = -45),
+        axis.title = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid = element_blank()
+         )+
+  scale_y_continuous(n.breaks = 5)
+
+ggdraw() +
+  draw_plot(fig1_main) +
+  draw_plot(fig1_zoom, 0.5, 0.4, 0.4, 0.4)
+
+```
+
+
+
+```{r table01, results= 'hide'}
+comparedf <-  df_filter %>% filter(Date >= Yesterday) %>% pivot_wider(
+  names_from = Date,
+  names_prefix = "Date",
+  values_from = case_all,
+  values_fill = 0) 
+
+table1_df <- comparedf %>% mutate(
+  growth = .data[[colnames(.)[[2]]]] - .data[[colnames(.)[[3]]]],
+  ratio = (.data[[colnames(.)[[2]]]] - .data[[colnames(.)[[3]]]])/.data[[colnames(.)[[3]]]]*100
+) %>% 
+  arrange(- ratio, - growth)
+
+
+table1_df %>% knitr::kable(
+  col.names = c("省份",format(Today,"%m月%d日"),format(Yesterday,"%m月%d日"),"增减情况","比例（%）"),
+  caption = "近2日全国各省报告感染者变化情况",
+  align = "c",
+  digits = 2
+  
+)
+comparedf
+
+```
+
+
+
+```{r}
+# 读取shp文件
+mymap <- read_sf("Data/maps/china.shp")
+colnames(mymap) <- c("p_code", "provience", "class", "geometry")
+
+nineline <- read_sf("Data/maps/ninelines.shp")
+
+## 设置投影坐标系统
+
+mymap <- st_set_crs(mymap, 4326)
+mymap <- st_transform(mymap, "+init=epsg:4508")
+
+
+
+
+# 整理病例数据
+
+mymap <-  mymap %>% mutate(
+  provience2 = str_extract(provience, "..")
+)
+mapdata <- df_cusum %>% mutate(
+  provience2 = str_extract(provience, "..")
+)
+mymap <-  mymap %>% left_join(mapdata, by = "provience2")
+# 补充缺失省份
+
+
+# 绘制地图
+
+# 读取shp文件
+mymap <- read_sf("Data/maps/china.shp") # 省级行政区域
+nineline <- read_sf("Data/maps/ninelines.shp") # 就段线
+procity <- read_sf("Data/maps/procity.shp")
+
+## 设置投影坐标系统
+
+mymap <- st_set_crs(mymap, 4326)
+mymap <- st_transform(mymap, "+init=epsg:4508")
+
+
+# 整理病例数据
+mymap <-  mymap %>% mutate(
+  provience2 = str_extract(省, "..")
+)
+
+mapdata <- df_cusum %>% mutate(
+  provience2 = str_extract(provience, "..")
+)
+
+
+mymap <-  mymap %>% left_join(mapdata, by = "provience2")
+# 整理确实省份名字
+mymap$provience2[c(5,6,9)] <- c("内蒙古", "" ,"黑龙江" )
+
+# 设置病例数分段
+##   设置分位数
+x <- mymap$case_all
+quti <-  c(1, 10 , 50,  100, 200, 1000, 2000, 10000, 20000 )
+## 设置标签
+quti_lab <-  imap_chr(quti, function(. ,idx){
+  paste0("≥", quti[idx])
+  })
+
+quti_lab <- quti_lab[-9]
+quti_lab[1] <- "≥ 1"
+## 添加分位数据
+
+mymap <- mymap %>% mutate(
+  case_cut = cut(case_all, breaks = quti, labels = quti_lab, include.lowest = T, right = T)
+)
+
+```
+
+
+```{r}
+# 绘制地图
+map_line <- ggplot(mymap) +
+  geom_sf(aes(fill = case_cut), show.legend = F) +
+  scale_fill_viridis_d(option = "D", direction = -1, na.value = "grey75", 
+                       alpha = 0.7, begin = 0.2 , end = 0.8) +
+  geom_sf(data = nineline, size = 0.8) +
+  coord_sf(ndiscr = 0,xlim = c(222000, 1600000),ylim = c(400000, 2600000)) +
+  geom_sf_text(aes(label = provience2), size = 2) +
+  theme_bw() +
+  theme(axis.title = element_blank()
+        )
+
+map_all <-   ggplot(mymap) +
+  geom_sf(aes(fill = case_cut), show.legend = T) +
+  scale_fill_viridis_d(option = "D", direction = -1, na.value = "grey75", 
+                       alpha = 0.7, begin = 0.2 , end = 0.8) +
+  geom_sf(data = nineline, size = 0.9) +
+  coord_sf(ndiscr = 0, xlim = c(-2800000,  2280000), ylim = c(1800000,6010000)) +
+  geom_sf_text(aes(label = provience2), size = 4) +
+  theme_bw() +
+  theme(axis.title = element_blank(),
+        legend.title = element_blank(),
+        legend.position = c(0.95, 0.5),
+        ) +
+  ggspatial::annotation_north_arrow(location = "tl",
+                                    height = unit(1.5, "cm"),
+                                    width = unit(1, "cm")
+                                    ) +
+  ggspatial::annotation_scale() 
+  
+ 
+case_map <- ggdraw() +
+  draw_plot(map_all, 0,0,1,1)+
+  draw_plot(map_line,x = 0.03, y = 0.06, width = 0.4, height = 0.3 )
+```
+
+## 累计报告感染者情况
+
+自2022年7月1日起，全国累计报告感染者人数较多的省份（剔出无症状转确诊）为`r case_cums_all`等省市,见图\@ref(fig:fig02)。
+
+
+
+```{r fig02, results='asis', fig.cap="7月1日至今全国累计报告感染者分布图"}
+case_map
+```
+
+
+
+```{r}
+#  计算各省7月1日以来平均报告感染着数量
+sta_provience <-  df_filter %>% group_by(provience
+) %>% summarise(
+  mean = mean(case_all),
+  sd = sd(case_all),
+  tirp_sd = 3 * sd
+)
+# 提取近3日报告病例数量
+threeDays <-   df_filter %>% filter(Date >= Yesterday -1) %>% group_by(provience, Date) %>% 
+  summarise(
+    cases = sum(case_all)
+  )
+comb1 <-  sta_provience %>% pivot_longer(cols = c(2:4),
+  names_to = "type",
+  values_to = "cases"
+)
+comb2 <-  df_filter %>%  rename(type = Date, cases = case_all) 
+comb1 <-  comb1 %>% mutate(
+  type = case_when(
+    type == "mean" ~ as.Date.character("2022-01-01"),
+    type == "sd" ~ as.Date.character("2022-01-02"),
+    TRUE ~ as.Date.character("2022-01-03"),
+  )
+)
+
+
+stat_df <- rbind(comb2, comb1) %>% 
+   mutate(
+  type = as.Date.POSIXct(type)
+)
+
+
+
+```
+
+```{r}
+
+
+# 各省近10日内报告感染者数量趋势
+
+
+growth<- df_filter %>% 
+  filter(Date > Today -9) %>% 
+  group_by(provience) %>% 
+  summarise(
+    broom::tidy(lm(case_all ~ Date))
+    ) %>% 
+  filter(term == "Date") %>% 
+  arrange(desc(estimate))
+
+growth_raito <- growth %>% filter(p.value < 0.05)
+
+growth_raito_5 <- growth_raito %>% filter(estimate > 0) 
+
+desc_ratio <-  growth_raito %>% 
+  filter(estimate < -0.0001) %>% 
+  arrange(estimate)
+
+```
+
+## 近10内各省报告感染者数量变化趋势
+
+对近10日内各省报告数据分析显示，感染者数量呈上升趋势的省份（增速）分别为`r paste0( growth_raito_5[[1]], "（", round(growth_raito_5[[3]], 2),  "）", collapse = "、")`。 报告数量呈下降趋势的省份（降速）分别为`r paste0( desc_ratio[[1]], "（", round(desc_ratio[[3]], 2), "）", collapse = "、")` ，见图\@ref(fig:fig03)。
+
+
+```{r fig03, results='asis', fig.cap="近10日全国各省感染者报告情况"}
+
+fig1 <- ggplot(data = filter(stat_df, type >= Today -9, cases > 0), aes(x = type, y = cases, group = provience))+   geom_line() + 
+  geom_point(size = 0.5) +
+  geom_smooth(method = "glm", col = "beige", size = 0.8, alpha = 0.6, level = 0.99, fill = "lightgrey") +
+  #stat_cor() +
+  scale_x_date(date_breaks = "2 day", date_labels = "%m/%d") +
+  geom_point(data = filter(stat_df, type > Yesterday-2), aes(col = as.factor(type)), size = 1) +
+  #geom_line(data = filter(stat_df, type > Yesterday-2), col = "red", size = 0.5) +
+  xlab("日期") +
+  ylab("病例数") +
+  facet_wrap(~ provience, scales = "free_y")+
+  theme_bw() +
+  theme(panel.grid = element_blank(),
+        strip.background = element_blank(),
+        legend.title = element_blank(),
+        legend.position = "top")  
+  
+fig1  
+
+```
+ 
+```{r table02, results='asis'}
+
+growth %>%
+  mutate(
+    p = if_else(p.value < 0.05, "<0.05", "/")
+  ) %>% 
+  select(c(1, 3, 4, 6, 7)) %>% 
+  knitr::kable(
+    col.names = c("省份", "变化趋势", "标准误", "p值", "显著性"),
+    caption = "近10日各省报告感染者数线性回归分析结果",
+    align = "c"
+  )
+
+```
+
+
+
+
