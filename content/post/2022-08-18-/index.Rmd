@@ -41,10 +41,10 @@ options(digits = 3)
 knitr::opts_chunk$set(
   prompt = FALSE,
   comment = "#",
-  results = "markup",
+  results = "asis",
   error = FALSE,
   message = FALSE,
-  fig.align = "center",
+  fig.show = "asis",
   collapse = FALSE,
   tidy = F,
   echo = F,
@@ -53,9 +53,7 @@ knitr::opts_chunk$set(
   warning = F,
   cache.path = "cash/",
   cache = F,
-  fig.height = 6,
-  fig.width = 8
-  
+  fig.align = "center"
   )
 
 ```
@@ -150,7 +148,7 @@ case_cums_all <- paste0(df_cusum_arragen$provience,  df_cusum_arragen$case_all,"
 `r format(web_date - 1,"%b%d日")`0-24时，全国（除港澳台外）`r n_provience`个省市报告新增本土感染者`r case_all_toady`例（较前日`r case_all_compare`例），新增数排前5位的依次是`r raise_provience`，分别为`r raise_cases`例。详见图\@ref(fig:fig01)。
 
 
-```{r fig01, results= 'asis', fig.cap="全国新冠肺炎新增感染者情况"}
+```{r fig01, fig.cap="全国新冠肺炎新增感染者情况"}
 compaer_2day <- df_filter %>% 
   filter(Date >= Yesterday) %>% 
   group_by(provience) %>% 
@@ -168,7 +166,6 @@ fig1_main <- compaer_2day %>%
         legend.text = element_text(size = 25),
         axis.text = element_text(size = 20),
         axis.text.x =  element_text(angle = -45),
-        axis.title = element_text(size =  30),
         legend.position = c(0.5, 0.95), 
         panel.grid.major = element_blank(),
         legend.direction = "horizontal",
@@ -347,7 +344,7 @@ case_map <- ggdraw() +
 
 
 
-```{r fig02, results='asis', fig.cap="7月1日至今全国累计报告感染者分布图"}
+```{r fig02, fig.cap="7月1日至今全国累计报告感染者分布图"}
 case_map
 ```
 
@@ -419,7 +416,7 @@ desc_ratio <-  growth_raito %>%
 对近10日内各省报告数据分析显示，感染者数量呈上升趋势的省份（增速）分别为`r paste0( growth_raito_5[[1]], "（", round(growth_raito_5[[3]], 2),  "）", collapse = "、")`。 报告数量呈下降趋势的省份（降速）分别为`r paste0( desc_ratio[[1]], "（", round(desc_ratio[[3]], 2), "）", collapse = "、")` ，见图\@ref(fig:fig03)。
 
 
-```{r fig03, results='asis', fig.cap="近10日全国各省感染者报告情况"}
+```{r fig03, fig.cap="近10日全国各省感染者报告情况"}
 
 fig1 <- ggplot(data = filter(stat_df, type >= Today -9, cases > 0), aes(x = type, y = cases, group = provience))+   geom_line() + 
   geom_point(size = 0.5) +

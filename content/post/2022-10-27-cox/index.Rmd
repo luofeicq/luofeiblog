@@ -1,0 +1,109 @@
+---
+title: cox回归学习
+author: Luo Fei
+date: '2022-10-27'
+slug: []
+categories:
+  - Tec
+tags:
+  - R
+math: true
+showToc: true
+TocOpen: false
+toc-title: "目录"
+draft: false
+hidemeta: false
+comments: false
+description: "学习在R语言中做cox回归分析"
+canonicalURL: ""
+disableShare: false
+hideSummary: false
+searchHidden: false
+ShowReadingTime: false
+ShowBreadCrumbs: true
+ShowPostNavLinks: true
+cover:
+    image: "" # image path/url
+    alt: "<alt text>" # alt text
+    caption: "<text>" # display caption under cover
+    relative: false # when using page bundles set this to true
+    hidden: true # only hide on current single page      
+---
+
+
+```{r,setup,include=FALSE}
+options(digits = 3)
+
+##knitr设置
+knitr::opts_chunk$set(
+  prompt = FALSE,
+  comment = "#",
+  results = "asis",
+  error = FALSE,
+  message = FALSE,
+  fig.show = "asis",
+  collapse = FALSE,
+  tidy = T,
+  echo = T,
+  message = F,
+  results = "hide",
+  warning = F,
+  cache.path = "cash/",
+  cache = F,
+  fig.align = "center"
+  )
+
+```
+
+```{r}
+library(tidyverse)
+library(survival)
+library(survminer)
+library(gtsummary)
+theme_gtsummary_journal("lancet")
+theme_gtsummary_language("zh-cn")
+```
+
+很久没有更新blog了，最近写论文用到了生存分析和cox回归，在这里记录一下过程中的一些心得和技巧。
+
+# 创建模拟数据
+
+```{r, results='markup'}
+df_cox <- tibble(
+  date_s = sample(as.Date.character("2010-1-1"):as.Date.character("2010-12-31"),500, replace = T),
+  date_e = sample(as.Date.character("2011-1-1"):as.Date.character("2011-12-31"),500, replace = T),
+  inter = rpois(500,30),
+  stat = rbinom(500,1,0.95),
+  age = rnorm(500, 40, 10),
+  sex = rbinom(500,1,0.6),
+  edu = sample(1:5, 500, replace = T),
+  dis = rbinom(500,1,0.7)
+)
+
+
+df_cox %>% tbl_summary(by = stat) %>% 
+  add_p() %>% 
+  modify_caption("模拟数据基础信息汇总表")
+
+
+```
+
+# 生存曲线
+
+```{r}
+
+fit0 <-  survfit(Surv(inter, stat) ~ dis, data = df_cox)
+
+ggsurvplot(fit0, risk.table = T, tables.height = 0.3 )
+
+
+
+```
+# cox回归
+
+```{r}
+cox1 <- coxph(Surv(inter, stat) ~ age + sex + dis + edu, data = df_cox)
+
+ggforest(cox1)
+```
+
