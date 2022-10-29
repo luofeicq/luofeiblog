@@ -1,0 +1,119 @@
+---
+title: R数据分析与统计推断基础2-数据可视化
+author: Luo Fei
+date: '2022-10-29'
+slug: course1
+categories:
+  - 中文
+tags:
+  - R
+output:
+    blogdown::html_page:
+        number_sections: true  
+        link-citations: true 
+math: true
+showToc: true
+TocOpen: false
+toc-title: "目录"
+bibliography: ["course.bib"]
+biblio-style: "abbrv"
+draft: false
+hidemeta: false
+comments: false
+description: "公共卫生医师培训R语言相关"
+canonicalURL: ""
+disableShare: false
+hideSummary: false
+searchHidden: false
+ShowReadingTime: false
+ShowBreadCrumbs: true
+ShowPostNavLinks: true
+cover:
+    image: "tidyverse.png" # image path/url
+    alt: "<alt text>" # alt text
+    caption: "<text>" # display caption under cover
+    relative: false # when using page bundles set this to true
+    hidden: true # only hide on current single page  
+---
+
+
+
+<p>这些教程主要市基于“modrndive”包<span class="citation">(<a href="#ref-R-moderndive" role="doc-biblioref">Kim and Ismay 2022</a>)</span>的参考手册和自己基自己浅薄的R使用经验编写，主要目的还是引导重庆的公共卫生人使用R语言分析数据，撰写报告，减轻重复劳动的负担。</p>
+<div id="需要使用到的包" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> 需要使用到的包：</h1>
+<pre class="r"><code>library(tidyverse)  # tidy系列数据分析套装
+library(moderndive)  # 统计推断、数据模拟，统计学导学
+library(nycflights13)  # 航班数据库
+library(gapminder)  # gap minder 数据库</code></pre>
+<p>在R里面对于数据可视化当然要用到数据可视化的王者<code>ggplot2</code><span class="citation">(<a href="#ref-R-ggplot2" role="doc-biblioref">Wickham et al. 2022</a>)</span>。</p>
+</div>
+<div id="gapminder-数据" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Gapminder 数据</h1>
+<p>TED talk “The best stats you’ve ever seen”。其中的数据来源就是，随机抽取其中5行数据看看<a href="#tab:tabgap">2.1</a>。</p>
+<table>
+<caption><span id="tab:tabgap">表2.1: </span>Gapminder数据</caption>
+<thead>
+<tr class="header">
+<th align="center">country</th>
+<th align="center">continent</th>
+<th align="center">year</th>
+<th align="center">lifeExp</th>
+<th align="center">pop</th>
+<th align="center">gdpPercap</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">Senegal</td>
+<td align="center">Africa</td>
+<td align="center">2007</td>
+<td align="center">63.1</td>
+<td align="center">1.23e+07</td>
+<td align="center">1712</td>
+</tr>
+<tr class="even">
+<td align="center">Nigeria</td>
+<td align="center">Africa</td>
+<td align="center">2007</td>
+<td align="center">46.9</td>
+<td align="center">1.35e+08</td>
+<td align="center">2014</td>
+</tr>
+<tr class="odd">
+<td align="center">Peru</td>
+<td align="center">Americas</td>
+<td align="center">1977</td>
+<td align="center">58.4</td>
+<td align="center">1.60e+07</td>
+<td align="center">6281</td>
+</tr>
+<tr class="even">
+<td align="center">Niger</td>
+<td align="center">Africa</td>
+<td align="center">2002</td>
+<td align="center">54.5</td>
+<td align="center">1.11e+07</td>
+<td align="center">601</td>
+</tr>
+<tr class="odd">
+<td align="center">Iran</td>
+<td align="center">Asia</td>
+<td align="center">2007</td>
+<td align="center">71.0</td>
+<td align="center">6.95e+07</td>
+<td align="center">11606</td>
+</tr>
+</tbody>
+</table>
+<p>我们尝试来展示以下数据中的信息：</p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-1.png" width="576" style="display: block; margin: auto;" /></p>
+<p><strong>参考文献</strong></p>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-R-moderndive" class="csl-entry">
+Kim, Albert Y., and Chester Ismay. 2022. <em>Moderndive: Tidyverse-Friendly Introductory Linear Regression</em>. <a href="https://CRAN.R-project.org/package=moderndive">https://CRAN.R-project.org/package=moderndive</a>.
+</div>
+<div id="ref-R-ggplot2" class="csl-entry">
+Wickham, Hadley, Winston Chang, Lionel Henry, Thomas Lin Pedersen, Kohske Takahashi, Claus Wilke, Kara Woo, Hiroaki Yutani, and Dewey Dunnington. 2022. <em>Ggplot2: Create Elegant Data Visualisations Using the Grammar of Graphics</em>. <a href="https://CRAN.R-project.org/package=ggplot2">https://CRAN.R-project.org/package=ggplot2</a>.
+</div>
+</div>
+</div>

@@ -1,0 +1,101 @@
+---
+title: R数据分析与统计推断基础2-数据可视化
+author: Luo Fei
+date: '2022-10-29'
+slug: course1
+categories:
+  - 中文
+tags:
+  - R
+output:
+    blogdown::html_page:
+        number_sections: true  
+        link-citations: true 
+math: true
+showToc: true
+TocOpen: false
+toc-title: "目录"
+bibliography: ["course.bib"]
+biblio-style: "abbrv"
+draft: false
+hidemeta: false
+comments: false
+description: "公共卫生医师培训R语言相关"
+canonicalURL: ""
+disableShare: false
+hideSummary: false
+searchHidden: false
+ShowReadingTime: false
+ShowBreadCrumbs: true
+ShowPostNavLinks: true
+cover:
+    image: "tidyverse.png" # image path/url
+    alt: "<alt text>" # alt text
+    caption: "<text>" # display caption under cover
+    relative: false # when using page bundles set this to true
+    hidden: true # only hide on current single page  
+---
+
+```{r,setup,include=FALSE}
+
+options(digits = 3)
+
+##knitr设置
+knitr::opts_chunk$set(
+  echo = FALSE,
+  prompt = FALSE,
+  comment = "#",
+  results = "markup",
+  error = FALSE,
+  message = FALSE,
+  fig.align = "center",
+  collapse = FALSE,
+  tidy = TRUE
+  )
+
+knitr::write_bib(c("tidyverse", "nycflights13", "moderndive", "ggplot2","gapminder"), "course.bib", width = 60)
+
+```  
+
+这些教程主要市基于“modrndive”包[@R-moderndive]的参考手册和自己基自己浅薄的R使用经验编写，主要目的还是引导重庆的公共卫生人使用R语言分析数据，撰写报告，减轻重复劳动的负担。
+
+# 需要使用到的包：
+
+```{r, echo=T}
+library(tidyverse) # tidy系列数据分析套装
+library(moderndive) # 统计推断、数据模拟，统计学导学
+library(nycflights13) # 航班数据库
+library(gapminder) # gap minder 数据库
+```
+
+
+在R里面对于数据可视化当然要用到数据可视化的王者`ggplot2`[@R-ggplot2]。
+
+# Gapminder 数据
+
+TED talk “The best stats you’ve ever seen”。其中的数据来源就是，随机抽取其中5行数据看看\@ref(tab:tabgap)。
+
+```{r tabgap}
+gapminder %>% sample_n(5) %>% knitr::kable(
+  caption = "Gapminder数据",
+  align = "c"
+)
+
+```
+
+
+我们尝试来展示以下数据中的信息：
+
+```{r, fig.width=6, fig.height=4}
+gapminder %>% ggplot(aes(gdpPercap/10000, lifeExp)) +
+  geom_point(aes(col  = continent, size = pop), alpha = 0.5) +
+  theme_bw() +
+  scale_x_continuous()+
+  labs(x = "GDP per capita(/万)", y = "Life Expectancy") +
+   facet_wrap(~ year)
+  
+```
+
+
+
+`r if (knitr::is_html_output()) '**参考文献** '`
