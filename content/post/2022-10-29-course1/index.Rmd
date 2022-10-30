@@ -42,7 +42,7 @@ options(digits = 3)
 
 ##knitr设置
 knitr::opts_chunk$set(
-  echo = FALSE,
+  echo = TRUE,
   prompt = FALSE,
   comment = "#",
   results = "markup",
@@ -50,7 +50,8 @@ knitr::opts_chunk$set(
   message = FALSE,
   fig.align = "left",
   collapse = FALSE,
-  tidy = TRUE
+  tidy = TRUE,
+  warning = TRUE
   )
 
 knitr::write_bib(c("tidyverse", "nycflights13", "moderndive", "ggplot2","gapminder", "gtsummary", "skimr"), "course.bib", width = 60)
@@ -59,7 +60,7 @@ knitr::write_bib(c("tidyverse", "nycflights13", "moderndive", "ggplot2","gapmind
 
 这些教程主要市基于“modrndive”包[@R-moderndive]的参考手册和自己浅薄的R使用经验编写，主要目的还是引导重庆的公共卫生人使用R语言分析数据，撰写报告，减轻重复劳动的负担。
 
-```{r figcover, fig.cap="Family of tidy packages."}
+```{r figcover, fig.cap="Family of tidy packages.", echo=FALSE}
 knitr::include_graphics("otherfigs/tidyverse.png")
 ```
 
@@ -73,6 +74,7 @@ library(nycflights13) # 航班数据库
 library(gapminder) # gap minder 数据库
 library(gtsummary) # 超棒的统计表格自动生成
 library(skimr) # 描述性统计包
+library(infer) #  统计推断
 ```
 
 
@@ -175,7 +177,7 @@ alaska_flights  %>% sample_n(5)
 
 由于数据库变量较多，我们用skimr[@{R-skimr]包种的`simr()`函数，查看各个变量的信息。从结果可以看到整个数据库共有19列，714行，其中字符变量4个，数值变量14个，时间变量1个，后面3张表是对不同类型变量的描述性信息，如：缺失值、最值、中位数、标准差，分位数，直方图等。
 
-```{r}
+```{r, echo=FALSE}
 alaska_flights %>% skim() 
 ```
 ## 绘制散点图
@@ -233,6 +235,38 @@ alaska_flights %>%
 ## 箱图
 
 ## 柱状图
+
+# 统计推断
+
+
+```{r}
+df_mean_pool <- tibble(
+  group = rep(c("a", "b"), each = 2000), 
+  score = c(rnorm(2000,10,2), rnorm(2000,11, 3))
+)
+df_mean_c <- sample_n(df_mean_pool, 50)
+
+infer1 <-  df_mean_c %>% 
+  specify(score ~ group) %>% 
+  hypothesize(null = "independence") %>% 
+  generate(reps = 1000, type = "permute") %>% 
+  calculate(stat = "diff in means", order = c("a", "b"))
+
+ob_diff <- df_mean_c %>% 
+  specify(score ~ group) %>% 
+  #generate(reps = 2000, type = "bootstrap") %>% 
+  calculate(stat = "diff in means", order = c("a", "b"))
+
+
+```
+
+## 分布和*p*值
+
+```{r}
+infer1 %>%  visualize() +
+  shade_pvalue(obs_stat = ob_diff, direction = "left")
+infer1 %>% get_pvalue(obs_stat = ob_diff, direction = "left")  
+```
 
 
 
