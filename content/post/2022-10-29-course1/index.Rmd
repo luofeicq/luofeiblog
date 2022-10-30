@@ -48,16 +48,21 @@ knitr::opts_chunk$set(
   results = "markup",
   error = FALSE,
   message = FALSE,
-  fig.align = "center",
+  fig.align = "left",
   collapse = FALSE,
   tidy = TRUE
   )
 
-knitr::write_bib(c("tidyverse", "nycflights13", "moderndive", "ggplot2","gapminder"), "course.bib", width = 60)
+knitr::write_bib(c("tidyverse", "nycflights13", "moderndive", "ggplot2","gapminder", "gtsummary", "skimr"), "course.bib", width = 60)
 
 ```  
 
-这些教程主要市基于“modrndive”包[@R-moderndive]的参考手册和自己基自己浅薄的R使用经验编写，主要目的还是引导重庆的公共卫生人使用R语言分析数据，撰写报告，减轻重复劳动的负担。
+这些教程主要市基于“modrndive”包[@R-moderndive]的参考手册和自己浅薄的R使用经验编写，主要目的还是引导重庆的公共卫生人使用R语言分析数据，撰写报告，减轻重复劳动的负担。
+
+```{r figcover, fig.cap="Family of tidy packages."}
+knitr::include_graphics("otherfigs/tidyverse.png")
+```
+
 
 # 需要使用到的包：
 
@@ -66,12 +71,14 @@ library(tidyverse) # tidy系列数据分析套装
 library(moderndive) # 统计推断、数据模拟，统计学导学
 library(nycflights13) # 航班数据库
 library(gapminder) # gap minder 数据库
+library(gtsummary) # 超棒的统计表格自动生成
+library(skimr) # 描述性统计包
 ```
 
 
 在R里面对于数据可视化当然要用到数据可视化的王者`ggplot2`[@R-ggplot2]。
 
-# Gapminder 数据
+Gapminder 数据
 
 TED talk “The best stats you’ve ever seen”。其中的数据来源就是，随机抽取其中5行数据看看\@ref(tab:tabgap)。
 
@@ -79,6 +86,7 @@ TED talk “The best stats you’ve ever seen”。其中的数据来源就是�
 gapminder %>% sample_n(5) %>% knitr::kable(
   caption = "Gapminder数据",
   align = "c"
+  
 )
 
 ```
@@ -95,6 +103,137 @@ gapminder %>% ggplot(aes(gdpPercap/10000, lifeExp)) +
    facet_wrap(~ year)
   
 ```
+```{r, include=FALSE}
+set.seed(100)
+p1 <- rbinom(10000,1,0.3)
+
+p2 <- rbinom(10000,1,0.5)
+pool <- tibble(
+  id = 1:20000,
+  sex = rep(c("f","m"), each = 10000),
+  value = c(p2,p1)
+  )
+
+df1 <- sample_n(pool, 50)
+
+```
+
+```{r, include=FALSE}
+N <- 1000
+df_boot <- tibble()
+for (i in 1:N) {
+  df_boot <- bind_rows(
+    df_boot, bind_cols(
+      tibble(time = rep(i, 50)),
+      sample_n(df1, 50 , replace = T)
+    )
+  )
+}
+df_boot %>% group_by(time) %>% count(sex) %>% mutate(
+  p = proportions(n)
+) %>% ggplot(aes(x = p)) +
+  geom_bar()+
+  facet_grid(~ sex)
+
+df_diff <-  df_boot %>% group_by(time, sex) %>% 
+  count(value) %>% mutate(
+  p = proportions(n)
+  ) %>%
+  filter(value == 1) %>% 
+  select(c(time, sex, p)) %>% 
+  pivot_wider(names_from = sex, values_from = p) %>% 
+  mutate(dif = f - m) 
+df_95 <-  df_diff$dif %>% quantile(na.rm = T, probs = c(0.05,0.95))
+df_diff %>% 
+  ggplot(aes(x = dif)) +
+  geom_histogram(binwidth = 0.01, col = "white")+
+  scale_x_continuous(breaks = seq(-1,1, 0.05)) +
+  geom_vline(xintercept = df_95, col = "red", size = 1) 
+
+
+
+```
+
+# 五种基本的统计图形           
+1. 散点图 scatterplots     
+2. 线图 linegraphs          
+3. 直方图 histograms           
+4. 箱图 boxplots          
+5. 柱状图 barplots        
+
+## 散点图
+
+散点图也叫双变量图（*bivariate plots*），主要用于可视化两个变量之间的变化关系。我们使用`alaska_flights`数据包来学习一下R种散点图的绘制。这个数据包主要是2013年阿拉斯加航空公司的航班数据。
+
+### 数据概览
+
+使用`sample_n()`随机抽取5行数据查看一下数据表的结构，也使用`head()`函数，浏览数据的前5行，使用管道符号`%>%`（快捷键ctrl+shift+m）可以让我们的代码的可读性更强，你可以将其视为函数结果的传递过程，每个`%>%`，将上一个函数结果传递至下一个函数。R4.2版本后，增加了原生管道`|>`，二者的效果一样。
+
+```{r}
+alaska_flights  %>% sample_n(5)
+```
+
+由于数据库变量较多，我们用skimr[@{R-skimr]包种的`simr()`函数，查看各个变量的信息。从结果可以看到整个数据库共有19列，714行，其中字符变量4个，数值变量14个，时间变量1个，后面3张表是对不同类型变量的描述性信息，如：缺失值、最值、中位数、标准差，分位数，直方图等。
+
+```{r}
+alaska_flights %>% skim() 
+```
+## 绘制散点图
+
+这里我们简单介绍一下使用`ggplot2`绘图的一般步骤
+
+1. 首先使用`ggplot()`函数我们创建一个`ggplot`对象，换句话说建立一个空白的画板。在`aes()`中分别定义这个统计图的x轴和y轴的度量变量分别为`alaska_flights`数据库里的`dep_delay`和`arr_delay`。这时的画板是空白的，因为我们没有定义要用哪种图形来展示。
+
+```{r}
+# ggplot(alaska_flights) #这种格式同样可以，但是不利于我们选择变量
+
+alaska_flights %>% 
+  ggplot(aes(x = dep_delay, y = arr_delay))
+
+```
+
+2. 使用`+`号添加`geom_point`图层后，一张基础的散点图完成了。程序输出一条warning，提示我们图形移除了5行有缺失值的数据。（图：\@ref(fig:figpoint1)）
+
+```{r figpoint1, fig.cap="Arrival vs. departure delays scatterplot."}
+alaska_flights %>% 
+  ggplot(aes(x = dep_delay, y = arr_delay))+
+  geom_point()
+```
+3. 但是我们发现这个图中“0，0”附近的点都挤在一起，让人难以辨识，一般情况有两种方式解决这个问题，首先是在`geom_point()`设置`alpha`点的透明度。这样，我们可以更明显地看出数据的集中趋势。（图：\@ref(fig:figpoint2)）
+
+```{r figpoint2, fig.cap="Arrival vs. departure delays scatterplot with alpha = 0.2."}
+alaska_flights %>% 
+  ggplot(aes(x = dep_delay, y = arr_delay))+
+  geom_point(alpha = 0.2)
+```
+4. 第二种方案可以使用`geom_jitter()`替代`geom_point()`或者在`geom()`中使用`position = position_jitter()`，给每个数据点的位置添加随机扰动，降低重叠程度。`width = , height = `参数可以控制扰动的大小。（图：\@ref(fig:figpoint3)）
+
+```{r figpoint3, fig.cap="Arrival versus departure delays jittered scatterplot."}
+alaska_flights %>% 
+  ggplot(aes(x = dep_delay, y = arr_delay))+
+  geom_point(position = position_jitter(width = 20, height = 20))
+```
+
+5. 我们可以在`aes()`在添加其他分类变量来展示分组的信息，如颜色，点形状，大小等，使用`theme_bw()`添加一个图形主题（图：\@ref(fig:figpoint04)）
+
+```{r figpoint04, fig.cap="Arrival versus departure delays jittered scatterplot with groups."}
+alaska_flights %>% 
+  ggplot(aes(x = dep_delay, y = arr_delay))+
+  geom_point(aes(col = factor(flight), size = hour),
+             alpha = 0.5,
+             position = position_jitter(width = 30, height = 30),
+             )+
+  theme_bw()
+```
+
+## 线图
+
+## 直方图
+
+## 箱图
+
+## 柱状图
+
 
 
 

@@ -144,8 +144,13 @@
 .post-content table th {
     font-size: 16px;
     text-align: center;
-    background-color: #3f3f3f;
-    color: white;
+    background-color: #ffffff;
+    font-weight: bold;
+    color: rgb(0, 0, 0);
+}
+
+.post-content table caption {
+    font-weight: bold;
 }
 
 .post-content table tr:nth-child(even){
@@ -267,7 +272,12 @@
 .post-content figure > figcaption > p {
     color: var(--secondary);
     font-size: 16px;
-    font-weight: normal;
+    font-weight: bold;
+}
+
+.post-content p.caption {
+    font-weight: bold;
+    text-align: center;
 }
 
 .toc {

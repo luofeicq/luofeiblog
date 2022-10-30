@@ -38,20 +38,26 @@ cover:
 
 
 
-<p>这些教程主要市基于“modrndive”包<span class="citation">(<a href="#ref-R-moderndive" role="doc-biblioref">Kim and Ismay 2022</a>)</span>的参考手册和自己基自己浅薄的R使用经验编写，主要目的还是引导重庆的公共卫生人使用R语言分析数据，撰写报告，减轻重复劳动的负担。</p>
+<p>这些教程主要市基于“modrndive”包<span class="citation">(<a href="#ref-R-moderndive" role="doc-biblioref">Kim and Ismay 2022</a>)</span>的参考手册和自己浅薄的R使用经验编写，主要目的还是引导重庆的公共卫生人使用R语言分析数据，撰写报告，减轻重复劳动的负担。</p>
+<div class="figure" style="text-align: left"><span style="display:block;" id="fig:figcover"></span>
+<img src="otherfigs/tidyverse.png" alt="Family of tidy packages." width="1008" />
+<p class="caption">
+图0.1: Family of tidy packages.
+</p>
+</div>
 <div id="需要使用到的包" class="section level1" number="1">
 <h1><span class="header-section-number">1</span> 需要使用到的包：</h1>
 <pre class="r"><code>library(tidyverse)  # tidy系列数据分析套装
 library(moderndive)  # 统计推断、数据模拟，统计学导学
 library(nycflights13)  # 航班数据库
-library(gapminder)  # gap minder 数据库</code></pre>
+library(gapminder)  # gap minder 数据库
+library(gtsummary)  # 超棒的统计表格自动生成
+library(skimr)  # 描述性统计包</code></pre>
 <p>在R里面对于数据可视化当然要用到数据可视化的王者<code>ggplot2</code><span class="citation">(<a href="#ref-R-ggplot2" role="doc-biblioref">Wickham et al. 2022</a>)</span>。</p>
-</div>
-<div id="gapminder-数据" class="section level1" number="2">
-<h1><span class="header-section-number">2</span> Gapminder 数据</h1>
-<p>TED talk “The best stats you’ve ever seen”。其中的数据来源就是，随机抽取其中5行数据看看<a href="#tab:tabgap">2.1</a>。</p>
+<p>Gapminder 数据</p>
+<p>TED talk “The best stats you’ve ever seen”。其中的数据来源就是，随机抽取其中5行数据看看<a href="#tab:tabgap">1.1</a>。</p>
 <table>
-<caption><span id="tab:tabgap">表2.1: </span>Gapminder数据</caption>
+<caption><span id="tab:tabgap">表1.1: </span>Gapminder数据</caption>
 <thead>
 <tr class="header">
 <th align="center">country</th>
@@ -64,49 +70,504 @@ library(gapminder)  # gap minder 数据库</code></pre>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="center">Senegal</td>
-<td align="center">Africa</td>
-<td align="center">2007</td>
-<td align="center">63.1</td>
-<td align="center">1.23e+07</td>
-<td align="center">1712</td>
+<td align="center">Iceland</td>
+<td align="center">Europe</td>
+<td align="center">1957</td>
+<td align="center">73.5</td>
+<td align="center">1.65e+05</td>
+<td align="center">9244</td>
 </tr>
 <tr class="even">
-<td align="center">Nigeria</td>
-<td align="center">Africa</td>
-<td align="center">2007</td>
-<td align="center">46.9</td>
-<td align="center">1.35e+08</td>
-<td align="center">2014</td>
+<td align="center">Germany</td>
+<td align="center">Europe</td>
+<td align="center">1982</td>
+<td align="center">73.8</td>
+<td align="center">7.83e+07</td>
+<td align="center">22032</td>
 </tr>
 <tr class="odd">
-<td align="center">Peru</td>
-<td align="center">Americas</td>
-<td align="center">1977</td>
-<td align="center">58.4</td>
-<td align="center">1.60e+07</td>
-<td align="center">6281</td>
+<td align="center">Denmark</td>
+<td align="center">Europe</td>
+<td align="center">1982</td>
+<td align="center">74.6</td>
+<td align="center">5.12e+06</td>
+<td align="center">21688</td>
 </tr>
 <tr class="even">
-<td align="center">Niger</td>
-<td align="center">Africa</td>
-<td align="center">2002</td>
-<td align="center">54.5</td>
-<td align="center">1.11e+07</td>
-<td align="center">601</td>
-</tr>
-<tr class="odd">
-<td align="center">Iran</td>
+<td align="center">China</td>
 <td align="center">Asia</td>
-<td align="center">2007</td>
-<td align="center">71.0</td>
-<td align="center">6.95e+07</td>
-<td align="center">11606</td>
+<td align="center">1962</td>
+<td align="center">44.5</td>
+<td align="center">6.66e+08</td>
+<td align="center">488</td>
+</tr>
+<tr class="odd">
+<td align="center">United Kingdom</td>
+<td align="center">Europe</td>
+<td align="center">1997</td>
+<td align="center">77.2</td>
+<td align="center">5.88e+07</td>
+<td align="center">26075</td>
 </tr>
 </tbody>
 </table>
 <p>我们尝试来展示以下数据中的信息：</p>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-1.png" width="576" style="display: block; margin: auto;" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-1.png" width="576" style="display: block; margin: auto auto auto 0;" /></p>
+</div>
+<div id="五种基本的统计图形" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> 五种基本的统计图形</h1>
+<ol style="list-style-type: decimal">
+<li>散点图 scatterplots<br />
+</li>
+<li>线图 linegraphs<br />
+</li>
+<li>直方图 histograms<br />
+</li>
+<li>箱图 boxplots<br />
+</li>
+<li>柱状图 barplots</li>
+</ol>
+<div id="散点图" class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> 散点图</h2>
+<p>散点图也叫双变量图（<em>bivariate plots</em>），主要用于可视化两个变量之间的变化关系。我们使用<code>alaska_flights</code>数据包来学习一下R种散点图的绘制。这个数据包主要是2013年阿拉斯加航空公司的航班数据。</p>
+<div id="数据概览" class="section level3" number="2.1.1">
+<h3><span class="header-section-number">2.1.1</span> 数据概览</h3>
+<p>使用<code>sample_n()</code>随机抽取5行数据查看一下数据表的结构，也使用<code>head()</code>函数，浏览数据的前5行，使用管道符号<code>%&gt;%</code>（快捷键ctrl+shift+m）可以让我们的代码的可读性更强，你可以将其视为函数结果的传递过程，每个<code>%&gt;%</code>，将上一个函数结果传递至下一个函数。R4.2版本后，增加了原生管道<code>|&gt;</code>，二者的效果一样。</p>
+<pre><code># # A tibble: 5 × 19
+#    year month   day dep_time sched_dep…¹ dep_d…² arr_t…³ sched…⁴ arr_d…⁵ carrier
+#   &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;       &lt;int&gt;   &lt;dbl&gt;   &lt;int&gt;   &lt;int&gt;   &lt;dbl&gt; &lt;chr&gt;  
+# 1  2013    12     1      700         705      -5    1005    1017     -12 AS     
+# 2  2013    12    27     1828        1825       3    2156    2152       4 AS     
+# 3  2013    11    10     1819        1825      -6    2210    2149      21 AS     
+# 4  2013    12    16      659         705      -6    1005    1015     -10 AS     
+# 5  2013     5     7      716         725      -9     922    1015     -53 AS     
+# # … with 9 more variables: flight &lt;int&gt;, tailnum &lt;chr&gt;, origin &lt;chr&gt;,
+# #   dest &lt;chr&gt;, air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;, minute &lt;dbl&gt;,
+# #   time_hour &lt;dttm&gt;, and abbreviated variable names ¹​sched_dep_time,
+# #   ²​dep_delay, ³​arr_time, ⁴​sched_arr_time, ⁵​arr_delay</code></pre>
+<p>由于数据库变量较多，我们用skimr[@{R-skimr]包种的<code>simr()</code>函数，查看各个变量的信息。从结果可以看到整个数据库共有19列，714行，其中字符变量4个，数值变量14个，时间变量1个，后面3张表是对不同类型变量的描述性信息，如：缺失值、最值、中位数、标准差，分位数，直方图等。</p>
+<table>
+<caption><span id="tab:unnamed-chunk-6">表2.1: </span>Data summary</caption>
+<tbody>
+<tr class="odd">
+<td align="left">Name</td>
+<td align="left">Piped data</td>
+</tr>
+<tr class="even">
+<td align="left">Number of rows</td>
+<td align="left">714</td>
+</tr>
+<tr class="odd">
+<td align="left">Number of columns</td>
+<td align="left">19</td>
+</tr>
+<tr class="even">
+<td align="left">_______________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Column type frequency:</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">character</td>
+<td align="left">4</td>
+</tr>
+<tr class="odd">
+<td align="left">numeric</td>
+<td align="left">14</td>
+</tr>
+<tr class="even">
+<td align="left">POSIXct</td>
+<td align="left">1</td>
+</tr>
+<tr class="odd">
+<td align="left">________________________</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">Group variables</td>
+<td align="left">None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: character</strong></p>
+<table>
+<colgroup>
+<col width="19%" />
+<col width="13%" />
+<col width="19%" />
+<col width="5%" />
+<col width="5%" />
+<col width="8%" />
+<col width="12%" />
+<col width="15%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">min</th>
+<th align="right">max</th>
+<th align="right">empty</th>
+<th align="right">n_unique</th>
+<th align="right">whitespace</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">carrier</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">tailnum</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">6</td>
+<td align="right">6</td>
+<td align="right">0</td>
+<td align="right">84</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">origin</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">dest</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table>
+<colgroup>
+<col width="17%" />
+<col width="11%" />
+<col width="16%" />
+<col width="9%" />
+<col width="8%" />
+<col width="5%" />
+<col width="5%" />
+<col width="5%" />
+<col width="5%" />
+<col width="5%" />
+<col width="7%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">mean</th>
+<th align="right">sd</th>
+<th align="right">p0</th>
+<th align="right">p25</th>
+<th align="right">p50</th>
+<th align="right">p75</th>
+<th align="right">p100</th>
+<th align="left">hist</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">year</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">2013.00</td>
+<td align="right">0.00</td>
+<td align="right">2013</td>
+<td align="right">2013</td>
+<td align="right">2013</td>
+<td align="right">2013</td>
+<td align="right">2013</td>
+<td align="left">▁▁▇▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">month</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">6.41</td>
+<td align="right">3.41</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">6</td>
+<td align="right">9</td>
+<td align="right">12</td>
+<td align="left">▇▆▆▆▇</td>
+</tr>
+<tr class="odd">
+<td align="left">day</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">15.79</td>
+<td align="right">8.85</td>
+<td align="right">1</td>
+<td align="right">8</td>
+<td align="right">16</td>
+<td align="right">23</td>
+<td align="right">31</td>
+<td align="left">▇▇▇▇▆</td>
+</tr>
+<tr class="even">
+<td align="left">dep_time</td>
+<td align="right">2</td>
+<td align="right">1.00</td>
+<td align="right">1294.56</td>
+<td align="right">565.66</td>
+<td align="right">651</td>
+<td align="right">718</td>
+<td align="right">1805</td>
+<td align="right">1825</td>
+<td align="right">2205</td>
+<td align="left">▇▁▁▇▁</td>
+</tr>
+<tr class="odd">
+<td align="left">sched_dep_time</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">1284.50</td>
+<td align="right">551.95</td>
+<td align="right">705</td>
+<td align="right">720</td>
+<td align="right">1815</td>
+<td align="right">1825</td>
+<td align="right">1835</td>
+<td align="left">▇▁▁▁▇</td>
+</tr>
+<tr class="even">
+<td align="left">dep_delay</td>
+<td align="right">2</td>
+<td align="right">1.00</td>
+<td align="right">5.80</td>
+<td align="right">31.36</td>
+<td align="right">-21</td>
+<td align="right">-7</td>
+<td align="right">-3</td>
+<td align="right">3</td>
+<td align="right">225</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">arr_time</td>
+<td align="right">2</td>
+<td align="right">1.00</td>
+<td align="right">1564.89</td>
+<td align="right">591.37</td>
+<td align="right">3</td>
+<td align="right">1003</td>
+<td align="right">2043</td>
+<td align="right">2128</td>
+<td align="right">2355</td>
+<td align="left">▁▁▇▁▇</td>
+</tr>
+<tr class="even">
+<td align="left">sched_arr_time</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">1595.30</td>
+<td align="right">558.98</td>
+<td align="right">1015</td>
+<td align="right">1025</td>
+<td align="right">2125</td>
+<td align="right">2145</td>
+<td align="right">2158</td>
+<td align="left">▇▁▁▁▇</td>
+</tr>
+<tr class="odd">
+<td align="left">arr_delay</td>
+<td align="right">5</td>
+<td align="right">0.99</td>
+<td align="right">-9.93</td>
+<td align="right">36.48</td>
+<td align="right">-74</td>
+<td align="right">-32</td>
+<td align="right">-17</td>
+<td align="right">2</td>
+<td align="right">198</td>
+<td align="left">▇▇▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">flight</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">12.19</td>
+<td align="right">34.26</td>
+<td align="right">5</td>
+<td align="right">7</td>
+<td align="right">7</td>
+<td align="right">15</td>
+<td align="right">915</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">air_time</td>
+<td align="right">5</td>
+<td align="right">0.99</td>
+<td align="right">325.62</td>
+<td align="right">16.17</td>
+<td align="right">277</td>
+<td align="right">314</td>
+<td align="right">324</td>
+<td align="right">336</td>
+<td align="right">392</td>
+<td align="left">▁▇▇▂▁</td>
+</tr>
+<tr class="even">
+<td align="left">distance</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">2402.00</td>
+<td align="right">0.00</td>
+<td align="right">2402</td>
+<td align="right">2402</td>
+<td align="right">2402</td>
+<td align="right">2402</td>
+<td align="right">2402</td>
+<td align="left">▁▁▇▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">hour</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">12.62</td>
+<td align="right">5.50</td>
+<td align="right">7</td>
+<td align="right">7</td>
+<td align="right">18</td>
+<td align="right">18</td>
+<td align="right">18</td>
+<td align="left">▇▁▁▁▇</td>
+</tr>
+<tr class="even">
+<td align="left">minute</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">22.18</td>
+<td align="right">6.58</td>
+<td align="right">5</td>
+<td align="right">20</td>
+<td align="right">25</td>
+<td align="right">25</td>
+<td align="right">35</td>
+<td align="left">▁▂▆▇▂</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: POSIXct</strong></p>
+<table>
+<colgroup>
+<col width="13%" />
+<col width="9%" />
+<col width="13%" />
+<col width="18%" />
+<col width="18%" />
+<col width="18%" />
+<col width="8%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="left">min</th>
+<th align="left">max</th>
+<th align="left">median</th>
+<th align="right">n_unique</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">time_hour</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="left">2013-01-01 07:00:00</td>
+<td align="left">2013-12-31 18:00:00</td>
+<td align="left">2013-06-28 12:30:00</td>
+<td align="right">714</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="绘制散点图" class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span> 绘制散点图</h2>
+<p>这里我们简单介绍一下使用<code>ggplot2</code>绘图的一般步骤</p>
+<ol style="list-style-type: decimal">
+<li>首先使用<code>ggplot()</code>函数我们创建一个<code>ggplot</code>对象，换句话说建立一个空白的画板。在<code>aes()</code>中分别定义这个统计图的x轴和y轴的度量变量分别为<code>alaska_flights</code>数据库里的<code>dep_delay</code>和<code>arr_delay</code>。这时的画板是空白的，因为我们没有定义要用哪种图形来展示。</li>
+</ol>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto auto auto 0;" /></p>
+<ol start="2" style="list-style-type: decimal">
+<li>使用<code>+</code>号添加<code>geom_point</code>图层后，一张基础的散点图完成了。程序输出一条warning，提示我们图形移除了5行有缺失值的数据。（图：<a href="#fig:figpoint1">2.1</a>）</li>
+</ol>
+<pre><code># Warning: Removed 5 rows containing missing values (geom_point).</code></pre>
+<div class="figure" style="text-align: left"><span style="display:block;" id="fig:figpoint1"></span>
+<img src="{{< blogdown/postref >}}index_files/figure-html/figpoint1-1.png" alt="Arrival vs. departure delays scatterplot." width="672" />
+<p class="caption">
+图2.1: Arrival vs. departure delays scatterplot.
+</p>
+</div>
+<ol start="3" style="list-style-type: decimal">
+<li>但是我们发现这个图中“0，0”附近的点都挤在一起，让人难以辨识，一般情况有两种方式解决这个问题，首先是在<code>geom_point()</code>设置<code>alpha</code>点的透明度。这样，我们可以更明显地看出数据的集中趋势。（图：<a href="#fig:figpoint2">2.2</a>）</li>
+</ol>
+<pre><code># Warning: Removed 5 rows containing missing values (geom_point).</code></pre>
+<div class="figure" style="text-align: left"><span style="display:block;" id="fig:figpoint2"></span>
+<img src="{{< blogdown/postref >}}index_files/figure-html/figpoint2-1.png" alt="Arrival vs. departure delays scatterplot with alpha = 0.2." width="672" />
+<p class="caption">
+图2.2: Arrival vs. departure delays scatterplot with alpha = 0.2.
+</p>
+</div>
+<ol start="4" style="list-style-type: decimal">
+<li>第二种方案可以使用<code>geom_jitter()</code>替代<code>geom_point()</code>或者在<code>geom()</code>中使用<code>position = position_jitter()</code>，给每个数据点的位置添加随机扰动，降低重叠程度。<code>width = , height =</code>参数可以控制扰动的大小。（图：<a href="#fig:figpoint3">2.3</a>）</li>
+</ol>
+<pre><code># Warning: Removed 5 rows containing missing values (geom_point).</code></pre>
+<div class="figure" style="text-align: left"><span style="display:block;" id="fig:figpoint3"></span>
+<img src="{{< blogdown/postref >}}index_files/figure-html/figpoint3-1.png" alt="Arrival versus departure delays jittered scatterplot." width="672" />
+<p class="caption">
+图2.3: Arrival versus departure delays jittered scatterplot.
+</p>
+</div>
+<ol start="5" style="list-style-type: decimal">
+<li>我们可以在<code>aes()</code>在添加其他分类变量来展示分组的信息，如颜色，点形状，大小等，使用<code>theme_bw()</code>添加一个图形主题（图：<a href="#fig:figpoint04">2.4</a>）</li>
+</ol>
+<pre><code># Warning: Removed 5 rows containing missing values (geom_point).</code></pre>
+<div class="figure" style="text-align: left"><span style="display:block;" id="fig:figpoint04"></span>
+<img src="{{< blogdown/postref >}}index_files/figure-html/figpoint04-1.png" alt="Arrival versus departure delays jittered scatterplot with groups." width="672" />
+<p class="caption">
+图2.4: Arrival versus departure delays jittered scatterplot with groups.
+</p>
+</div>
+</div>
+<div id="线图" class="section level2" number="2.3">
+<h2><span class="header-section-number">2.3</span> 线图</h2>
+</div>
+<div id="直方图" class="section level2" number="2.4">
+<h2><span class="header-section-number">2.4</span> 直方图</h2>
+</div>
+<div id="箱图" class="section level2" number="2.5">
+<h2><span class="header-section-number">2.5</span> 箱图</h2>
+</div>
+<div id="柱状图" class="section level2" number="2.6">
+<h2><span class="header-section-number">2.6</span> 柱状图</h2>
 <p><strong>参考文献</strong></p>
 <div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-R-moderndive" class="csl-entry">
@@ -114,6 +575,7 @@ Kim, Albert Y., and Chester Ismay. 2022. <em>Moderndive: Tidyverse-Friendly Intr
 </div>
 <div id="ref-R-ggplot2" class="csl-entry">
 Wickham, Hadley, Winston Chang, Lionel Henry, Thomas Lin Pedersen, Kohske Takahashi, Claus Wilke, Kara Woo, Hiroaki Yutani, and Dewey Dunnington. 2022. <em>Ggplot2: Create Elegant Data Visualisations Using the Grammar of Graphics</em>. <a href="https://CRAN.R-project.org/package=ggplot2">https://CRAN.R-project.org/package=ggplot2</a>.
+</div>
 </div>
 </div>
 </div>
