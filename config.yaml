@@ -21,6 +21,7 @@ enableRobotsTXT: true
 buildDrafts: true
 buildFuture: false
 buildExpired: false
+#disableThemeToggle: true
 menu:
     main:
         - identifier: archives
@@ -41,6 +42,8 @@ menu:
           weight: 40
 params:
     #math: true
+    #defaultTheme: light
+   #defaultTheme: dark
     assets:
         disableHLJS: false
     utteranc:
