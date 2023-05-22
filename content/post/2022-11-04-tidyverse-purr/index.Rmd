@@ -1,0 +1,157 @@
+---
+title: tidyverse系列-purr
+author: Luo Fei
+date: '2022-11-04'
+slug: []
+categories:
+  - 中文
+tags:
+  - R
+output:
+    blogdown::html_page:
+        number_sections: true  
+        link-citations: true 
+math: true
+showToc: true
+TocOpen: false
+toc-title: "目录"
+bibliography: ["tidy.bib", "packages.bib"]
+biblio-style: "abbrv"
+draft: false
+hidemeta: false
+comments: false
+description: "公共卫生医师培训R语言相关"
+canonicalURL: ""
+disableShare: false
+hideSummary: false
+searchHidden: false
+ShowReadingTime: false
+ShowBreadCrumbs: true
+ShowPostNavLinks: true
+cover:
+    image: "tidyverse.png" # image path/url
+    alt: "<alt text>" # alt text
+    caption: "<text>" # display caption under cover
+    relative: false # when using page bundles set this to true
+    hidden: true # only hide on current single page  
+---
+
+```{r,setup,include=FALSE}
+
+options(digits = 3)
+
+##knitr设置
+knitr::opts_chunk$set(
+  echo = TRUE,
+  prompt = FALSE,
+  comment = "#",
+  results = "markup",
+  error = FALSE,
+  message = FALSE,
+  fig.align = "left",
+  collapse = FALSE,
+  tidy = FALSE,
+  warning = FALSE
+  )
+
+knitr::write_bib(c("purrr", "nycflights13", "moderndive", "ggplot2","gapminder", "gtsummary", "skimr"), "packages.bib", width = 60)
+
+```  
+
+```{r}
+library(tidyverse)
+rm(list = ls())
+```
+
+
+本系列主要是~又来挖坑~想对`tidyverse`[@R-tidyverse]这个整合包的各个包的使用说明做一个完整的中文介绍。本章主要介绍`purrr`包[@R-purrr]， `purrr`包通常被称为“优雅的循环迭代包”，它比for循环的速度快，代码更容读。           
+# `map()`函数
+
+
+## 一个列表
+
+1.  `map(.x, .f, ...)`map系列函数会将一个函数应用到输入的列表或向量的每个元素上面，然后返回一个list。比如：
+
+```{r}
+x <- list(1:10, 11:20, 21:30)
+
+l1 <- list(x = c("a", "b"), y = c("c", "d"))
+
+map(l1, sort, decreasing = T )
+
+```
+
+2. `map_dbl(.x, .f, ...)`返回双精度向量
+
+```{r}
+# map_dbl(x, ~ mean(.x, na.rm = T))
+map_dbl(x, mean)
+
+```
+3. `map_int`返回整数向量，注意对于计算结果不是整数的函数，使用`map_int`程序会报错。
+
+```{r}
+map_int(x, length)
+```
+4. `map_chr`， 返回字符向量。
+
+```{r}
+map_chr(l1, paste, collapse = ",")
+```
+5. `map_lgl`返回逻辑向量
+
+```{r}
+
+```
+
+6. `map_dfc`返回一个按列合并的数据框，注意对于每一个元素运行候返回的值要长度
+
+```{r}
+map_dfc(l1, rep, 3)
+```
+
+
+对于这个结果感到疑惑的，我们可以单独`l1`中的元素运行`rep`看看结果，就更好理解了。
+
+```{r}
+rep(l1$x,3)
+
+rep(l1$y, 3)
+```
+对于`map_dfc`运行的结果，看作是做了以下操作
+
+
+```{r}
+df <- as.data.frame(matrix(nrow = length(l1[[1]]) * 3, ncol = 0))
+for (i in 1:length(l1)) {
+  df <- bind_cols(df, data.frame(rep(l1[[i]], 3)))
+  colnames(df)[[i]] <- names(l1)[[i]]
+}
+
+
+```
+
+7. `map_dfr`，返回按行合并的数据框。
+
+```{r}
+map_dfr(x, summary)
+```
+
+
+8. `walk`walk 函数并不会返回任何结果，有时仅需要遍历一个数据结构调用函数进行一些显示、绘图， 这称为函数的side effect， 不需要返回结果。比如用cat查看并输出数据框中的变量类别
+
+```{r}
+walk(x, print)
+```
+
+
+## 两个列表
+
+`map(.x, .f, ...)`map函数会将一个函数应用到输入的列表或向量的一对元素上面，然后返回一个list。比如：
+
+```{r}
+
+
+```
+
+
