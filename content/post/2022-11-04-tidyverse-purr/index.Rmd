@@ -54,7 +54,7 @@ knitr::opts_chunk$set(
   warning = FALSE
   )
 
-knitr::write_bib(c("purrr", "nycflights13", "moderndive", "ggplot2","gapminder", "gtsummary", "skimr"), "packages.bib", width = 60)
+knitr::write_bib(c("tidyverse","purrr", "nycflights13", "moderndive", "ggplot2","gapminder", "gtsummary", "skimr"), "packages.bib", width = 60)
 
 ```  
 
@@ -123,11 +123,12 @@ rep(l1$y, 3)
 
 ```{r}
 df <- as.data.frame(matrix(nrow = length(l1[[1]]) * 3, ncol = 0))
+
 for (i in 1:length(l1)) {
   df <- bind_cols(df, data.frame(rep(l1[[i]], 3)))
   colnames(df)[[i]] <- names(l1)[[i]]
 }
-
+df
 
 ```
 
@@ -145,13 +146,26 @@ walk(x, print)
 ```
 
 
-## 两个列表
+## 两个列表使用`map2`系列
 
-`map(.x, .f, ...)`map函数会将一个函数应用到输入的列表或向量的一对元素上面，然后返回一个list。比如：
+1. `map2(.x, .f, ...)`map函数会将一个函数应用到输入的一对列表或向量的一对元素上面，然后返回一个list。比如：
 
 ```{r}
+# x <- list(1:10, 11:20, 21:30)
+y <- list(1, 2, 3)
+z <- list(4, 5, 6)
+l2 <- list(x = "a", y = "z")
+map2(x, y, ~ .x * .y)
+# list(x[[i]] * y[[i]])
+```
+2. `map2_dbl`
 
-
+```{r}
+map2_dbl(y, z, ~ .x / .y)
 ```
 
+3. `map2_int`
+```{r}
+map2_int(y, z, ~ (length(c(.x) + length(.y))))
+```
 
