@@ -1,0 +1,116 @@
+---
+title: scanstatistics包在公共卫生中的应用
+author: Luo Fei
+date: '2023-05-22'
+slug: scanstat
+categories:
+  - 中文
+  - Tec
+tags:
+  - R
+output:
+    blogdown::html_page:
+        number_sections: true  
+        link-citations: true 
+math: true
+showToc: true
+TocOpen: false
+toc-title: "目录"
+bibliography: ["packages.bib", "article.bib"]
+biblio-style: "abbrv"
+draft: false
+hidemeta: false
+comments: false
+description: "学习使用sscanstatistics包"
+canonicalURL: ""
+disableShare: false
+hideSummary: false
+searchHidden: false
+ShowReadingTime: false
+ShowBreadCrumbs: true
+ShowPostNavLinks: true
+cover:
+    image: "" # image path/url
+    alt: "<alt text>" # alt text
+    caption: "<text>" # display caption under cover
+    relative: false # when using page bundles set this to true
+    hidden: true # only hide on current single page  
+---
+
+
+
+<div id="什么是时空扫描统计" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> 什么是时空扫描统计？</h1>
+<p>扫描统计学主要用于观测多个位置上时间序列数据或事件数据,检测数据集中的异常聚集， 在scanstatistics包<span class="citation">(<a href="#ref-R-scanstatistics" role="doc-biblioref">Benjamin Allévius 2023</a>)</span>主要能实现以下功能：</p>
+<ul>
+<li><p>首先将研究区域划分为多个位置(位置点或网格)，观测每个位置上一段时间内的数据变化或事件发生情况。</p></li>
+<li><p>然后从现在向过去延伸，在空间上选取若干位置，在时间上选取一定时间段,形成空间-时间聚集。每个聚集对应选定的位置集合和时间间隔。</p></li>
+<li><p>对每个空间-时间聚集计算一个统计量,反映该聚集内观测到的数据或事件与预期值的差异。</p></li>
+<li><p>报告统计量最大的几个空间-时间聚集，它们可能对应数据或事件的异常聚集。</p></li>
+<li><p>重复这个过程,对不同的空间-时间聚集进行检验，找到研究区域内所有潜在的异常聚集。</p></li>
+</ul>
+<p># 使用扫描空间统计的常见步骤有：</p>
+<ol style="list-style-type: decimal">
+<li><p>数据资料准备。 如事件数据、时间序列数据等。数据要包含空间位置信息和测量值或事件计数信息。</p></li>
+<li><p>设置研究区域和空间格网。根据数据空间范围设置研究区域，并在区域内划分网格。网格形状和大小根据具体研究目标确定，通常情况使用行政区划的地图。</p></li>
+<li><p>选取空间聚集的时间窗口。从当前时间向过去延伸，选择一个或几个时间窗口，如最近1周、2周等。</p></li>
+<li><p>在研究区域内，选择若干空间窗口和时间窗口组合，形成空间-时间聚集。每个聚集对应一组位置(空间窗口)和一段时间区间(时间窗口)。</p></li>
+<li><p>计算每个空间-时间聚集的观测值与预期值的差异，得到聚集的统计量。统计量可直接使用观测值与预期值的差异，或基于该差异计算s标准华的差异比值等。</p></li>
+<li><p>识别统计量最大的k个空间-时间聚集，作为潜在的异常聚集中心。k的选择根据研究目标确定，通常为3到5个。</p></li>
+<li><p>对k个异常聚集中心，进行进一步分析，如数据动态监测、空间相关探索等，判断聚集的显著性和可能原因。</p></li>
+<li><p>重复步骤4到步骤7，调整空间-时间聚集的设置，完成对整个研究区域的扫描检验，找到所有潜在异常聚集。</p></li>
+<li><p>根据扫描检验结果和进一步分析，得出研究结论，识别空间聚集模式以及影响因素。</p></li>
+</ol>
+<p># 示例：重庆市输入性疟疾时空聚集分析</p>
+<p># <code>scanstatistics</code>包中的主要函数</p>
+<p>## 扫描统计函数</p>
+<ul>
+<li><p><code>scan_eb_poisson</code>：最常用的函数， 基于Poisson分布模型期望值的扫描统计检测聚集时间<span class="citation">(<a href="#ref-1998Evaluating" role="doc-biblioref">M. Kulldorff et al. 1998</a>)</span>。</p></li>
+<li><p><code>scan_pb_poisson</code>: 基于总体值<span class="citation">(<a href="#ref-2010Prospective" role="doc-biblioref">M. Kulldorff 2010</a>)</span>.</p></li>
+<li><p><code>scan_eb_negbin</code>： 基于负二项分布模型。</p></li>
+<li><p><code>scan_eb_zip</code>： 基于零膨胀Poission分布模型期望值。<span class="citation">(<a href="#ref-B2017An" role="doc-biblioref">B. Allévius and Hhle 2017</a>)</span></p></li>
+<li><p><code>scan_permutation</code>：基于时间-空间置换模型。<span class="citation">(<a href="#ref-2005A" role="doc-biblioref">Martin Kulldorff et al. 2005</a>)</span></p></li>
+<li><p><code>scan_bayes_negbin</code>: 基于贝叶斯时空扩展模型。<span class="citation">(<a href="#ref-NIPS2005_28acfe2d" role="doc-biblioref">Neill, Moore, and Cooper 2005</a>)</span></p></li>
+</ul>
+<p>## 数据集准备</p>
+<pre class="r"><code># 加载相应的包
+library(sp)
+library(sf)
+library(lubridate)
+library(tidyverse)</code></pre>
+<div id="纽约的乳腺癌发病率分析" class="section level2" number="1.1">
+<h2><span class="header-section-number">1.1</span> 纽约的乳腺癌发病率分析</h2>
+<pre class="r"><code>nymap &lt;- st_read(&quot;map/NYSCancer_region.dbf&quot;)</code></pre>
+<p>Reading layer <code>NYSCancer_region' from data source</code>C:\2023-05-22-scanstat_region.dbf’
+using driver `ESRI Shapefile’
+Simple feature collection with 13848 features and 77 fields
+Geometry type: MULTIPOLYGON
+Dimension: XY
+Bounding box: xmin: -79.8 ymin: 40.5 xmax: -71.9 ymax: 45
+Geodetic CRS: NAD83</p>
+<pre class="r"><code>nymap %&gt;% ggplot() +
+  geom_sf() +
+  geom_point(aes(y = LATITUDE, x = LONGITUDE), alpha = 0.2)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto auto auto 0;" /></p>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-R-scanstatistics" class="csl-entry">
+Allévius, Benjamin. 2023. <em>Scanstatistics: Space-Time Anomaly Detection Using Scan Statistics</em>. <a href="https://github.com/promerpr/scanstatistics">https://github.com/promerpr/scanstatistics</a>.
+</div>
+<div id="ref-B2017An" class="csl-entry">
+Allévius, B, and Michael Hhle. 2017. <span>“An Expectation-Based Space-Time Scan Statistic for ZIP-Distributed Data.”</span> <em>Stockholm University</em>.
+</div>
+<div id="ref-2010Prospective" class="csl-entry">
+Kulldorff, M. 2010. <span>“Prospective Time Periodic Geographical Disease Surveillance Using a Scan Statistic.”</span> <em>Journal of the Royal Statistical Society</em> 164 (1): 61–72.
+</div>
+<div id="ref-2005A" class="csl-entry">
+Kulldorff, Martin, Richard Heffernan, Jessica Hartman, Renato Assun??O, and Farzad Mostashari. 2005. <span>“A Space–Time Permutation Scan Statistic for Disease Outbreak Detection.”</span> <em>Plos Medicine</em> 2 (3): e59.
+</div>
+<div id="ref-1998Evaluating" class="csl-entry">
+Kulldorff, M, W F Athas, E J Feurer, B A Miller, and C R Key. 1998. <span>“Evaluating Cluster Alarms: A Space-Time Scan Statistic and Brain Cancer in Los Alamos, New Mexico.”</span> <em>American Journal of Public Health</em> 88.
+</div>
+<div id="ref-NIPS2005_28acfe2d" class="csl-entry">
+Neill, Daniel, Andrew Moore, and Gregory Cooper. 2005. <span>“A Bayesian Spatial Scan Statistic.”</span> In <em>Advances in Neural Information Processing Systems</em>, edited by Y. Weiss, B. Schölkopf, and J. Platt. Vol. 18. MIT Press. <a href="https://proceedings.neurips.cc/paper_files/paper/2005/file/28acfe2da49d2b9a7f177458256f2540-Paper.pdf">https://proceedings.neurips.cc/paper_files/paper/2005/file/28acfe2da49d2b9a7f177458256f2540-Paper.pdf</a>.
+</div>
+</div>
+</div>
+</div>
